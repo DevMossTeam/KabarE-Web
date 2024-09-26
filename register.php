@@ -6,21 +6,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = $_POST['username'];
     $email = $_POST['email'];
     $password = $_POST['password'];
+    $confirmPassword = $_POST['confirmPassword'];
 
-    // Hash password sebelum menyimpan ke database
-    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-
-    // Query untuk menyimpan data pengguna baru
-    $stmt = $conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
-    $stmt->bind_param("sss", $username, $email, $hashed_password);
-
-    if ($stmt->execute()) {
-        header('Location: login.php');
-        exit;
+    // Validasi email
+    if (!preg_match('/^[a-zA-Z][0-9]{8}@student\.polije\.ac\.id$/', $email)) {
+        $error = "Email harus diawali dengan 1 huruf, diikuti 8 angka, dan diakhiri dengan @student.polije.ac.id";
+    } elseif ($password !== $confirmPassword) {
+        $error = "Password dan konfirmasi password tidak cocok!";
     } else {
-        $error = "Pendaftaran gagal!";
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+        // Query untuk memasukkan data pengguna baru ke tabel user
+        $stmt = $conn->prepare("INSERT INTO user (username, email, password) VALUES (?, ?, ?)");
+        $stmt->bind_param("sss", $username, $email, $hashedPassword);
+
+        if ($stmt->execute()) {
+            header('Location: login.php');
+            exit;
+        } else {
+            $error = "Terjadi kesalahan saat mendaftar!";
+        }
+        $stmt->close();
     }
-    $stmt->close();
 }
 ?>
 
@@ -43,18 +50,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <form action="register.php" method="POST">
             <div class="mb-4">
                 <label for="username" class="block text-gray-700">Username</label>
-                <input type="text" id="username" name="username" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                <input type="text" id="username" name="username" placeholder="Masukkan username" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
             </div>
             <div class="mb-4">
                 <label for="email" class="block text-gray-700">Email</label>
-                <input type="email" id="email" name="email" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                <input type="email" id="email" name="email" placeholder="Masukkan email (misal: a12345678@student.polije.ac.id)" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
             </div>
             <div class="mb-4">
                 <label for="password" class="block text-gray-700">Password</label>
-                <input type="password" id="password" name="password" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                <input type="password" id="password" name="password" placeholder="Masukkan password" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            </div>
+            <div class="mb-6">
+                <label for="confirmPassword" class="block text-gray-700">Confirm Password</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Masukkan konfirmasi password" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
             </div>
             <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600">Register</button>
         </form>
+        <div class="mt-4 text-center">
+            <p class="text-gray-700">Already have an account? <a href="login.php" class="text-blue-500 hover:underline">Login here</a></p>
+        </div>
     </div>
 </body>
 </html>
