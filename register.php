@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
             <div class="mb-4">
                 <label for="email" class="block text-gray-700">Email</label>
-                <input type="email" id="email" name="email" placeholder="Masukkan email (misal: a12345678@student.polije.ac.id)" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                <input type="email" id="email" name="email" placeholder="Masukkan email" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
             </div>
             <div class="mb-4">
                 <label for="password" class="block text-gray-700">Password</label>
@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
             <div class="mb-6">
                 <label for="confirmPassword" class="block text-gray-700">Confirm Password</label>
-                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Masukkan konfirmasi password" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Konfirmasi password" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
             </div>
             <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600">Register</button>
         </form>
