@@ -30,6 +30,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (password_verify($password, $user['password'])) {
                 $_SESSION['loggedin'] = true;
                 $_SESSION['username'] = $user['username'];
+
+                // Set cookies
+                setcookie("username", $user['username'], time() + (86400 * 30), "/"); // 86400 = 1 day
+                setcookie("loggedin", true, time() + (86400 * 30), "/");
+
                 header('Location: index.php');
                 exit;
             } else {
