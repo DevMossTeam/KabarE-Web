@@ -8,9 +8,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $password = $_POST['password'];
     $confirmPassword = $_POST['confirmPassword'];
 
-    // Validasi email
-    if (!preg_match('/^[a-zA-Z][0-9]{8}@student\.polije\.ac\.id$/', $email)) {
-        $error = "Email harus diawali dengan 1 huruf, diikuti 8 angka, dan diakhiri dengan @student.polije.ac.id";
+    // Hapus validasi email khusus
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error = "Email tidak valid!";
     } elseif ($password !== $confirmPassword) {
         $error = "Password dan konfirmasi password tidak cocok!";
     } else {
@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->bind_param("sss", $username, $email, $hashedPassword);
 
         if ($stmt->execute()) {
-            header('Location: login.php');
+            header('Location: login.php'); // Arahkan ke halaman login setelah registrasi berhasil
             exit;
         } else {
             $error = "Terjadi kesalahan saat mendaftar!";

@@ -2,20 +2,13 @@
 session_start();
 require 'config.php'; // Menggunakan file config.php untuk koneksi database
 
-if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {
-    header('Location: index.php');
-    exit;
-}
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $usernameOrEmail = $_POST['usernameOrEmail'];
     $password = $_POST['password'];
 
-    // Validasi email jika format email
-    if (filter_var($usernameOrEmail, FILTER_VALIDATE_EMAIL)) {
-        if (!preg_match('/^[a-zA-Z][0-9]{8}@student\.polije\.ac\.id$/', $usernameOrEmail)) {
-            $error = "Email harus diawali dengan 1 huruf, diikuti 8 angka, dan diakhiri dengan @student.polije.ac.id";
-        }
+    // Hapus validasi email khusus
+    if (filter_var($usernameOrEmail, FILTER_VALIDATE_EMAIL) && !filter_var($usernameOrEmail, FILTER_VALIDATE_EMAIL)) {
+        $error = "Email tidak valid!";
     }
 
     if (!isset($error)) {
