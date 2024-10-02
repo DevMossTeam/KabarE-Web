@@ -48,34 +48,49 @@ session_start();
             <hr class="border-gray-300">
             <div class="flex justify-between items-center mt-2">
                 <a href="index.php" class="text-white px-4">Home</a>
-                <a href="news.php" class="text-white px-4">News</a>
-                <a href="about.php" class="text-white px-4">About</a>
-                <a href="contact.php" class="text-white px-4">Contact</a>
+                <a href="category/news.php" class="text-white px-4">News</a>
+                <a href="category/pemilu.php" class="text-white px-4">Pemilu</a>
+                <a href="category/teknologi.php" class="text-white px-4">Teknologi</a>
+                <a href="category/otomotif.php" class="text-white px-4">Otomotif</a>
+                <a href="category/olahraga.php" class="text-white px-4">Olahraga</a>
+                <a href="category/lifestyle.php" class="text-white px-4">Lifestyle</a>
+                <a href="category/tren.php" class="text-white px-4">Tren</a>
+                <a href="category/kesehatan.php" class="text-white px-4">Kesehatan</a>
+                <a href="category/ekonomi.php" class="text-white px-4">Ekonomi</a>
+                <div class="relative">
+                    <button id="otherCategoryButton" class="text-white px-4">
+                        <i class="fas fa-ellipsis-h text-2xl"></i>
+                    </button>
+                    <div id="otherCategoryMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-20">
+                        <a href="category/other_category/berita_lainnya.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Berita Lainnya</a>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
 
     <script>
-        const searchContainer = document.getElementById('searchContainer');
-        const searchForm = document.getElementById('searchForm');
-        const searchInput = searchForm.querySelector('input[type="text"]');
+        const profileButton = document.getElementById('profileButton');
+        const profileMenu = document.getElementById('profileMenu');
+        const otherCategoryButton = document.getElementById('otherCategoryButton');
+        const otherCategoryMenu = document.getElementById('otherCategoryMenu');
 
-        searchContainer.addEventListener('mouseenter', () => {
-            searchInput.style.width = '200px';
-            searchInput.classList.remove('w-0');
-            searchInput.classList.add('px-4', 'py-2');
-            searchInput.focus();
+        profileButton.addEventListener('click', () => {
+            profileMenu.classList.toggle('hidden');
         });
 
-        searchContainer.addEventListener('mouseleave', () => {
-            searchInput.style.width = '0';
-            searchInput.classList.add('w-0');
-            searchInput.classList.remove('px-4', 'py-2');
+        otherCategoryButton.addEventListener('click', () => {
+            otherCategoryMenu.classList.toggle('hidden');
         });
 
-        searchInput.addEventListener('blur', () => {
-            searchInput.style.width = '0';
-            searchInput.classList.add('w-0');
-            searchInput.classList.remove('px-4', 'py-2');
+        window.addEventListener('click', (e) => {
+            if (!profileButton.contains(e.target) && !profileMenu.contains(e.target)) {
+                profileMenu.classList.add('hidden');
+            }
+            if (!otherCategoryButton.contains(e.target) && !otherCategoryMenu.contains(e.target)) {
+                otherCategoryMenu.classList.add('hidden');
+            }
         });
     </script>
+</body>
+</html>
