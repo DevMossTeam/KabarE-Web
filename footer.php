@@ -1,9 +1,9 @@
     <!-- Footer -->
-    <footer class="bg-black text-white py-4 mt-auto">
+    <footer class="bg-blue-500 text-white py-4 mt-auto">
         <div class="container mx-auto">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
                 <div class="mb-4 md:mb-0">
-                    <img src="assets/web-icon/KabarU-logo.png" alt="KabarU Logo" class="h-8 mb-2">
+                    <img src="/assets/web-icon/KabarE-logo.png" alt="KabarE Logo" class="h-8 mb-2">
                     <p class="text-lg mb-0">Politeknik Negeri Jember</p>
                     <p class="text-lg mt-0 mb-2">UKM Explant</p>
                     <p class="text-xs mb-2">Media Berita Mahasiswa Terpercaya</p>
@@ -21,7 +21,7 @@
                     </div>
                 </div>
             </div>
-            <hr class="my-4 border-gray-300 border-2">
+            <hr class="my-4 border-t border-gray-300 w-full">
             <div class="text-center space-x-4">
                 <span class="text-sm">Ketentuan</span>
                 <span class="text-sm">Kebijakan Privasi</span>
