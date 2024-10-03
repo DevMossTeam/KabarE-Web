@@ -78,3 +78,42 @@
 </div>
 
 <?php include 'footer.php'; ?>
+
+<script>
+    const slider = document.getElementById('slider');
+    const prevButton = document.getElementById('prev');
+    const nextButton = document.getElementById('next');
+    const dots = document.querySelectorAll('[data-slide]');
+    let currentSlide = 0;
+
+    // Update slider position and dot indicator
+    function updateSlider() {
+        slider.style.transform = `translateX(-${currentSlide * 100}%)`;
+        dots.forEach(dot => dot.classList.remove('bg-gray-800', 'w-6', 'h-2'));
+        dots.forEach(dot => dot.classList.add('w-3', 'h-3', 'rounded-full'));
+        dots[currentSlide].classList.add('bg-gray-800', 'w-6', 'h-2', 'rounded-full');
+    }
+
+    // Next slide
+    nextButton.addEventListener('click', () => {
+        currentSlide = (currentSlide + 1) % dots.length;
+        updateSlider();
+    });
+
+    // Previous slide
+    prevButton.addEventListener('click', () => {
+        currentSlide = (currentSlide - 1 + dots.length) % dots.length;
+        updateSlider();
+    });
+
+    // Dot indicator click
+    dots.forEach(dot => {
+        dot.addEventListener('click', () => {
+            currentSlide = parseInt(dot.getAttribute('data-slide'));
+            updateSlider();
+        });
+    });
+
+    // Initialize slider
+    updateSlider();
+</script>
