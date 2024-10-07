@@ -2,47 +2,44 @@
 session_start();
 include 'config.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = $_POST['email'];
-    $password = $_POST['password'];
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Pastikan input ada sebelum mengaksesnya
+    $input = $_POST['usernameOrEmail'] ?? null; // Sesuaikan nama input
+    $password = $_POST['password'] ?? null;
 
-    // Debugging: Periksa input email dan password
-    error_log("Email yang diterima: $email");
+    if ($input && $password) {
+        // Query untuk memeriksa username atau email
+        $stmt = $conn->prepare("SELECT id, email, password FROM user WHERE (username = ? OR email = ?)");
+        if ($stmt) {
+            $stmt->bind_param("ss", $input, $input);
+            $stmt->execute();
+            $result = $stmt->get_result();
 
-    // Validasi kredensial pengguna
-    $stmt = $conn->prepare("SELECT id, password FROM user WHERE email = ?");
-    if ($stmt) {
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $result = $stmt->get_result();
+            if ($result->num_rows > 0) {
+                $user = $result->fetch_assoc();
 
-        if ($result->num_rows > 0) {
-            $user = $result->fetch_assoc();
-            // Debugging: Periksa hasil query
-            error_log("User ditemukan: " . print_r($user, true));
-
-            if (password_verify($password, $user['password'])) {
-                // Set user_id di sesi
-                $_SESSION['user_id'] = $user['id'];
-                error_log("User ID berhasil diset di sesi: " . $_SESSION['user_id']);
-                header("Location: /index.php"); // Redirect ke halaman index setelah login
-                exit();
+                // Verifikasi password
+                if (password_verify($password, $user['password'])) {
+                    $_SESSION['user_id'] = $user['id'];
+                    $_SESSION['email'] = $user['email'];
+                    header("Location: /index.php");
+                    exit();
+                } else {
+                    echo "Password salah.";
+                }
             } else {
-                echo "Password salah.";
+                echo "Email atau username tidak ditemukan.";
             }
-        } else {
-            echo "Email tidak ditemukan.";
-        }
 
-        $stmt->close();
+            $stmt->close();
+        } else {
+            echo "Terjadi kesalahan pada query.";
+        }
     } else {
-        error_log("Query gagal: " . $conn->error);
+        echo "Silakan masukkan username/email dan password.";
     }
-} else {
-    error_log("Metode request bukan POST.");
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
