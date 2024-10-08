@@ -11,7 +11,8 @@
                 <img src="https://via.placeholder.com/200x150" class="w-full md:w-full lg:w-1/4 h-32 object-cover rounded-lg mb-1 lg:mb-0 transition-transform duration-300 hover:scale-105 cursor-pointer">
                 <div class="text-center md:text-center lg:text-left lg:ml-4">
                     <h3 class="text-lg font-bold mt-1">Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit, Sed Do Eiusmod Tempor</h3>
-                    <span class="text-orange-500 font-bold mt-1 inline-block">Kategori</span>
+                    <p class="text-gray-500 mt-1">Ini adalah deskripsi singkat dari berita yang ditampilkan pada kartu ini.</p> <!-- Paragraf baru -->
+                    <span class="text-[#FF3232] font-bold mt-1 inline-block">Kategori</span> <!-- Warna diubah menjadi #FF3232 -->
                     <span class="text-gray-500 text-sm mt-1 block">12 menit yang lalu</span>
                 </div>
             </div>
@@ -20,7 +21,8 @@
                 <img src="https://via.placeholder.com/200x150" class="w-full md:w-full lg:w-1/4 h-32 object-cover rounded-lg mb-1 lg:mb-0 transition-transform duration-300 hover:scale-105 cursor-pointer">
                 <div class="text-center md:text-center lg:text-left lg:ml-4">
                     <h3 class="text-lg font-bold mt-1">Consectetur Adipiscing Elit, Sed Do Eiusmod Tempor Incididunt Ut Labore Et Dolore</h3>
-                    <span class="text-orange-500 font-bold mt-1 inline-block">Kategori</span>
+                    <p class="text-gray-500 mt-1">Ini adalah deskripsi singkat dari berita yang ditampilkan pada kartu ini.</p> <!-- Paragraf baru -->
+                    <span class="text-[#FF3232] font-bold mt-1 inline-block">Kategori</span> <!-- Warna diubah menjadi #FF3232 -->
                     <span class="text-gray-500 text-sm mt-1 block">30 menit yang lalu</span>
                 </div>
             </div>
@@ -29,7 +31,8 @@
                 <img src="https://via.placeholder.com/200x150" class="w-full md:w-full lg:w-1/4 h-32 object-cover rounded-lg mb-1 lg:mb-0 transition-transform duration-300 hover:scale-105 cursor-pointer">
                 <div class="text-center md:text-center lg:text-left lg:ml-4">
                     <h3 class="text-lg font-bold mt-1">Sed Do Eiusmod Tempor, Magna Aliqua Ut Enim Ad Minim Veniam, Quis Nostrud Exercitation</h3>
-                    <span class="text-orange-500 font-bold mt-1 inline-block">Kategori</span>
+                    <p class="text-gray-500 mt-1">Ini adalah deskripsi singkat dari berita yang ditampilkan pada kartu ini.</p> <!-- Paragraf baru -->
+                    <span class="text-[#FF3232] font-bold mt-1 inline-block">Kategori</span> <!-- Warna diubah menjadi #FF3232 -->
                     <span class="text-gray-500 text-sm mt-1 block">1 jam yang lalu</span>
                 </div>
             </div>
@@ -167,16 +170,15 @@
                 </ul>
             </div>
 
-          <!-- Kampus Section -->
-            <div class="w-full lg:w-1/2 mt-8 lg:mt-1 lg:-ml-72"> <!-- Tambahkan margin kiri negatif untuk menggeser lebih jauh ke kiri -->
+            <!-- Kampus Section -->
+            <div class="w-full lg:w-1/2 mt-8 lg:mt-1 lg:-ml-72">
                 <div class="mb-4">
                     <span class="inline-block bg-[#FF3232] text-white px-6 py-1 rounded-t-md">Kampus</span>
-                    <div class="border-b-4 border-[#FF3232] mt-0" style="width: calc(100% + 290px);"></div> <!-- Perlebar border ke kanan hingga ke ujung -->
+                    <div class="border-b-4 border-[#FF3232] mt-0" style="width: calc(100% + 290px);"></div>
                 </div>
-                <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 relative"> <!-- Atur grid untuk empat kolom pada lg -->
-                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-gray-300"></div> <!-- Garis vertikal kiri -->
-                    <div class="lg:col-span-3 ml-4"> <!-- Perbesar ukuran kartu besar dan tambahkan margin kiri -->
-                        <img src="https://via.placeholder.com/500x400" class="w-full h-auto object-cover rounded-lg"> <!-- Perbesar ukuran gambar besar -->
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 relative">
+                    <div class="lg:col-span-3">
+                        <img src="https://via.placeholder.com/600x350" class="w-full h-auto object-cover rounded-lg">
                         <div class="mt-4">
                             <span class="text-red-500 font-bold">Kategori</span>
                             <span class="text-gray-500 text-sm ml-2">25 Januari 2024</span>
@@ -184,13 +186,71 @@
                             <p class="text-gray-500 mt-1">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
                         </div>
                     </div>
-                    <div class="grid grid-cols-3 lg:grid-cols-1 gap-2 mt-4 lg:mt-0 lg:gap-0"> <!-- Hapus gap antar kartu kecil -->
-                        <?php for ($i = 1; $i <= 3; $i++): ?>
-                            <img src="https://via.placeholder.com/150x100" class="w-full h-auto object-cover rounded-lg lg:w-31/33 lg:mb-0"> <!-- Perbesar ukuran kartu kecil -->
-                        <?php endfor; ?>
-                    </div>
-                    <div class="absolute right-0 top-0 bottom-0 w-1 bg-gray-300" style="right: -290px;"></div> <!-- Garis vertikal kanan diperluas -->
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Politik Section -->
+    <div class="mt-8">
+        <span class="inline-block bg-[#FF3232] text-white px-6 py-1 rounded-t-md">Politik</span>
+        <div class="border-b-4 border-[#FF3232] mt-0 mb-4"></div>
+        <div class="flex flex-col lg:flex-row gap-4">
+            <?php for ($i = 1; $i <= 2; $i++): ?>
+                <div class="flex flex-col w-full lg:w-1/2">
+                    <img src="https://via.placeholder.com/600x330" class="w-full h-auto object-cover rounded-lg">
+                    <div class="mt-4">
+                        <span class="text-red-500 font-bold">Kategori</span>
+                        <span class="text-gray-500 text-sm ml-2">25 Januari 2025</span>
+                        <h3 class="text-lg font-bold mt-2">Lorem Ipsum Dolor Sit Amet</h3>
+                        <p class="text-gray-500 mt-1">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                    </div>
+                </div>
+            <?php endfor; ?>
+        </div>
+    </div>
+
+    <!-- Berita Lainnya dan Baru Baru Ini Section -->
+    <div class="py-4 mt-16">
+        <div class="flex flex-col lg:flex-row">
+            <!-- Berita Lainnya Section -->
+            <div class="w-full lg:w-2/3 pr-4"> <!-- Lebar lebih besar untuk Berita Lainnya -->
+                <div class="mb-4">
+                    <span class="inline-block bg-[#45C630] text-white px-6 py-1 rounded-t-md">Berita Lainnya</span>
+                    <div class="border-b-4 border-[#45C630] mt-0"></div>
+                </div>
+                <?php for ($i = 1; $i <= 3; $i++): ?>
+                    <div class="flex mb-4 items-start"> <!-- Tambahkan items-start untuk sejajar -->
+                        <div class="flex-grow">
+                            <span class="text-gray-400 text-sm">2 jam yang lalu</span>
+                            <h3 class="text-lg font-bold mt-1">Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit <?= $i ?></h3>
+                            <p class="text-gray-500 mt-1">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                            <div class="border-b border-gray-300 mt-2"></div>
+                        </div>
+                        <img src="https://via.placeholder.com/300x175" class="w-48 h-44 object-cover rounded-lg ml-4"> <!-- Perbesar gambar -->
+                    </div>
+                <?php endfor; ?>
+            </div>
+
+            <!-- Baru Baru Ini Section -->
+            <div class="w-full lg:w-1/3 pl-4"> <!-- Perpendek lebar menjadi 1/3 -->
+                <div class="mb-4">
+                    <span class="inline-block bg-[#FFC300] text-white px-6 py-1 rounded-t-md">Baru Baru Ini</span>
+                    <div class="border-b-4 border-[#FFC300] mt-0"></div>
+                </div>
+                <ul class="pl-4">
+                    <?php for ($i = 1; $i <= 6; $i++): ?>
+                        <li class="mb-4">
+                            <div class="flex items-center">
+                                <div>
+                                    <span class="text-gray-400 text-sm">2 jam yang lalu</span>
+                                    <h3 class="text-lg font-bold mt-1">Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit <?= $i ?></h3>
+                                    <div class="border-b border-gray-300 mt-2"></div>
+                                </div>
+                            </div>
+                        </li>
+                    <?php endfor; ?>
+                </ul>
             </div>
         </div>
     </div>
