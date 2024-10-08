@@ -2,15 +2,46 @@
 
 <!-- Main Content -->
 <div class="flex-grow container mx-auto mt-8 mb-8 relative z-10">
-    <!-- Image Slider and News Cards -->
-    <div class="flex flex-col md:flex-row justify-between">
+    <!-- Image Slider and News Cards in a responsive grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <!-- News Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-1 gap-2 order-2 lg:order-1">
+            <!-- Card 1 -->
+            <div class="flex flex-col lg:flex-row items-center lg:items-start">
+                <img src="https://via.placeholder.com/200x150" class="w-full md:w-full lg:w-1/4 h-32 object-cover rounded-lg mb-1 lg:mb-0 transition-transform duration-300 hover:scale-105 cursor-pointer">
+                <div class="text-center md:text-center lg:text-left lg:ml-4">
+                    <h3 class="text-lg font-bold mt-1">Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit, Sed Do Eiusmod Tempor</h3>
+                    <span class="text-orange-500 font-bold mt-1 inline-block">Kategori</span>
+                    <span class="text-gray-500 text-sm mt-1 block">12 menit yang lalu</span>
+                </div>
+            </div>
+            <!-- Card 2 -->
+            <div class="flex flex-col lg:flex-row items-center lg:items-start">
+                <img src="https://via.placeholder.com/200x150" class="w-full md:w-full lg:w-1/4 h-32 object-cover rounded-lg mb-1 lg:mb-0 transition-transform duration-300 hover:scale-105 cursor-pointer">
+                <div class="text-center md:text-center lg:text-left lg:ml-4">
+                    <h3 class="text-lg font-bold mt-1">Consectetur Adipiscing Elit, Sed Do Eiusmod Tempor Incididunt Ut Labore Et Dolore</h3>
+                    <span class="text-orange-500 font-bold mt-1 inline-block">Kategori</span>
+                    <span class="text-gray-500 text-sm mt-1 block">30 menit yang lalu</span>
+                </div>
+            </div>
+            <!-- Card 3 -->
+            <div class="flex flex-col lg:flex-row items-center lg:items-start">
+                <img src="https://via.placeholder.com/200x150" class="w-full md:w-full lg:w-1/4 h-32 object-cover rounded-lg mb-1 lg:mb-0 transition-transform duration-300 hover:scale-105 cursor-pointer">
+                <div class="text-center md:text-center lg:text-left lg:ml-4">
+                    <h3 class="text-lg font-bold mt-1">Sed Do Eiusmod Tempor, Magna Aliqua Ut Enim Ad Minim Veniam, Quis Nostrud Exercitation</h3>
+                    <span class="text-orange-500 font-bold mt-1 inline-block">Kategori</span>
+                    <span class="text-gray-500 text-sm mt-1 block">1 jam yang lalu</span>
+                </div>
+            </div>
+        </div>
+
         <!-- Image Slider -->
-        <div class="relative w-full md:w-2/3 mb-8 md:mb-0 group">
-            <!-- Slider Images -->
+        <div class="relative mb-8 md:mb-0 group order-1 lg:order-2">
             <div class="relative overflow-hidden h-96 rounded-lg">
                 <div class="flex transition-transform duration-500 ease-in-out" id="slider">
                     <?php for ($i = 1; $i <= 12; $i++): ?>
-                        <img src="https://via.placeholder.com/800x600?text=Image+<?= $i ?>" class="w-full h-full object-cover transition duration-300 ease-in-out group-hover:brightness-75">
+                        <img src="https://via.placeholder.com/800x600?text=Image+<?= $i ?>" 
+                             class="w-full h-full object-cover transition duration-300 ease-in-out group-hover:brightness-75 transform -translate-y-24">
                     <?php endfor; ?>
                 </div>
 
@@ -30,45 +61,14 @@
                 </div>
             </div>
         </div>
-
-        <!-- News Cards -->
-        <div class="w-full md:w-1/3 flex flex-col space-y-4 md:ml-4">
-            <!-- Card 1 -->
-            <div class="flex md:flex-row flex-col items-center md:items-start">
-                <img src="https://via.placeholder.com/200x150" class="w-40 h-32 object-cover rounded-lg mb-2 md:mb-0 transition-transform duration-300 hover:scale-105 cursor-pointer">
-                <div class="md:ml-4 text-center md:text-left">
-                    <h3 class="text-lg font-bold mt-2">Judul Berita 1</h3>
-                    <span class="bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-md mt-2 inline-block">Kategori</span>
-                    <span class="text-gray-500 text-sm mt-1 block">12 menit yang lalu</span>
-                </div>
-            </div>
-            <!-- Card 2 -->
-            <div class="flex md:flex-row flex-col items-center md:items-start">
-                <img src="https://via.placeholder.com/200x150" class="w-40 h-32 object-cover rounded-lg mb-2 md:mb-0 transition-transform duration-300 hover:scale-105 cursor-pointer">
-                <div class="md:ml-4 text-center md:text-left">
-                    <h3 class="text-lg font-bold mt-2">Judul Berita 2</h3>
-                    <span class="bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-md mt-2 inline-block">Kategori</span>
-                    <span class="text-gray-500 text-sm mt-1 block">30 menit yang lalu</span>
-                </div>
-            </div>
-            <!-- Card 3 -->
-            <div class="flex md:flex-row flex-col items-center md:items-start">
-                <img src="https://via.placeholder.com/200x150" class="w-40 h-32 object-cover rounded-lg mb-2 md:mb-0 transition-transform duration-300 hover:scale-105 cursor-pointer">
-                <div class="md:ml-4 text-center md:text-left">
-                    <h3 class="text-lg font-bold mt-2">Judul Berita 3</h3>
-                    <span class="bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-md mt-2 inline-block">Kategori</span>
-                    <span class="text-gray-500 text-sm mt-1 block">1 jam yang lalu</span>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- Berita Terkini -->
-    <div class="border-t border-b border-gray-300 py-4 mt-8">
+    <div class="py-12 mt-8 bg-black -mx-20 px-20">
         <div class="flex items-center justify-between mb-4">
             <div class="flex items-center">
-                <div class="bg-orange-500 w-1 h-6"></div>
-                <h2 class="text-xl font-bold ml-2">Berita Terkini</h2>
+                <div class="bg-orange-500 w-2 h-6"></div>
+                <h2 class="text-xl font-bold ml-2 text-white">Berita Terkini</h2>
             </div>
             <!-- Toggle Buttons -->
             <div class="flex space-x-2">
@@ -87,8 +87,8 @@
                         <div class="bg-white shadow-md rounded-lg overflow-hidden">
                             <img src="https://via.placeholder.com/150x100" class="w-full h-32 object-cover">
                             <div class="p-4">
-                                <h3 class="text-md font-bold mt-2">Judul Berita <?= $i ?></h3>
-                                <span class="bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-md mt-2 inline-block">Kategori</span>
+                                <h3 class="text-md font-bold mt-2 text-black">Lorem Ipsum Dolor Sit Amet</h3>
+                                <span class="text-orange-500 font-bold mt-2 inline-block">Kategori</span>
                                 <span class="text-gray-500 text-sm mt-1 block">12 menit yang lalu</span>
                             </div>
                         </div>
@@ -98,73 +98,101 @@
         </div>
     </div>
 
-    <!-- Berita Populer dan Indept -->
-    <div class="border-t border-b border-gray-300 py-4 mt-8">
-        <div class="flex">
+    <!-- Berita Populer dan Baru Baru Ini -->
+    <div class="py-4 mt-16">
+        <div class="flex flex-col lg:flex-row">
             <!-- Populer Section -->
-            <div class="w-2/3 pr-4">
-                <div class="flex items-center mb-4">
-                    <div class="bg-orange-500 w-1 h-6"></div>
-                    <h2 class="text-xl font-bold ml-2">Populer</h2>
+            <div class="w-full lg:w-2/3 pr-4">
+                <div class="mb-4">
+                    <span class="inline-block bg-red-600 text-white px-6 py-1 rounded-t-md ml-4">Populer</span>
+                    <div class="border-b-4 border-red-600 mt-0 ml-4"></div>
                 </div>
-                <?php for ($i = 1; $i <= 10; $i++): ?>
-                    <div class="flex mb-4 popular-card <?php if ($i > 5) echo 'hidden'; ?>">
-                        <img src="https://via.placeholder.com/400x300" class="w-64 h-48 object-cover rounded-lg">
-                        <div class="ml-4">
-                            <h3 class="text-lg font-bold mt-2">Judul Populer <?= $i ?></h3>
-                            <span class="bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-md mt-2 inline-block">Kategori</span>
-                            <span class="text-gray-500 text-sm mt-1 block">12 menit yang lalu</span>
+                <?php for ($i = 1; $i <= 3; $i++): ?>
+                    <div class="flex mb-4 popular-card">
+                        <div class="flex-grow ml-4"> <!-- Geser ke kanan -->
+                            <h3 class="text-lg font-bold mt-2">Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit, Sed Do Eiusmod Tempor</h3>
+                            <p class="text-gray-500 mt-1">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
                         </div>
+                        <img src="https://via.placeholder.com/400x300" class="w-64 h-48 object-cover rounded-lg ml-4"> <!-- Gambar di sebelah kanan -->
                     </div>
                 <?php endfor; ?>
-                <button id="show-more-popular" class="text-blue-500 mt-4">Populer Lainnya</button>
             </div>
 
-            <!-- Indept Section -->
-            <div class="w-1/3 pl-4 border-l border-gray-300">
-                <div class="flex items-center mb-4">
-                    <div class="bg-orange-500 w-1 h-6"></div>
-                    <h2 class="text-xl font-bold ml-2">Indept</h2>
+            <!-- Baru Baru Ini Section -->
+            <div class="w-full lg:w-1/3 pl-4"> <!-- Tambahkan padding kiri -->
+                <div class="mb-4">
+                    <span class="inline-block bg-yellow-500 text-white px-6 py-1 rounded-t-md ml-4">Baru Baru Ini</span>
+                    <div class="border-b-4 border-yellow-500 mt-0 ml-4"></div>
                 </div>
-                <ul class="list-disc pl-4">
-                    <?php for ($i = 1; $i <= 5; $i++): ?>
-                        <li class="mb-2">Indep Item <?= $i ?></li>
+                <ul class="pl-16">
+                    <?php for ($i = 1; $i <= 6; $i++): ?>
+                        <li class="mb-4">
+                            <div class="flex items-center">
+                                <span class="text-blue-300 font-semibold italic text-5xl mr-6" style="font-family: 'Inter', sans-serif;"><?= $i ?></span>
+                                <div>
+                                    <span class="text-gray-400 text-sm">2 jam yang lalu</span>
+                                    <h3 class="text-lg font-bold mt-1">Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit <?= $i ?></h3>
+                                    <?php if ($i === 6): ?> <!-- Tambahkan pembatas hanya pada item terakhir -->
+                                        <div class="border-b border-gray-300 mt-2"></div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </li>
                     <?php endfor; ?>
                 </ul>
             </div>
         </div>
-    </div>
 
-    <!-- Kategori Lainnya -->
-    <div class="border-t border-b border-gray-300 py-4 mt-8">
-        <?php 
-        $categories = ['Teknologi', 'Olahraga', 'Ekonomi'];
-        foreach ($categories as $category): ?>
-            <div class="flex mb-8 ">
-                <div class="w-1/3">
-                    <img src="https://via.placeholder.com/400x300" class="w-full h-48 object-cover rounded-lg">
+        <!-- Label dan Kampus Section -->
+        <div class="flex flex-col lg:flex-row mt-8">
+            <!-- Label Section -->
+            <div class="w-full lg:w-1/2">
+                <span class="inline-block bg-green-500 text-white px-6 py-1 rounded-t-md">Label</span>
+                <div class="border-b-4 border-green-500 mt-0" style="width: 350px;"></div>
+                <div class="flex flex-wrap gap-2 mt-4" style="max-width: 350px;">
+                    <?php for ($i = 1; $i <= 5; $i++): ?>
+                        <span class="inline-block bg-white text-black border border-blue-500 px-3 py-1 rounded-full">Tag <?= $i ?></span>
+                    <?php endfor; ?>
                 </div>
-                <div class="w-2/3 pl-4 border-l border-gray-300">
-                    <div class="flex items-center mb-4">
-                        <div class="bg-orange-500 w-1 h-6"></div>
-                        <h2 class="text-xl font-bold ml-2"><?= $category ?></h2>
+                <ul class="mt-4" style="max-width: 350px;">
+                    <?php for ($i = 1; $i <= 6; $i++): ?>
+                        <li class="mb-4">
+                            <div class="flex flex-col">
+                                <span class="text-gray-400 text-sm">2 jam yang lalu</span>
+                                <h3 class="text-lg font-bold mt-1">Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit <?= $i ?></h3>
+                                <div class="border-b border-gray-300 mt-2" style="width: 340px;"></div>
+                            </div>
+                        </li>
+                    <?php endfor; ?>
+                </ul>
+            </div>
+
+          <!-- Kampus Section -->
+            <div class="w-full lg:w-1/2 mt-8 lg:mt-1 lg:-ml-72"> <!-- Tambahkan margin kiri negatif untuk menggeser lebih jauh ke kiri -->
+                <div class="mb-4">
+                    <span class="inline-block bg-[#FF3232] text-white px-6 py-1 rounded-t-md">Kampus</span>
+                    <div class="border-b-4 border-[#FF3232] mt-0" style="width: calc(100% + 290px);"></div> <!-- Perlebar border ke kanan hingga ke ujung -->
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 relative"> <!-- Atur grid untuk empat kolom pada lg -->
+                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-gray-300"></div> <!-- Garis vertikal kiri -->
+                    <div class="lg:col-span-3 ml-4"> <!-- Perbesar ukuran kartu besar dan tambahkan margin kiri -->
+                        <img src="https://via.placeholder.com/500x400" class="w-full h-auto object-cover rounded-lg"> <!-- Perbesar ukuran gambar besar -->
+                        <div class="mt-4">
+                            <span class="text-red-500 font-bold">Kategori</span>
+                            <span class="text-gray-500 text-sm ml-2">25 Januari 2024</span>
+                            <h3 class="text-lg font-bold mt-2">Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit</h3>
+                            <p class="text-gray-500 mt-1">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                        </div>
                     </div>
-                    <div class="mb-4">
-                        <h3 class="text-lg font-bold mt-2">Judul <?= $category ?> 1</h3>
-                        <span class="bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-md mt-2 inline-block">Kategori</span>
-                        <span class="text-gray-500 text-sm mt-1 block">12 menit yang lalu</span>
-                    </div>
-                    <ul class="list-disc pl-4">
-                        <?php for ($i = 2; $i <= 5; $i++): ?>
-                            <li class="mb-2">Judul <?= $category ?> <?= $i ?></li>
+                    <div class="grid grid-cols-3 lg:grid-cols-1 gap-2 mt-4 lg:mt-0 lg:gap-0"> <!-- Hapus gap antar kartu kecil -->
+                        <?php for ($i = 1; $i <= 3; $i++): ?>
+                            <img src="https://via.placeholder.com/150x100" class="w-full h-auto object-cover rounded-lg lg:w-31/33 lg:mb-0"> <!-- Perbesar ukuran kartu kecil -->
                         <?php endfor; ?>
-                    </ul>
-                    <button class="text-blue-500 mt-4 flex items-center">
-                        Lihat Lebih Banyak <span class="ml-2">&#10095;</span>
-                    </button>
+                    </div>
+                    <div class="absolute right-0 top-0 bottom-0 w-1 bg-gray-300" style="right: -290px;"></div> <!-- Garis vertikal kanan diperluas -->
                 </div>
             </div>
-        <?php endforeach; ?>
+        </div>
     </div>
 </div>
 
@@ -229,21 +257,4 @@
     });
 
     updateLatestNewsSlider();
-
-    // Show more popular cards
-    const showMoreButton = document.getElementById('show-more-popular');
-    const popularCards = document.querySelectorAll('.popular-card');
-    let showAll = false;
-
-    showMoreButton.addEventListener('click', () => {
-        showAll = !showAll;
-        popularCards.forEach((card, index) => {
-            if (showAll) {
-                card.classList.remove('hidden');
-            } else if (index >= 5) {
-                card.classList.add('hidden');
-            }
-        });
-        showMoreButton.textContent = showAll ? 'Tampilkan Lebih Sedikit' : 'Populer Lainnya';
-    });
 </script>
