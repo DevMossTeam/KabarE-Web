@@ -2,9 +2,9 @@
 
 <!-- Main Content -->
 <div class="container mx-auto mt-8 mb-16">
-    <h1 class="text-3xl font-bold mb-6 text-center">Ekonomi</h1>
+    <h1 class="text-3xl font-bold mb-6 text-center">Tren</h1>
     <div class="bg-white p-6 rounded-lg shadow-lg">
-        <p class="text-gray-700 mb-4">Konten ekonomi akan ditampilkan di sini.</p>
+        <p class="text-gray-700 mb-4">Konten tren akan ditampilkan di sini.</p>
     </div>
 </div>
 
