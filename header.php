@@ -44,7 +44,7 @@ if (isset($_SESSION['user_id'])) {
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
-<body class="bg-gray-100 flex flex-col min-h-screen">
+<body class="bg-gray-100 flex flex-col min-h-screen overflow-x-hidden">
     <!-- Navbar -->
     <nav id="mainNavbar" class="z-10 relative">
         <!-- Bagian Atas Navbar -->
@@ -175,19 +175,18 @@ if (isset($_SESSION['user_id'])) {
             </a>
             <div class="flex space-x-4 ml-4">
                 <a href="/category/kampus.php" class="nav-link text-white hover:text-blue-300">Kampus</a>
-                <a href="/category/pemilu.php" class="nav-link text-white hover:text-blue-300">Pemilu</a>
-                <a href="/category/teknologi.php" class="nav-link text-white hover:text-blue-300">Teknologi</a>
-                <a href="/category/otomotif.php" class="nav-link text-white hover:text-blue-300">Otomotif</a>
+                <a href="/category/prestasi.php" class="nav-link text-white hover:text-blue-300">Prestasi</a>
+                <a href="/category/politik.php" class="nav-link text-white hover:text-blue-300">Politik</a>
+                <a href="/category/kesehatan.php" class="nav-link text-white hover:text-blue-300">Kesehatan</a>
                 <a href="/category/olahraga.php" class="nav-link text-white hover:text-blue-300">Olahraga</a>
                 <div class="relative">
                     <button id="otherCategoryButtonScroll" class="text-white hover:text-blue-300">
                         <i class="fas fa-bars text-2xl"></i>
                     </button>
                     <div id="otherCategoryMenuScroll" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-20">
-                        <a href="/category/lifestyle.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Lifestyle</a>
-                        <a href="/category/tren.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Tren</a>
-                        <a href="/category/kesehatan.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Kesehatan</a>
                         <a href="/category/ekonomi.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Ekonomi</a>
+                        <a href="/category/bisnis.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Bisnis</a>
+                        <a href="/category/ukm.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">UKM</a>
                         <a href="/category/other_category/berita_lainnya.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Berita Lainnya</a>
                     </div>
                 </div>
