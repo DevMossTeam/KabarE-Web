@@ -1,53 +1,78 @@
 <?php include '../header.php'; ?>
+<?php include '../category_header.php'; ?>
+<?php renderCategoryHeader('Kampus'); ?>
 
 <!-- Main Content -->
-<div class="flex-grow container mx-auto mt-8 mb-16">
-    <!-- Welcome Text -->
-    <div class="container mx-auto text-center mb-16">
-        <h1 class="text-3xl font-bold mb-6">Latest News</h1>
-        <p class="mb-8">Stay updated with the latest news and articles.</p>
+<div class="container mx-auto mt-8 mb-16">
+    <!-- 4 Gambar -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <?php for ($i = 1; $i <= 4; $i++): ?>
+            <div class="relative">
+                <img src="https://via.placeholder.com/600x350" class="w-full h-auto object-cover rounded-lg">
+                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
+                    <span class="text-white font-bold">Kategori | 27 Januari 2025</span>
+                    <h3 class="text-white text-lg font-bold mt-1">Judul Berita <?= $i ?></h3>
+                    <p class="text-white">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                </div>
+            </div>
+        <?php endfor; ?>
     </div>
 
-    <!-- Breaking News -->
-    <div class="container mx-auto">
-        <div class="bg-white p-6 rounded-lg shadow-lg mb-16">
-            <h2 class="text-2xl font-bold mb-2">Breaking News</h2>
-            <p class="text-gray-700 mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.</p>
-            <a href="#" class="text-blue-500 hover:underline">Read more</a>
-        </div>
+    <!-- 6 Gambar -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <?php for ($i = 1; $i <= 6; $i++): ?>
+            <div class="relative">
+                <img src="https://via.placeholder.com/300x200" class="w-full h-auto object-cover rounded-lg">
+                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
+                    <span class="text-white font-bold">Kategori | <?= $i * 3 ?> menit yang lalu</span>
+                    <h3 class="text-white text-lg font-bold mt-1">Judul Berita <?= $i ?></h3>
+                </div>
+            </div>
+        <?php endfor; ?>
+    </div>
 
-        <!-- News Articles -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-            <!-- Article 1 -->
-            <div class="bg-white p-6 rounded-lg shadow-lg">
-                <h2 class="text-2xl font-bold mb-2">Judul Berita 4</h2>
-                <p class="text-gray-700 mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.</p>
-                <a href="#" class="text-blue-500 hover:underline">Read more</a>
+    <!-- Berita Lainnya dan Baru Baru Ini -->
+    <div class="py-4 mt-16">
+        <div class="flex flex-col lg:flex-row">
+            <!-- Berita Lainnya Section -->
+            <div class="w-full lg:w-2/3 pr-4">
+                <div class="mb-4">
+                    <span class="inline-block bg-[#45C630] text-white px-6 py-1 rounded-t-md">Berita Lainnya</span>
+                    <div class="border-b-4 border-[#45C630] mt-0"></div>
+                </div>
+                <?php for ($i = 1; $i <= 4; $i++): ?>
+                    <div class="flex mb-4 items-center">
+                        <div class="flex-grow">
+                            <span class="text-gray-400 text-sm block mb-1">2 jam yang lalu</span>
+                            <h3 class="text-lg font-bold mt-1">Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit <?= $i ?></h3>
+                            <p class="text-gray-500 mt-1 mb-2">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                        </div>
+                        <img src="https://via.placeholder.com/200x140" class="w-40 h-28 object-cover rounded-lg ml-4">
+                    </div>
+                    <div class="border-b border-gray-300 mt-1 mb-4"></div>
+                <?php endfor; ?>
             </div>
-            <!-- Article 2 -->
-            <div class="bg-white p-6 rounded-lg shadow-lg">
-                <h2 class="text-2xl font-bold mb-2">Judul Berita 5</h2>
-                <p class="text-gray-700 mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.</p>
-                <a href="#" class="text-blue-500 hover:underline">Read more</a>
-            </div>
-            <!-- Article 3 -->
-            <div class="bg-white p-6 rounded-lg shadow-lg">
-                <h2 class="text-2xl font-bold mb-2">Judul Berita 6</h2>
-                <p class="text-gray-700 mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.</p>
-                <a href="#" class="text-blue-500 hover:underline">Read more</a>
-            </div>
-            <!-- Tambahkan lebih banyak artikel sesuai kebutuhan -->
-        </div>
 
-        <!-- Additional Content -->
-        <div class="bg-white p-6 rounded-lg shadow-lg mb-16">
-            <h2 class="text-2xl font-bold mb-2">Global News</h2>
-            <ul class="list-disc pl-5">
-                <li class="text-gray-700 mb-2">Update 1: Lorem ipsum dolor sit amet, consectetur adipiscing elit.</li>
-                <li class="text-gray-700 mb-2">Update 2: Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.</li>
-                <li class="text-gray-700 mb-2">Update 3: Sed nisi. Nulla quis sem at nibh elementum imperdiet.</li>
-                <li class="text-gray-700 mb-2">Update 4: Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta.</li>
-            </ul>
+            <!-- Baru Baru Ini Section -->
+            <div class="w-full lg:w-1/3 pl-4 mt-8 md:mt-12 lg:mt-0">
+                <div class="mb-4">
+                    <span class="inline-block bg-[#FFC300] text-white px-6 py-1 rounded-t-md">Baru Baru Ini</span>
+                    <div class="border-b-4 border-[#FFC300] mt-0"></div>
+                </div>
+                <ul class="pl-4">
+                    <?php for ($i = 1; $i <= 6; $i++): ?>
+                        <li class="mb-4">
+                            <div class="flex items-center">
+                                <div>
+                                    <span class="text-gray-400 text-sm">2 jam yang lalu</span>
+                                    <h3 class="text-lg font-bold mt-1">Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit <?= $i ?></h3>
+                                    <div class="border-b border-gray-300 mt-2"></div>
+                                </div>
+                            </div>
+                        </li>
+                    <?php endfor; ?>
+                </ul>
+            </div>
         </div>
     </div>
 </div>
