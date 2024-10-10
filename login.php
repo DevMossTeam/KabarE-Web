@@ -22,8 +22,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 if (password_verify($password, $user['password'])) {
                     $_SESSION['user_id'] = $user['id'];
                     $_SESSION['email'] = $user['email'];
+
+                    // Set cookie untuk menyimpan sesi pengguna
+                    setcookie('user_id', $user['id'], time() + (86400 * 30), "/"); // Cookie berlaku selama 30 hari
+                    setcookie('email', $user['email'], time() + (86400 * 30), "/");
+
                     header("Location: /index.php");
                     exit();
+             
                 } else {
                     echo "Password salah.";
                 }
