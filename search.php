@@ -2,12 +2,16 @@
 <?php include 'config.php'; ?>
 
 <?php
-// Mendapatkan query pencarian
+// Mendapatkan query pencarian dan kategori
 $query = isset($_GET['query']) ? $_GET['query'] : '';
+$category = isset($_GET['category']) ? $_GET['category'] : '';
 
 try {
     // Melakukan pencarian di database
-    $sql = "SELECT * FROM articles WHERE title LIKE '%$query%' OR content LIKE '%$query%'";
+    $sql = "SELECT * FROM articles WHERE (title LIKE '%$query%' OR content LIKE '%$query%')";
+    if ($category) {
+        $sql .= " AND category = '$category'";
+    }
     $result = $conn->query($sql);
 
     if ($result === false) {
@@ -33,7 +37,7 @@ try {
     <?php else: ?>
         <div class="text-center">
             <h2 class="text-2xl font-bold mb-2">No Results Found</h2>
-            <p class="text-gray-700 mb-4">We couldn't find any content matching your search query. Please try again with different keywords.</p>
+            <p class="text-gray-700 mb-4">We couldn't find any content matching your search query<?php echo $category ? " in the category '$category'" : ''; ?>. Please try again with different keywords.</p>
         </div>
     <?php endif; ?>
 </div>
