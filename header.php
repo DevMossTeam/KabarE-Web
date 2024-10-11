@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 include 'connection/config.php';
 
 // Redirect ke index.php jika halaman ini diakses langsung dan bukan halaman yang diizinkan
-$allowed_pages = ['index.php', 'mainEditor.php', 'kampus.php', 'prestasi.php', 'politik.php', 'kesehatan.php', 'olahraga.php', 'ekonomi.php', 'bisnis.php', 'ukm.php', 'berita_lainnya.php'];
+$allowed_pages = ['index.php', 'reviewStat.php', 'mainEditor.php', 'kampus.php', 'prestasi.php', 'politik.php', 'kesehatan.php', 'olahraga.php', 'ekonomi.php', 'bisnis.php', 'ukm.php', 'berita_lainnya.php'];
 $current_page = basename($_SERVER['PHP_SELF']);
 
 if (!in_array($current_page, $allowed_pages)) {
@@ -234,7 +234,7 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
         });
 
         reviewButton.addEventListener('click', () => {
-            location.href = '/reviews/review.php'; // Arahkan ke halaman review
+            location.href = '/reviews/reviewStat.php'; // Arahkan ke halaman reviewStat
         });
 
         let lastScrollTop = 0;
