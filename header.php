@@ -79,9 +79,10 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
 
                     <!-- Ikon Edit, Notifikasi, dan Profil -->
                     <div class="relative z-30">
-                        <button class="text-gray-500 hover:text-[#4A99FF] focus:outline-none" onclick="loadContent('mainEditor.php')">
+                        <!-- Hapus tombol edit -->
+                        <!-- <button class="text-gray-500 hover:text-[#4A99FF] focus:outline-none" onclick="loadContent('mainEditor.php')">
                             <i class="fas fa-edit text-xl"></i>
-                        </button>
+                        </button> -->
                     </div>
 
                     <div class="relative z-30">
@@ -101,14 +102,14 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
                         <div id="profileMenu"
                             class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-30">
                             <div class="block px-4 py-2 text-gray-800">
-                                <?= $isLoggedIn ? htmlspecialchars($email) : '<a href="/login.php" class="text-blue-500 hover:underline">Login</a>'; ?>
+                                <?php if ($isLoggedIn): ?>
+                                    <span id="userEmail" class="cursor-pointer"><?= htmlspecialchars($email) ?></span>
+                                <?php else: ?>
+                                    <a href="/login.php" class="text-blue-500 hover:underline">Login</a>
+                                <?php endif; ?>
                             </div>
                             <hr class="border-gray-200">
                             <?php if ($isLoggedIn): ?>
-                                <a href="/subscriptions.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
-                                    <i class="fas fa-newspaper mr-2"></i>Berlangganan
-                                </a>
-                                <hr class="border-gray-200">
                                 <a href="/saved-content.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
                                     <i class="fas fa-bookmark mr-2"></i>Konten yang Disimpan
                                 </a>
@@ -140,25 +141,22 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
                     </a>
                     <div id="currentDate" class="text-white text-sm mt-1"></div> <!-- Elemen untuk menampilkan waktu -->
                 </div>
-                <a href="/category/kampus.php" class="nav-link text-white hover:text-blue-300 px-2 md:px-4">Kampus</a>
-                <a href="/category/prestasi.php"
-                    class="nav-link text-white hover:text-blue-300 px-2 md:px-4">prestasi</a>
-                <a href="/category/politik.php" class="nav-link text-white hover:text-blue-300 px-2 md:px-4">Politik</a>
-                <a href="/category/kesehatan.php"
-                    class="nav-link text-white hover:text-blue-300 px-2 md:px-4">Kesehatan</a>
-                <a href="/category/olahraga.php"
-                    class="nav-link text-white hover:text-blue-300 px-2 md:px-4">Olahraga</a>
-                <a href="/category/ekonomi.php" class="nav-link text-white hover:text-blue-300 px-2 md:px-4">Ekonomi</a>
-                <a href="/category/bisnis.php" class="nav-link text-white hover:text-blue-300 px-2 md:px-4">Bisnis</a>
-                <a href="/category/ukm.php" class="nav-link text-white hover:text-blue-300 px-2 md:px-4">UKM</a>
+                <a href="/category/kampus.php" class="nav-link text-white hover:text-blue-300 px-1 md:px-2">Kampus</a>
+                <a href="/category/prestasi.php" class="nav-link text-white hover:text-blue-300 px-1 md:px-2">Prestasi</a>
+                <a href="/category/politik.php" class="nav-link text-white hover:text-blue-300 px-1 md:px-2">Politik</a>
+                <a href="/category/kesehatan.php" class="nav-link text-white hover:text-blue-300 px-1 md:px-2">Kesehatan</a>
+                <a href="/category/olahraga.php" class="nav-link text-white hover:text-blue-300 px-1 md:px-2">Olahraga</a>
+                <a href="/category/ekonomi.php" class="nav-link text-white hover:text-blue-300 px-1 md:px-2">Ekonomi</a>
+                <a href="/category/bisnis.php" class="nav-link text-white hover:text-blue-300 px-1 md:px-2 hidden lg:inline">Bisnis</a>
+                <a href="/category/ukm.php" class="nav-link text-white hover:text-blue-300 px-1 md:px-2 hidden lg:inline">UKM</a>
                 <div class="relative">
-                    <button id="otherCategoryButton" class="text-white hover:text-blue-300 px-2 md:px-4">
+                    <button id="otherCategoryButton" class="text-white hover:text-blue-300 px-1 md:px-2">
                         <i class="fas fa-bars text-2xl"></i>
                     </button>
-                    <div id="otherCategoryMenu"
-                        class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-30">
-                        <a href="/category/other_category/berita_lainnya.php"
-                            class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Berita Lainnya</a>
+                    <div id="otherCategoryMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-30">
+                        <a href="/category/other_category/berita_lainnya.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Berita Lainnya</a>
+                        <a href="/category/bisnis.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-200 md:block lg:hidden">Bisnis</a>
+                        <a href="/category/ukm.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-200 md:block lg:hidden">UKM</a>
                     </div>
                 </div>
             </div>
@@ -256,7 +254,7 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
 
          // Fungsi untuk mengubah lokasi ke mainEditor.php
          function loadContent(url) {
-            location.href = '/editor/' + url; // Pastikan '/editor/' ditambahkan jika file berada di dalam folder 'editor'
+            location.href = '/profile/' + url; // Pastikan '/editor/' ditambahkan jika file berada di dalam folder 'editor'
         }
 
         // Update current date
@@ -268,6 +266,15 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
         }
 
         updateCurrentDate();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const userEmail = document.getElementById('userEmail');
+            if (userEmail) {
+                userEmail.addEventListener('click', () => {
+                    loadContent('mainEditor.php');
+                });
+            }
+        });
     </script>
 </body>
 
