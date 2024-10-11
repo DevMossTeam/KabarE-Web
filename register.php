@@ -1,6 +1,6 @@
 <?php
 session_start();
-require 'config/config.php'; // Menggunakan file config.php untuk koneksi database
+require 'connection/config.php'; // Menggunakan file config.php untuk koneksi database
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = $_POST['username'];

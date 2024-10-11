@@ -2,7 +2,7 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-include 'config/config.php';
+include 'connection/config.php';
 
 // Redirect ke index.php jika halaman ini diakses langsung dan bukan halaman yang diizinkan
 $allowed_pages = ['index.php', 'mainEditor.php', 'kampus.php', 'prestasi.php', 'politik.php', 'kesehatan.php', 'olahraga.php', 'ekonomi.php', 'bisnis.php', 'ukm.php', 'berita_lainnya.php'];
@@ -64,7 +64,7 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
                     <img src="assets/web-icon/KabarE-UTDK.png" alt="Logo" class="w-10 h-10">
                     <!-- Perbesar logo -->
                 </a>
-                <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-2"> <!-- Kurangi jarak antar elemen -->
                     <!-- Search Form -->
                     <form id="searchForm" action="/search.php" method="GET" class="flex items-center">
                         <div class="relative">
@@ -77,14 +77,7 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
                         </div>
                     </form>
 
-                    <!-- Ikon Edit, Notifikasi, dan Profil -->
-                    <div class="relative z-30">
-                        <!-- Hapus tombol edit -->
-                        <!-- <button class="text-gray-500 hover:text-[#4A99FF] focus:outline-none" onclick="loadContent('mainEditor.php')">
-                            <i class="fas fa-edit text-xl"></i>
-                        </button> -->
-                    </div>
-
+                    <!-- Ikon Notifikasi, Upload, dan Review -->
                     <div class="relative z-30">
                         <button id="notificationButton" class="text-gray-500 hover:text-[#4A99FF] focus:outline-none">
                             <i class="fas fa-bell text-xl"></i>
@@ -93,6 +86,18 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
                             class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-30">
                             <div class="block px-4 py-2 text-gray-800">Tidak ada notifikasi baru</div>
                         </div>
+                    </div>
+
+                    <div class="relative z-30">
+                        <button id="uploadButton" class="text-gray-500 hover:text-[#4A99FF] focus:outline-none">
+                            <i class="fas fa-upload text-xl"></i>
+                        </button>
+                    </div>
+
+                    <div class="relative z-30">
+                        <button id="reviewButton" class="bg-[#4A99FF] text-white rounded-[15px] px-3 py-1 font-semibold italic focus:outline-none">
+                            Review
+                        </button>
                     </div>
 
                     <div class="relative z-30">
@@ -205,6 +210,8 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
         const scrollHeader = document.getElementById('scrollHeader');
         const otherCategoryButtonScroll = document.getElementById('otherCategoryButtonScroll');
         const otherCategoryMenuScroll = document.getElementById('otherCategoryMenuScroll');
+        const uploadButton = document.getElementById('uploadButton');
+        const reviewButton = document.getElementById('reviewButton');
 
         otherCategoryButton.addEventListener('click', () => {
             otherCategoryMenu.classList.toggle('hidden');
@@ -220,6 +227,14 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
 
         otherCategoryButtonScroll.addEventListener('click', () => {
             otherCategoryMenuScroll.classList.toggle('hidden');
+        });
+
+        uploadButton.addEventListener('click', () => {
+            location.href = '/authors/upload.php'; // Arahkan ke halaman upload
+        });
+
+        reviewButton.addEventListener('click', () => {
+            location.href = '/reviews/review.php'; // Arahkan ke halaman review
         });
 
         let lastScrollTop = 0;
