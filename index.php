@@ -50,9 +50,10 @@
 
             <div class="relative overflow-hidden h-96 rounded-lg">
                 <div class="flex transition-transform duration-500 ease-in-out" id="slider">
-                    <?php for ($i = 1; $i <= 12; $i++): ?>
+                    <?php for ($i = 1; $i <= 7; $i++): ?> <!-- Ubah jumlah gambar menjadi 7 -->
                         <img src="https://via.placeholder.com/800x600?text=Image+<?= $i ?>" 
-                             class="w-full h-full object-cover transition duration-300 ease-in-out group-hover:brightness-75 transform -translate-y-24">
+                             class="w-full h-full object-cover transition duration-300 ease-in-out group-hover:brightness-75 transform -translate-y-24"
+                             loading="lazy"> <!-- Tambahkan lazy loading -->
                     <?php endfor; ?>
                 </div>
 
@@ -66,7 +67,7 @@
 
                 <!-- Indicator Dots inside the slider -->
                 <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
-                    <?php for ($i = 0; $i < 12; $i++): ?>
+                    <?php for ($i = 0; $i < 7; $i++): ?> <!-- Sesuaikan jumlah dot -->
                         <button class="w-3 h-3 rounded-full bg-gray-400 transition-all duration-300 ease-in-out" data-slide="<?= $i ?>"></button>
                     <?php endfor; ?>
                 </div>
@@ -279,15 +280,9 @@
         "Lorem Ipsum Dolor Sit Amet 4",
         "Lorem Ipsum Dolor Sit Amet 5",
         "Lorem Ipsum Dolor Sit Amet 6",
-        "Lorem Ipsum Dolor Sit Amet 7",
-        "Lorem Ipsum Dolor Sit Amet 8",
-        "Lorem Ipsum Dolor Sit Amet 9",
-        "Lorem Ipsum Dolor Sit Amet 10",
-        "Lorem Ipsum Dolor Sit Amet 11",
-        "Lorem Ipsum Dolor Sit Amet 12"
+        "Lorem Ipsum Dolor Sit Amet 7"
     ];
 
-    // Ganti deskripsi dengan waktu dan informasi pembaca
     const descriptions = [
         "27 Januari 2024, 20:20 | 2 menit yang lalu",
         "28 Januari 2024, 14:15 | 5 menit yang lalu",
@@ -295,12 +290,7 @@
         "30 Januari 2024, 18:45 | 15 menit yang lalu",
         "31 Januari 2024, 12:00 | 20 menit yang lalu",
         "1 Februari 2024, 08:00 | 25 menit yang lalu",
-        "2 Februari 2024, 16:30 | 30 menit yang lalu",
-        "3 Februari 2024, 11:45 | 35 menit yang lalu",
-        "4 Februari 2024, 19:00 | 40 menit yang lalu",
-        "5 Februari 2024, 13:15 | 45 menit yang lalu",
-        "6 Februari 2024, 07:30 | 50 menit yang lalu",
-        "7 Februari 2024, 17:00 | 55 menit yang lalu"
+        "2 Februari 2024, 16:30 | 30 menit yang lalu"
     ];
 
     const categories = [
@@ -310,26 +300,19 @@
         "Kategori 4",
         "Kategori 5",
         "Kategori 6",
-        "Kategori 7",
-        "Kategori 8",
-        "Kategori 9",
-        "Kategori 10",
-        "Kategori 11",
-        "Kategori 12"
+        "Kategori 7"
     ];
 
     const headlineElement = document.getElementById('headline');
     const descriptionElement = document.getElementById('description');
     const categoryElement = document.getElementById('category');
 
-    // Update slider position, dot indicator, and text content
     function updateSlider() {
         slider.style.transform = `translateX(-${currentSlide * 100}%)`;
         dots.forEach(dot => dot.classList.remove('bg-gray-800', 'w-6', 'h-2'));
         dots.forEach(dot => dot.classList.add('w-3', 'h-3', 'rounded-full'));
         dots[currentSlide].classList.add('bg-gray-800', 'w-6', 'h-2', 'rounded-full');
 
-        // Remove active classes to reset animation
         headlineElement.classList.remove('translate-x-0', 'opacity-100');
         descriptionElement.classList.remove('translate-x-0', 'opacity-100');
         categoryElement.classList.remove('translate-x-0', 'opacity-100');
@@ -339,26 +322,22 @@
             descriptionElement.textContent = descriptions[currentSlide];
             categoryElement.textContent = categories[currentSlide];
 
-            // Add active classes to trigger animation
             headlineElement.classList.add('translate-x-0', 'opacity-100');
             descriptionElement.classList.add('translate-x-0', 'opacity-100');
             categoryElement.classList.add('translate-x-0', 'opacity-100');
-        }, 100); // Delay to allow class removal
+        }, 100);
     }
 
-    // Next slide
     nextButton.addEventListener('click', () => {
-        currentSlide = (currentSlide + 1) % dots.length;
+        currentSlide = (currentSlide + 1) % headlines.length; // Pastikan menggunakan panjang array headlines
         updateSlider();
     });
 
-    // Previous slide
     prevButton.addEventListener('click', () => {
-        currentSlide = (currentSlide - 1 + dots.length) % dots.length;
+        currentSlide = (currentSlide - 1 + headlines.length) % headlines.length; // Pastikan menggunakan panjang array headlines
         updateSlider();
     });
 
-    // Dot indicator click
     dots.forEach(dot => {
         dot.addEventListener('click', () => {
             currentSlide = parseInt(dot.getAttribute('data-slide'));
@@ -366,7 +345,6 @@
         });
     });
 
-    // Initialize slider
     updateSlider();
 
     // Latest News Slider
