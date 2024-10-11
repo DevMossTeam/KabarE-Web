@@ -1,5 +1,5 @@
 <?php include 'header.php'; ?>
-<?php include 'config.php'; ?>
+<?php include 'config/config.php'; ?>
 
 <?php
 // Mendapatkan query pencarian dan kategori

@@ -2,7 +2,7 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-include 'config.php';
+include 'config/config.php';
 
 // Redirect ke index.php jika halaman ini diakses langsung dan bukan halaman yang diizinkan
 $allowed_pages = ['index.php', 'mainEditor.php', 'kampus.php', 'prestasi.php', 'politik.php', 'kesehatan.php', 'olahraga.php', 'ekonomi.php', 'bisnis.php', 'ukm.php', 'berita_lainnya.php'];

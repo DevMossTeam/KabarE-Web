@@ -1,6 +1,6 @@
 <?php
 session_start();
-include '../config.php'; // Pastikan jalur relatif ini benar
+include '../config/config.php'; // Pastikan jalur relatif ini benar
 include '../header.php'; // Sertakan header
 
 // Cek apakah pengguna sudah login
