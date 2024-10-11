@@ -32,9 +32,9 @@ $isLoggedIn = isset($_SESSION['user_id']);
     <div class="w-5/6 ml-12 mt-4"> <!-- Tambahkan margin kiri untuk menggeser ke kanan -->
         <h2 class="text-4xl font-semibold mt-4 mb-2 ml-4">Chiquita Clairina K</h2> <!-- Ukuran font 48 untuk nama di atas pilihan menu, semi-bold, geser ke kanan -->
         <div class="relative flex mt-4 border-b ml-4"> <!-- Geser pilihan menu ke kanan -->
-            <a href="/editor/mainEditor.php?page=artikel" class="menu-item mr-4 pb-2 text-sm">ARTIKEL</a> <!-- Ubah ukuran font -->
-            <a href="/editor/mainEditor.php?page=bacaNanti" class="menu-item mr-4 pb-2 text-sm">BACA NANTI</a> <!-- Ubah ukuran font -->
-            <a href="/editor/mainEditor.php?page=liked" class="menu-item pb-2 text-sm">DISUKAI</a> <!-- Ubah ukuran font -->
+            <a href="/profile/mainEditor.php?page=artikel" class="menu-item mr-4 pb-2 text-sm">ARTIKEL</a> <!-- Ubah ukuran font -->
+            <a href="/profile/mainEditor.php?page=bacaNanti" class="menu-item mr-4 pb-2 text-sm">BACA NANTI</a> <!-- Ubah ukuran font -->
+            <a href="/profile/mainEditor.php?page=liked" class="menu-item pb-2 text-sm">DISUKAI</a> <!-- Ubah ukuran font -->
             <div id="active-indicator" class="absolute bottom-0 h-0.5 bg-blue-500 transition-all duration-300" style="width: 60px;"></div> <!-- Sesuaikan lebar -->
         </div>
         <div class="mt-4">
