@@ -36,13 +36,13 @@
                 <p class="text-sm">Unit Kegiatan Mahasiswa Penyiaran Berita Mahasiswa Politeknik Negeri Jember. © 2024, Copyright KabarU.co.id</p>
                 <div class="flex">
                     <a href="https://www.facebook.com/ukmexplant" target="_blank" class="text-white mx-2">
-                        <i class="fab fa-facebook-f"></i>
+                        <i class="fab fa-facebook-f text-2xl"></i> <!-- Perbesar icon -->
                     </a>
                     <a href="https://www.instagram.com/ukpmexplant/" target="_blank" class="text-white mx-2">
-                        <i class="fab fa-instagram"></i>
+                        <i class="fab fa-instagram text-2xl"></i> <!-- Perbesar icon -->
                     </a>
                     <a href="https://www.youtube.com/@explantchannel1393" target="_blank" class="text-white mx-2">
-                        <i class="fab fa-youtube"></i>
+                        <i class="fab fa-youtube text-2xl"></i> <!-- Perbesar icon -->
                     </a>
                 </div>
             </div>

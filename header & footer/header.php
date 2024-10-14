@@ -2,7 +2,8 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-include '../connection/config.php';
+
+include __DIR__ . '/../connection/config.php';
 
 // Redirect ke index.php jika halaman ini diakses langsung dan bukan halaman yang diizinkan
 $allowed_pages = ['index.php', 'previewAuthor.php', 'publishAuthor.php', 'Main_author.php', 'reviewStat.php', 'mainEditor.php', 'kampus.php', 'search.php', 'prestasi.php', 'politik.php', 'kesehatan.php', 'olahraga.php', 'ekonomi.php', 'bisnis.php', 'ukm.php', 'berita_lainnya.php'];
@@ -105,16 +106,12 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
                             <i class="fas fa-user-circle text-3xl"></i>
                         </button>
                         <div id="profileMenu"
-                            class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-30">
-                            <div class="block px-4 py-2 text-gray-800">
-                                <?php if ($isLoggedIn): ?>
-                                    <span id="userEmail" class="cursor-pointer"><?= htmlspecialchars($email) ?></span>
-                                <?php else: ?>
-                                    <a href="/login.php" class="text-blue-500 hover:underline">Login</a>
-                                <?php endif; ?>
-                            </div>
-                            <hr class="border-gray-200">
+                            class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-50">
                             <?php if ($isLoggedIn): ?>
+                                <div class="block px-4 py-2 text-gray-800">
+                                    <span id="userEmail" class="cursor-pointer"><?= htmlspecialchars($email) ?></span>
+                                </div>
+                                <hr class="border-gray-200">
                                 <a href="/saved-content.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
                                     <i class="fas fa-bookmark mr-2"></i>Konten yang Disimpan
                                 </a>
@@ -130,6 +127,8 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
                                 <a href="/logout.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
                                     <i class="fas fa-sign-out-alt mr-2"></i>Keluar
                                 </a>
+                            <?php else: ?>
+                                <a href="/login.php" class="block px-4 py-2 text-blue-500 hover:underline">Login</a>
                             <?php endif; ?>
                         </div>
                     </div>

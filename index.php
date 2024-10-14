@@ -1,7 +1,7 @@
 <?php include 'header & footer/header.php'; ?>
 
 <!-- Main Content -->
-<div class="flex-grow container mx-auto mt-8 mb-8 relative z-10">
+<div class="flex-grow container mx-auto mt-8 mb-8 relative z-0"> <!-- Ubah z-index menjadi lebih rendah -->
     <!-- Image Slider and News Cards in a responsive grid -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <!-- News Cards -->
@@ -39,7 +39,7 @@
         </div>
 
         <!-- Image Slider -->
-        <div class="relative mb-8 md:mb-0 group order-1 lg:order-2">
+        <div class="relative mb-8 md:mb-0 group order-1 lg:order-2 z-0"> <!-- Pastikan z-index lebih rendah -->
        <!-- Teks dan Label di atas Image Slider -->
             <div class="text-left mb-4">
                 <span class="inline-block bg-[#FF3232] text-white px-4 py-1 rounded-md transition-transform duration-500 ease-in-out transform translate-x-full opacity-0" id="category">Kategori 1</span>
