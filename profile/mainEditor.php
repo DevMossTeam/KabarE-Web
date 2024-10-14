@@ -1,7 +1,7 @@
 <?php
 session_start();
 include '../connection/config.php'; // Pastikan jalur relatif ini benar
-include '../header.php'; // Sertakan header
+include '../header & footer/header.php'; // Sertakan header
 
 // Cek apakah pengguna sudah login
 $isLoggedIn = isset($_SESSION['user_id']);
@@ -60,7 +60,7 @@ $isLoggedIn = isset($_SESSION['user_id']);
     </div>
 </div>
 
-<?php include '../footer.php'; // Sertakan footer ?>
+<?php include '../header & footer/footer.php'; // Sertakan footer ?>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const menuItems = document.querySelectorAll('.menu-item');

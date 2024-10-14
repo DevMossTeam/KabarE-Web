@@ -1,5 +1,5 @@
-<?php include '../header.php'; ?>
-<?php include '../category_header.php'; ?>
+<?php include '../header & footer/header.php'; ?>
+<?php include '../header & footer/category_header.php'; ?>
 <?php renderCategoryHeader('UKM'); ?>
 
 <!-- Main Content -->
@@ -77,4 +77,4 @@
     </div>
 </div>
 
-<?php include '../footer.php'; ?>
+<?php include '../header & footer/footer.php'; ?>

@@ -1,4 +1,4 @@
-<?php include 'header.php'; ?>
+<?php include 'header & footer/header.php'; ?>
 
 <!-- Main Content -->
 <div class="flex-grow container mx-auto mt-8 mb-8 relative z-10">
@@ -264,7 +264,7 @@
     </div>
 </div>
 
-<?php include 'footer.php'; ?>
+<?php include 'header & footer/footer.php'; ?>
 
 <script>
     const slider = document.getElementById('slider');

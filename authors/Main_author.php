@@ -1,5 +1,5 @@
 <?php
-include '../header.php';
+include '../header & footer/header.php';
 ?>
 
 <div class="container mx-auto p-4">
@@ -43,5 +43,5 @@ include '../header.php';
 </script>
 
 <?php
-include '../footer.php';
+include '../header & footer/footer.php';
 ?>
