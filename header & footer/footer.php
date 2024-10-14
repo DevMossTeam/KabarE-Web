@@ -22,11 +22,11 @@
                                 </div>
                             </div>
                             <div class="text-right space-y-2 lg:space-y-0 lg:space-x-4 w-full lg:w-auto mb-4 lg:mb-0 ml-auto lg:ml-0">
-                                <span class="block text-base">Ketentuan</span> <!-- Perbesar teks -->
-                                <span class="block text-base">Kebijakan Privasi</span> <!-- Perbesar teks -->
-                                <span class="block text-base">Pedoman Media Siber</span> <!-- Perbesar teks -->
-                                <span class="block text-base">Tentang Kami</span> <!-- Perbesar teks -->
-                                <span class="block text-base">Peta Situs</span> <!-- Perbesar teks -->
+                                <a href="../footer-info/terms.php" class="block text-base">Ketentuan</a>
+                                <a href="../footer-info/privacy.php" class="block text-base">Kebijakan Privasi</a>
+                                <a href="../footer-info/media-guidelines.php" class="block text-base">Pedoman Media Siber</a>
+                                <a href="../footer-info/about-us.php" class="block text-base">Tentang Kami</a>
+                                <a href="../footer-info/site-map.php" class="block text-base">Peta Situs</a>
                             </div>
                         </div>
                     </div>
@@ -47,6 +47,6 @@
                 </div>
             </div>
         </div>
-    </footer>    
+    </footer>  
 </body>
 </html>
