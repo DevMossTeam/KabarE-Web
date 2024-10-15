@@ -64,7 +64,7 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
         <div class="bg-white p-4">
             <div class="container mx-auto flex justify-between items-center">
                 <a href="/index.php" class="text-black text-2xl font-bold">
-                    <img src="assets/web-icon/KabarE-UTDK.png" alt="Logo" class="w-10 h-10">
+                    <img src="../assets/web-icon/KabarE-UTDK.png" alt="Logo" class="w-10 h-10">
                     <!-- Perbesar logo -->
                 </a>
                 <div class="flex items-center space-x-2"> <!-- Kurangi jarak antar elemen -->
@@ -174,7 +174,7 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
         class="fixed top-0 left-0 right-0 bg-blue-500 p-2 transform -translate-y-full transition-transform duration-500 ease-out z-20">
         <div class="container mx-auto flex justify-between items-center">
             <a href="/index.php" class="text-white text-2xl font-bold">
-                <img src="assets/web-icon/KabarE-UTDF.png" alt="Logo" class="w-10 h-10">
+                <img src="../assets/web-icon/KabarE-UTDF.png" alt="Logo" class="w-10 h-10">
             </a>
             <div class="flex space-x-4 ml-4">
                 <a href="/category/kampus.php" class="nav-link text-white hover:text-blue-300">Kampus</a>

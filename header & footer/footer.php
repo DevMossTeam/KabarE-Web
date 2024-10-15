@@ -4,7 +4,7 @@
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
                         <div class="mb-4 md:mb-0 flex flex-col md:flex-row md:justify-between w-full">
                             <div class="flex-shrink-0">
-                                <img src="assets/web-icon/KabarE-UTDF.png" alt="Logo" class="w-10 h-10">
+                                <img src="../assets/web-icon/KabarE-UTDF.png" alt="Logo" class="w-10 h-10">
                             <p class="text-lg mb-0">Politeknik Negeri Jember</p>
                                 <p class="text-lg mt-0 mb-2">UKM Explant</p>
                                 <p class="text-sm mb-2">Media Berita Mahasiswa Terpercaya</p> <!-- Perbesar teks -->
