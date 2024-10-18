@@ -6,12 +6,12 @@
         <h2 class="text-xl font-bold mb-4">Tentang</h2>
         <div class="flex items-center space-x-2 mb-4">
             <i class="fas fa-info-circle text-blue-500"></i>
-            <span class="text-gray-700">Aplikasi</span>
+            <a href="appAbout.php?page=app" class="text-gray-700 hover:underline">Aplikasi</a>
         </div>
-        <button class="flex items-center space-x-2 text-gray-700 hover:underline">
+        <a href="appLicense.php?page=license" class="flex items-center space-x-2 text-gray-700 hover:underline">
             <i class="fas fa-file-alt"></i>
             <span>License</span>
-        </button>
+        </a>
     </div>
 
     <!-- Main Content -->
@@ -30,4 +30,3 @@
         </p>
     </div>
 </div>
-
