@@ -6,12 +6,12 @@
         <h2 class="text-xl font-bold mb-4">Bantuan</h2>
         <div class="flex items-center space-x-2 mb-4">
             <i class="fas fa-life-ring text-blue-500"></i>
-            <span class="text-gray-700">Pusat Bantuan</span>
+            <a href="?page=bantuan" class="text-gray-700 hover:underline">Pusat Bantuan</a>
         </div>
-        <button class="flex items-center space-x-2 text-gray-700 hover:underline">
+        <a href="?page=hubungi" class="flex items-center space-x-2 text-gray-700 hover:underline">
             <i class="fas fa-phone-alt"></i>
             <span>Hubungi Kami</span>
-        </button>
+        </a>
     </div>
 
     <!-- Main Content -->
@@ -54,4 +54,3 @@
         </div>
     </div>
 </div>
-
