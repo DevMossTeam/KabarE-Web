@@ -122,7 +122,7 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
                                     <i class="fas fa-thumbs-up mr-2"></i>Konten yang Disukai
                                 </a>
                                 <hr class="border-gray-200">
-                                <a href="/settings.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
+                                <a href="../settings/mainSetting.php?page=umum" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
                                     <i class="fas fa-cog mr-2"></i>Pengaturan
                                 </a>
                                 <hr class="border-gray-200">
