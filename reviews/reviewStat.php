@@ -1,5 +1,5 @@
 <?php
-include '../header & footer/header.php';
+include '../header & footer/header_AuthRev.php';
 ?>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -252,7 +252,3 @@ include '../header & footer/header.php';
         });
     });
 </script>
-
-<?php
-include '../header & footer/footer.php';
-?>
