@@ -22,7 +22,7 @@ include '../header & footer/header_AuthRev.php';
         <h2 class="text-lg font-semibold mb-2">Form Penulisan Artikel</h2>
         <!-- CKEditor -->
         <div class="border border-gray-300 rounded mb-4">
-            <textarea name="content" id="editor" rows="10" class="w-full p-2 border border-gray-300">Tulis artikelnya disini</textarea>
+            <textarea name="content" id="editor" rows="10" class="w-full p-2 border border-gray-300"></textarea>
         </div>
     </div>
 </div>
@@ -47,31 +47,7 @@ include '../header & footer/header_AuthRev.php';
 
 <script>
     // Inisialisasi CKEditor
-    CKEDITOR.replace('editor', {
-        on: {
-            instanceReady: function(evt) {
-                const editor = evt.editor;
-                const initialContent = 'Tulis artikelnya disini';
-
-                // Set initial content
-                editor.setData(initialContent);
-
-                // Remove placeholder on focus
-                editor.on('focus', function() {
-                    if (editor.getData().trim() === initialContent) {
-                        editor.setData('');
-                    }
-                });
-
-                // Restore placeholder if empty on blur
-                editor.on('blur', function() {
-                    if (editor.getData().trim() === '') {
-                        editor.setData(initialContent);
-                    }
-                });
-            }
-        }
-    });
+    CKEDITOR.replace('editor');
 
     const previewButton = document.getElementById('previewButton');
     const publishButton = document.getElementById('publishButton');
@@ -90,7 +66,7 @@ include '../header & footer/header_AuthRev.php';
 
     function checkContent() {
         const content = CKEDITOR.instances.editor.getData().trim();
-        if (content === '' || content === 'Tulis artikelnya disini') {
+        if (content === '') {
             showPopup();
             return false;
         }
