@@ -31,60 +31,61 @@
                         <div>
                             <p class="text-gray-600">Nama Lengkap</p>
                             <p class="font-semibold" id="namaLengkapText">Chiquita Clairina K</p>
-                            <input type="text" value="Chiquita Clairina K" class="w-full mt-2 border border-gray-300 rounded px-2 py-1 focus:outline-none hidden" id="namaLengkapInput">
+                            <p class="text-gray-500 border-b border-gray-300 focus:border-b-2 focus:border-blue-500 outline-none" id="namaLengkapInfo" contenteditable="false" data-default-text="Informasi ini harus akurat">Informasi ini harus akurat</p>
                         </div>
-                        <div class="border-t border-gray-300 mt-2 w-full"></div>
                     </div>
-                    <i class="fas fa-pen text-blue-500 cursor-pointer" onclick="toggleEdit('namaLengkap')"></i>
+                    <i class="fas fa-pen text-blue-500 cursor-pointer ml-6" onclick="toggleEdit('namaLengkap')"></i>
                 </div>
+                <!-- Ulangi pola ini untuk setiap bagian informasi -->
+                <!-- Username -->
                 <div class="flex items-center pb-2">
                     <i class="fas fa-user-tag text-gray-500"></i>
                     <div class="flex-1 ml-10">
                         <div>
                             <p class="text-gray-600">Username</p>
                             <p class="font-semibold" id="usernameText">Chiquita</p>
-                            <input type="text" value="Chiquita" class="w-full mt-2 border border-gray-300 rounded px-2 py-1 focus:outline-none hidden" id="usernameInput">
+                            <p class="text-gray-500 border-b border-gray-300 focus:border-b-2 focus:border-blue-500 outline-none" id="usernameInfo" contenteditable="false" data-default-text="Nama ini akan terlihat pembaca dan tertera sebagai editor">Nama ini akan terlihat pembaca dan tertera sebagai editor</p>
                         </div>
-                        <div class="border-t border-gray-300 mt-2 w-full"></div>
                     </div>
-                    <i class="fas fa-pen text-blue-500 cursor-pointer" onclick="toggleEdit('username')"></i>
+                    <i class="fas fa-pen text-blue-500 cursor-pointer ml-6" onclick="toggleEdit('username')"></i>
                 </div>
+                <!-- Posisi -->
                 <div class="flex items-center pb-2">
                     <i class="fas fa-briefcase text-gray-500"></i>
                     <div class="flex-1 ml-10">
                         <div>
                             <p class="text-gray-600">Posisi</p>
                             <p class="font-semibold" id="posisiText">Jurnalis / Penulis</p>
-                            <input type="text" value="Jurnalis / Penulis" class="w-full mt-2 border border-gray-300 rounded px-2 py-1 focus:outline-none hidden" id="posisiInput">
+                            <p class="text-gray-500 border-b border-gray-300 focus:border-b-2 focus:border-blue-500 outline-none" id="posisiInfo" contenteditable="false" data-default-text="Informasi ini tidak dapat diubah oleh anda">Informasi ini tidak dapat diubah oleh anda</p>
                         </div>
-                        <div class="border-t border-gray-300 mt-2 w-full"></div>
                     </div>
-                    <i class="fas fa-pen text-blue-500 cursor-pointer" onclick="toggleEdit('posisi')"></i>
+                    <i class="fas fa-pen text-blue-500 cursor-pointer ml-6" onclick="toggleEdit('posisi')"></i>
                 </div>
+                <!-- Info Lainnya -->
                 <div class="flex items-center pb-2">
                     <i class="fas fa-info-circle text-gray-500"></i>
                     <div class="flex-1 ml-10">
                         <div>
                             <p class="text-gray-600">Info Lainnya</p>
                             <p class="font-semibold" id="infoLainnyaText">Mahasiswa Jurusan Teknologi Informasi</p>
-                            <input type="text" value="Mahasiswa Jurusan Teknologi Informasi" class="w-full mt-2 border border-gray-300 rounded px-2 py-1 focus:outline-none hidden" id="infoLainnyaInput">
+                            <p class="text-gray-500 border-b border-gray-300 focus:border-b-2 focus:border-blue-500 outline-none" id="infoLainnyaInfo" contenteditable="false" data-default-text="Nama ini akan terlihat pembaca dan tertera sebagai editor">Nama ini akan terlihat pembaca dan tertera sebagai editor</p>
                         </div>
-                        <div class="border-t border-gray-300 mt-2 w-full"></div>
                     </div>
-                    <i class="fas fa-pen text-blue-500 cursor-pointer" onclick="toggleEdit('infoLainnya')"></i>
+                    <i class="fas fa-pen text-blue-500 cursor-pointer ml-6" onclick="toggleEdit('infoLainnya')"></i>
                 </div>
+                <!-- Bio Anda -->
                 <div class="flex items-center pb-2">
                     <i class="fas fa-align-left text-gray-500"></i>
                     <div class="flex-1 ml-10">
                         <div>
                             <p class="text-gray-600">Bio Anda</p>
                             <p class="font-semibold" id="bioText">Platform berita kampus yang menyajikan informasi terkini, akurat, dan terpercaya. Selalu di depan dalam mengabarkan suara mahasiswa</p>
-                            <input type="text" value="Platform berita kampus yang menyajikan informasi terkini, akurat, dan terpercaya. Selalu di depan dalam mengabarkan suara mahasiswa" class="w-full mt-2 border border-gray-300 rounded px-2 py-1 focus:outline-none hidden" id="bioInput">
+                            <p class="text-gray-500 border-b border-gray-300 focus:border-b-2 focus:border-blue-500 outline-none" id="bioInfo" contenteditable="false" data-default-text="Informasi ini akan terlihat pembaca">Informasi ini akan terlihat pembaca</p>
                         </div>
-                        <div class="border-t border-gray-300 mt-2 w-full"></div>
                     </div>
-                    <i class="fas fa-pen text-blue-500 cursor-pointer" onclick="toggleEdit('bio')"></i>
+                    <i class="fas fa-pen text-blue-500 cursor-pointer ml-6" onclick="toggleEdit('bio')"></i>
                 </div>
+                <!-- Social Media -->
                 <div class="flex items-center pb-2">
                     <div class="flex items-center space-x-2 w-1/2">
                         <i class="fas fa-link text-gray-500"></i>
@@ -115,24 +116,57 @@
 </div>
 
 <script>
+    let currentEdit = null;
+
     function toggleEdit(field) {
-        const textElement = document.getElementById(`${field}Text`);
-        const inputElement = document.getElementById(`${field}Input`);
-        
-        if (textElement.style.display !== 'none') {
-            textElement.style.display = 'none';
-            inputElement.classList.remove('hidden');
-            inputElement.focus();
+        const infoElement = document.getElementById(`${field}Info`);
+
+        if (currentEdit && currentEdit !== field) {
+            cancelEdit(currentEdit);
+        }
+
+        if (currentEdit === field) {
+            saveEdit(field);
         } else {
-            textElement.style.display = 'block';
-            inputElement.classList.add('hidden');
+            infoElement.contentEditable = true;
+            infoElement.classList.add('focus:border-b-2', 'focus:border-blue-500');
+            infoElement.textContent = '';
+            infoElement.focus();
+            currentEdit = field;
         }
     }
 
-    document.querySelectorAll('.flex a').forEach(link => {
-        link.addEventListener('click', function() {
-            document.querySelectorAll('.flex a').forEach(item => item.classList.remove('border-b-2', 'border-blue-500'));
-            this.classList.add('border-b-2', 'border-blue-500');
-        });
+    function saveEdit(field) {
+        const textElement = document.getElementById(`${field}Text`);
+        const infoElement = document.getElementById(`${field}Info`);
+
+        if (infoElement.textContent.trim() !== '') {
+            textElement.textContent = infoElement.textContent;
+        }
+        infoElement.contentEditable = false;
+        infoElement.classList.remove('focus:border-b-2', 'focus:border-blue-500');
+        infoElement.textContent = infoElement.getAttribute('data-default-text');
+        currentEdit = null;
+    }
+
+    function cancelEdit(field) {
+        const infoElement = document.getElementById(`${field}Info`);
+        infoElement.contentEditable = false;
+        infoElement.classList.remove('focus:border-b-2', 'focus:border-blue-500');
+        infoElement.textContent = infoElement.getAttribute('data-default-text');
+        currentEdit = null;
+    }
+
+    document.addEventListener('click', function(event) {
+        if (currentEdit && !event.target.closest('.flex')) {
+            cancelEdit(currentEdit);
+        }
+    });
+
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter' && currentEdit) {
+            event.preventDefault();
+            saveEdit(currentEdit);
+        }
     });
 </script>
