@@ -1,5 +1,5 @@
 <?php
-include '../header & footer/header.php';
+include '../header & footer/header_AuthRev.php';
 ?>
 
 <div class="container mx-auto p-4">
@@ -78,7 +78,3 @@ include '../header & footer/header.php';
         lastValue = tagInput.value;
     });
 </script>
-
-<?php
-include '../header & footer/footer.php';
-?>
