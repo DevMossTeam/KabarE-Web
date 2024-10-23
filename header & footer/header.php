@@ -8,7 +8,7 @@ include __DIR__ . '/../connection/config.php';
 // Redirect ke index.php jika halaman ini diakses langsung dan bukan halaman yang diizinkan
 $allowed_pages = ['index.php', 'previewAuthor.php', 'publishAuthor.php', 'Main_author.php', 'reviewStat.php', 'mainEditor.php', 
 'kampus.php', 'search.php', 'prestasi.php', 'politik.php', 'kesehatan.php', 'olahraga.php', 'ekonomi.php', 'bisnis.php', 'ukm.php', 
-'berita_lainnya.php', 'privacy.php', 'site-map.php', 'about-us.php', 'media-guidelines.php', 'ketentuan.php'];
+'berita_lainnya.php', 'privacy.php', 'site-map.php', 'about-us.php', 'media-guidelines.php', 'ketentuan.php', 'test.php'];
 $current_page = basename($_SERVER['PHP_SELF']);
 
 if (!in_array($current_page, $allowed_pages)) {
@@ -231,7 +231,7 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
         });
 
         uploadButton.addEventListener('click', () => {
-            location.href = '/authors/Main_author.php'; // Arahkan ke halaman Main_author
+            location.href = '/authors/test.php'; // Arahkan ke halaman Main_author
         });
 
         reviewButton.addEventListener('click', () => {
