@@ -231,7 +231,7 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
         });
 
         uploadButton.addEventListener('click', () => {
-            location.href = '/authors/test.php'; // Arahkan ke halaman Main_author
+            location.href = '/authors/Main_author.php'; // Arahkan ke halaman Main_author
         });
 
         reviewButton.addEventListener('click', () => {
