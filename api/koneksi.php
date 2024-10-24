@@ -4,7 +4,7 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 $server = 'localhost';
-$db = 'kabare_db';
+$db = 'kabare_project';
 $username = 'root';
 $password = '';
 $koneksi = mysqli_connect($server, $username, $password, $db);
