@@ -130,7 +130,7 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
                                     <i class="fas fa-sign-out-alt mr-2"></i>Keluar
                                 </a>
                             <?php else: ?>
-                                <a href="/login.php" class="block px-4 py-2 text-blue-500 hover:underline">Login</a>
+                                <a href="user-auth/login.php" class="block px-4 py-2 text-blue-500 hover:underline">Login</a>
                             <?php endif; ?>
                         </div>
                     </div>

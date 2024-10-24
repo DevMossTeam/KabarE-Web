@@ -12,6 +12,6 @@ setcookie('user_id', '', time() - 3600, '/');
 setcookie('email', '', time() - 3600, '/');
 
 // Redirect ke halaman login
-header("Location: /login.php");
+header("Location: ../user-auth/login.php");
 exit();
 ?>
