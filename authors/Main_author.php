@@ -6,16 +6,15 @@
     <title>Penulisan Artikel</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Arial:wght@400;700&family=Courier+New:wght@400;700&family=Georgia:wght@400;700&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="bg-gray-100">
     <?php include '../header & footer/header_AuthRev.php'; ?>
 
-    <div class="container mx-auto p-4">
-        <form id="articleForm" action="publishAuthor.php" method="post" enctype="multipart/form-data">
-            <div id="editorWrapper" class="bg-white shadow-md rounded-lg p-6 relative" style="height: 700px;">
-                <div class="absolute top-4 right-4 flex space-x-2">
+    <div class="container mx-auto p-6">
+        <form id="articleForm" action="publishAuthor.php" method="post" enctype="multipart/form-data" class="bg-white shadow-lg rounded-lg p-8">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl font-bold">Penulisan Artikel</h1>
+                <div class="flex space-x-2">
                     <button type="button" id="previewButton" class="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300 flex items-center">
                         <i class="fas fa-eye mr-2"></i> Pratinjau
                     </button>
@@ -23,12 +22,51 @@
                         <i class="fas fa-paper-plane mr-2"></i> Publikasi
                     </button>
                 </div>
+            </div>
 
-                <h1 class="text-xl font-bold mb-2">Judul Artikel</h1>
-                <input type="text" name="title" id="title" placeholder="Tulis judul artikelmu sendiri" class="w-full border-b-2 border-gray-300 focus:outline-none mb-4">
+            <div class="mb-4">
+                <label for="title" class="block text-lg font-semibold mb-2">Judul Artikel</label>
+                <input type="text" name="title" id="title" placeholder="Tulis judul artikelmu sendiri" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
 
-                <label for="articleContent" class="block mb-2"><strong>Form Penulisan Artikel</strong></label>
-                <div id="quillEditor" style="height: 400px;"></div>
+            <div class="mb-4">
+                <label for="articleContent" class="block text-lg font-semibold mb-2">Form Penulisan Artikel</label>
+                <div class="flex flex-wrap space-x-2 mb-2 relative">
+                    <button type="button" onclick="toggleCommand(this, 'undo')" class="p-2 hover:bg-gray-300"><i class="fas fa-undo-alt"></i></button>
+                    <button type="button" onclick="toggleCommand(this, 'redo')" class="p-2 hover:bg-gray-300"><i class="fas fa-redo-alt"></i></button>
+                    <select onchange="document.execCommand('formatBlock', false, this.value)" class="p-2 hover:bg-gray-300 border-2 border-transparent">
+                        <option value="p">Normal</option>
+                        <option value="h1">Heading 1</option>
+                        <option value="h2">Heading 2</option>
+                        <option value="h3">Heading 3</option>
+                    </select>
+                    <button type="button" onclick="toggleCommand(this, 'bold')" class="p-2 hover:bg-gray-300 border-2 border-transparent"><i class="fas fa-bold"></i></button>
+                    <button type="button" onclick="toggleCommand(this, 'italic')" class="p-2 hover:bg-gray-300 border-2 border-transparent"><i class="fas fa-italic"></i></button>
+                    <button type="button" onclick="toggleCommand(this, 'underline')" class="p-2 hover:bg-gray-300 border-2 border-transparent"><i class="fas fa-underline"></i></button>
+                    <button type="button" onclick="toggleCommand(this, 'strikeThrough')" class="p-2 hover:bg-gray-300 border-2 border-transparent"><i class="fas fa-strikethrough"></i></button>
+                    <div class="relative flex items-center">
+                        <button type="button" id="fontColorButton" class="p-2 hover:bg-gray-300 border-2 border-transparent"><i class="fas fa-font"></i></button>
+                        <input type="color" id="fontColor" class="absolute top-full left-0 mt-1 w-full h-8 opacity-0 cursor-pointer">
+                        <span id="fontColorIndicator" class="h-1 w-4 bg-black rounded-full absolute bottom-0 left-1/2 transform -translate-x-1/2"></span>
+                    </div>
+                    <div class="relative flex items-center">
+                        <button type="button" id="highlightColorButton" class="p-2 hover:bg-gray-300 border-2 border-transparent"><i class="fas fa-highlighter"></i></button>
+                        <input type="color" id="highlightColor" class="absolute top-full left-0 mt-1 w-full h-8 opacity-0 cursor-pointer">
+                        <span id="highlightColorIndicator" class="h-1 w-4 bg-yellow-300 rounded-full absolute bottom-0 left-1/2 transform -translate-x-1/2"></span>
+                    </div>
+                    <button type="button" onclick="toggleCommand(this, 'justifyLeft')" class="p-2 hover:bg-gray-300 border-2 border-transparent"><i class="fas fa-align-left"></i></button>
+                    <button type="button" onclick="toggleCommand(this, 'justifyCenter')" class="p-2 hover:bg-gray-300 border-2 border-transparent"><i class="fas fa-align-center"></i></button>
+                    <button type="button" onclick="toggleCommand(this, 'justifyRight')" class="p-2 hover:bg-gray-300 border-2 border-transparent"><i class="fas fa-align-right"></i></button>
+                    <button type="button" onclick="toggleCommand(this, 'justifyFull')" class="p-2 hover:bg-gray-300 border-2 border-transparent"><i class="fas fa-align-justify"></i></button>
+                    <button type="button" onclick="toggleCommand(this, 'insertUnorderedList')" class="p-2 hover:bg-gray-300 border-2 border-transparent"><i class="fas fa-list-ul"></i></button>
+                    <button type="button" onclick="toggleCommand(this, 'insertOrderedList')" class="p-2 hover:bg-gray-300 border-2 border-transparent"><i class="fas fa-list-ol"></i></button>
+                    <button type="button" onclick="toggleCommand(this, 'createLink', prompt('Enter URL:'))" class="p-2 hover:bg-gray-300 border-2 border-transparent"><i class="fas fa-link"></i></button>
+                    <button type="button" id="imageButton" class="p-2 hover:bg-gray-300 border-2 border-transparent"><i class="fas fa-image"></i></button>
+                    <input type="file" id="imageInput" accept="image/*" class="hidden" onchange="insertImage(event)">
+                    <button type="button" onclick="toggleCommand(this, 'insertHTML', '<blockquote>' + window.getSelection().toString() + '</blockquote>')" class="p-2 hover:bg-gray-300 border-2 border-transparent"><i class="fas fa-quote-right"></i></button>
+                    <button type="button" onclick="toggleCommand(this, 'removeFormat')" class="p-2 hover:bg-gray-300 border-2 border-transparent"><i class="fas fa-eraser"></i></button>
+                </div>
+                <div id="editor" contenteditable="true" class="border border-gray-300 rounded p-4 h-96 overflow-auto focus:outline-none"></div>
                 <input type="hidden" name="content" id="hiddenContent">
             </div>
         </form>
@@ -38,40 +76,33 @@
         <div class="bg-white p-6 rounded-lg shadow-lg transform transition-transform scale-0">
             <div class="flex items-center mb-4">
                 <i class="fas fa-exclamation-circle text-red-500 text-2xl mr-2"></i>
-                <h2 class="text-xl font-bold">Konten Masih Kosong</h2>
+                <h2 class="text-xl font-bold" id="popupTitle">Pesan</h2>
             </div>
-            <p class="mb-4">Anda belum menambahkan konten disini.</p>
+            <p class="mb-4" id="popupMessage">Pesan kesalahan.</p>
             <button id="closePopup" class="bg-blue-500 text-white px-4 py-2 rounded">Tutup</button>
         </div>
     </div>
 
-    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     <script>
-        const quill = new Quill('#quillEditor', {
-            theme: 'snow',
-            modules: {
-                toolbar: [
-                    [{ 'font': ['sans-serif', 'serif', 'monospace'] }],
-                    [{ 'size': ['small', false, 'large', 'huge'] }],
-                    ['bold', 'italic', 'underline', 'strike'],
-                    [{ 'color': [] }, { 'background': [] }],
-                    [{ 'script': 'sub' }, { 'script': 'super' }],
-                    [{ 'header': '1' }, { 'header': '2' }, 'blockquote', 'code-block'],
-                    [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
-                    [{ 'direction': 'rtl' }, { 'align': [] }],
-                    ['link', 'image', 'video', 'formula'],
-                    ['clean']
-                ]
-            }
-        });
-
+        const editor = document.getElementById('editor');
+        const hiddenContent = document.getElementById('hiddenContent');
         const previewButton = document.getElementById('previewButton');
         const publishButton = document.getElementById('publishButton');
         const popup = document.getElementById('popup');
         const closePopup = document.getElementById('closePopup');
+        const popupTitle = document.getElementById('popupTitle');
+        const popupMessage = document.getElementById('popupMessage');
         const articleForm = document.getElementById('articleForm');
-        const hiddenContent = document.getElementById('hiddenContent');
         const titleInput = document.getElementById('title');
+        const imageButton = document.getElementById('imageButton');
+        const imageInput = document.getElementById('imageInput');
+        const fontColorButton = document.getElementById('fontColorButton');
+        const highlightColorButton = document.getElementById('highlightColorButton');
+        const fontColor = document.getElementById('fontColor');
+        const highlightColor = document.getElementById('highlightColor');
+        const fontColorIndicator = document.getElementById('fontColorIndicator');
+        const highlightColorIndicator = document.getElementById('highlightColorIndicator');
+        const activeCommands = new Set();
 
         // Load data from localStorage
         window.addEventListener('load', () => {
@@ -83,7 +114,7 @@
             }
 
             if (savedContent) {
-                quill.root.innerHTML = savedContent;
+                editor.innerHTML = savedContent;
             }
         });
 
@@ -92,11 +123,57 @@
             localStorage.setItem('articleTitle', titleInput.value);
         });
 
-        quill.on('text-change', () => {
-            localStorage.setItem('articleContent', quill.root.innerHTML);
+        editor.addEventListener('input', () => {
+            localStorage.setItem('articleContent', editor.innerHTML);
         });
 
-        function showPopup() {
+        function toggleCommand(button, command, value = null) {
+            if (command === 'blockquote') {
+                document.execCommand('formatBlock', false, 'blockquote');
+                return;
+            }
+
+            if (command.includes('justify')) {
+                // Nonaktifkan semua tombol perataan
+                document.querySelectorAll('[onclick*="justify"]').forEach(btn => {
+                    btn.classList.remove('border-black');
+                });
+                // Hapus perintah perataan dari set aktif
+                activeCommands.forEach(cmd => {
+                    if (cmd.includes('justify')) {
+                        activeCommands.delete(cmd);
+                    }
+                });
+            }
+
+            if (activeCommands.has(command)) {
+                document.execCommand(command, false, value);
+                if (!isNoBorderCommand(command)) {
+                    button.classList.remove('border-black');
+                }
+                activeCommands.delete(command);
+            } else {
+                document.execCommand(command, false, value);
+                if (!isNoBorderCommand(command)) {
+                    button.classList.add('border-black');
+                }
+                activeCommands.add(command);
+            }
+        }
+
+        function isNoBorderCommand(command) {
+            return ['undo', 'redo', 'removeFormat'].includes(command);
+        }
+
+        editor.addEventListener('mouseup', () => {
+            activeCommands.forEach(command => {
+                document.execCommand(command, false, null);
+            });
+        });
+
+        function showPopup(title, message) {
+            popupTitle.textContent = title;
+            popupMessage.textContent = message;
             popup.classList.remove('hidden');
             popup.querySelector('div').classList.add('scale-100');
         }
@@ -107,17 +184,36 @@
         }
 
         function checkContent() {
-            const content = quill.getText().trim();
+            const content = editor.innerText.trim();
             if (content === '') {
-                showPopup();
+                showPopup('Konten Masih Kosong', 'Anda belum menambahkan konten disini.');
                 return false;
             }
             return true;
         }
 
+        function insertImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    editor.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            }
+            // Reset the input value to allow the same file to be selected again
+            event.target.value = '';
+        }
+
+        imageButton.addEventListener('click', () => {
+            imageInput.click();
+        });
+
         previewButton.addEventListener('click', (e) => {
             if (checkContent()) {
-                hiddenContent.value = quill.root.innerHTML;
+                hiddenContent.value = editor.innerHTML;
                 articleForm.action = 'previewAuthor.php'; // Set action to previewAuthor.php
                 articleForm.submit();
             } else {
@@ -127,7 +223,7 @@
 
         publishButton.addEventListener('click', (e) => {
             if (checkContent()) {
-                hiddenContent.value = quill.root.innerHTML;
+                hiddenContent.value = editor.innerHTML;
                 // Remove data from localStorage only after successful publication
                 localStorage.removeItem('articleTitle');
                 localStorage.removeItem('articleContent');
