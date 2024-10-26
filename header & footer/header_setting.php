@@ -55,9 +55,6 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
                 <a href="/settings/umum.php" class="text-[#A2A2A2] font-bold text-lg hover:text-blue-500 border-b-2 border-transparent hover:border-blue-500">Umum</a>
                 <a href="/settings/keamananSetting.php" class="text-[#A2A2A2] font-bold text-lg hover:text-blue-500 border-b-2 border-transparent hover:border-blue-500">Keamanan</a>
                 <a href="/settings/notif_setting.php" class="text-[#A2A2A2] font-bold text-lg hover:text-blue-500 border-b-2 border-transparent hover:border-blue-500">Notifikasi</a>
-                <a href="/settings/riwayat.php" class="text-[#A2A2A2] font-bold text-lg hover:text-blue-500 border-b-2 border-transparent hover:border-blue-500">Riwayat</a>
-                <a href="/settings/bantuan/pusat_bantuan.php" class="text-[#A2A2A2] font-bold text-lg hover:text-blue-500 border-b-2 border-transparent hover:border-blue-500">Bantuan</a>
-                <a href="/settings/tentang/appAbout.php" class="text-[#A2A2A2] font-bold text-lg hover:text-blue-500 border-b-2 border-transparent hover:border-blue-500">Tentang</a>
             </div>
             <div class="flex items-center space-x-4">
                 <button id="notificationButton" class="text-gray-500 hover:text-[#4A99FF] focus:outline-none">

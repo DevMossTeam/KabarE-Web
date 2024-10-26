@@ -11,24 +11,6 @@ switch ($page) {
     case 'keamanan':
         include 'keamanan.php';
         break;
-    case 'riwayat':
-        include 'riwayat.php';
-        break;
-    case 'bantuan':
-        include 'bantuan/pusat_bantuan.php';
-        break;
-    case 'hubungi':
-        include 'bantuan/hubungi_kami.php';
-        break;
-    case 'tentang':
-        include 'tentang/appAbout.php';
-        break;
-    case 'app':
-        include 'tentang/appAbout.php';
-        break;
-    case 'license':
-        include 'tentang/appLicense.php';
-        break;
     default:
         include 'umum.php';
         break;
