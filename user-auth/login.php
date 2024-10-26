@@ -5,12 +5,10 @@ include '../connection/config.php';
 $errorMessage = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Pastikan input ada sebelum mengaksesnya
-    $input = $_POST['usernameOrEmail'] ?? null; // Sesuaikan nama input
+    $input = $_POST['usernameOrEmail'] ?? null;
     $password = $_POST['password'] ?? null;
 
     if ($input && $password) {
-        // Query untuk memeriksa username atau email
         $stmt = $conn->prepare("SELECT id, email, password FROM user WHERE (username = ? OR email = ?)");
         if ($stmt) {
             $stmt->bind_param("ss", $input, $input);
@@ -19,26 +17,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             if ($result->num_rows > 0) {
                 $user = $result->fetch_assoc();
-
-                // Verifikasi password
                 if (password_verify($password, $user['password'])) {
                     $_SESSION['user_id'] = $user['id'];
                     $_SESSION['email'] = $user['email'];
-
-                    // Set cookie untuk menyimpan sesi pengguna
-                    setcookie('user_id', $user['id'], time() + (86400 * 30), "/"); // Cookie berlaku selama 30 hari
+                    setcookie('user_id', $user['id'], time() + (86400 * 30), "/");
                     setcookie('email', $user['email'], time() + (86400 * 30), "/");
-
                     header("Location: /index.php");
                     exit();
-             
                 } else {
                     $errorMessage = "Password salah.";
                 }
             } else {
                 $errorMessage = "Email atau username tidak ditemukan.";
             }
-
             $stmt->close();
         } else {
             $errorMessage = "Terjadi kesalahan pada query.";

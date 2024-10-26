@@ -1,9 +1,5 @@
 <?php
 session_start();
-require '../vendor/autoload.php'; // Autoload PHPMailer
-
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
 
 $email = $_SESSION['email'] ?? '';
 
@@ -13,49 +9,7 @@ if (!$email) {
     exit;
 }
 
-// Fungsi untuk mengirim email verifikasi
-function sendVerificationEmail($toEmail) {
-    $mail = new PHPMailer(true);
-    try {
-        // Konfigurasi server email
-        $mail->isSMTP();
-        $mail->Host = 'smtp.gmail.com';
-        $mail->SMTPAuth = true;
-        $mail->Username = 'devmossteam@gmail.com'; // Ganti dengan email Anda
-        $mail->Password = 'nahootnfsnukjfyo'; // Ganti dengan password aplikasi
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port = 587;
-
-        // Pengaturan email
-        $mail->setFrom('devmossteam@gmail.com', 'KabarE');
-        $mail->addAddress($toEmail);
-        $mail->isHTML(true);
-        $mail->Subject = 'Verifikasi Email Anda';
-        $mail->Body    = '
-        <html>
-        <head>
-          <title>Verifikasi Email</title>
-        </head>
-        <body>
-          <img src="../assets/web-icon/KabarE-UTDK.png" alt="Logo" style="width: 100px;">
-          <p>Silahkan klik tautan berikut untuk memverifikasi email Anda:</p>
-          <a href="http://kabare-web.test:81/user-auth/create_password.php">Klik tautan berikut</a>
-        </body>
-        </html>
-        ';
-
-        $mail->send();
-    } catch (Exception $e) {
-        echo "Email tidak dapat dikirim. Mailer Error: {$mail->ErrorInfo}";
-    }
-}
-
-// Kirim email verifikasi
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['resend'])) {
-    sendVerificationEmail($email);
-}
-
-sendVerificationEmail($email);
+// Kode untuk mengirim email verifikasi dihapus
 ?>
 
 <!DOCTYPE html>

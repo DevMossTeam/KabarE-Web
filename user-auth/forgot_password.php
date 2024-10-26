@@ -1,10 +1,6 @@
 <?php
 session_start();
 require '../connection/config.php';
-require '../vendor/autoload.php';
-
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
@@ -17,40 +13,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if ($result->num_rows > 0) {
         $_SESSION['email'] = $email;
-
-        // Kirim email reset password
-        $mail = new PHPMailer(true);
-        try {
-            $mail->isSMTP();
-            $mail->Host = 'smtp.gmail.com';
-            $mail->SMTPAuth = true;
-            $mail->Username = 'devmossteam@gmail.com';
-            $mail->Password = 'jbrfnqjdvivrpkur';
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-            $mail->Port = 587;
-
-            $mail->setFrom('devmossteam@gmail.com', 'KabarE');
-            $mail->addAddress($email);
-            $mail->isHTML(true);
-            $mail->Subject = 'Reset Password Anda';
-            $mail->Body    = '
-            <html>
-            <head>
-              <title>Reset Password</title>
-            </head>
-            <body>
-              <p>Silahkan klik tautan berikut untuk mengganti password Anda:</p>
-              <a href="http://kabare-web.test:81/user-auth/change_password.php">Ganti Password</a>
-            </body>
-            </html>
-            ';
-
-            $mail->send();
-            header('Location: verif_email.php');
-            exit;
-        } catch (Exception $e) {
-            echo "Email tidak dapat dikirim. Mailer Error: {$mail->ErrorInfo}";
-        }
+        header('Location: verif_email.php');
+        exit;
     } else {
         echo "Email tidak ditemukan.";
     }
