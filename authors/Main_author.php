@@ -27,9 +27,6 @@
                 <h1 class="text-xl font-bold mb-2">Judul Artikel</h1>
                 <input type="text" name="title" id="title" placeholder="Tulis judul artikelmu sendiri" class="w-full border-b-2 border-gray-300 focus:outline-none mb-4">
 
-                <label for="uploadCover" class="block mb-2 font-bold">Upload Cover</label>
-                <input type="file" id="uploadCover" name="cover" class="mb-4" accept="image/*">
-
                 <label for="articleContent" class="block mb-2"><strong>Form Penulisan Artikel</strong></label>
                 <div id="quillEditor" style="height: 400px;"></div>
                 <input type="hidden" name="content" id="hiddenContent">
