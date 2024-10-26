@@ -22,11 +22,11 @@
                                 </div>
                             </div>
                             <div class="text-right space-y-2 lg:space-y-0 lg:space-x-4 w-full lg:w-auto mb-4 lg:mb-0 ml-auto lg:ml-0">
-                                <a href="../footer-info/terms.php" class="block text-base">Ketentuan</a>
-                                <a href="../footer-info/privacy.php" class="block text-base">Kebijakan Privasi</a>
-                                <a href="../footer-info/media-guidelines.php" class="block text-base">Pedoman Media Siber</a>
-                                <a href="../footer-info/about-us.php" class="block text-base">Tentang Kami</a>
-                                <a href="../footer-info/site-map.php" class="block text-base">Peta Situs</a>
+                                <a href="/header & footer/footer-info/terms.php" class="nav-link block text-base">Ketentuan</a>
+                                <a href="/header & footer/footer-info/privacy.php" class="nav-link block text-base">Kebijakan Privasi</a>
+                                <a href="/header & footer/footer-info/media-guidelines.php" class="nav-link block text-base">Pedoman Media Siber</a>
+                                <a href="/header & footer/footer-info/about-us.php" class="nav-link block text-base">Tentang Kami</a>
+                                <a href="/header & footer/footer-info/site-map.php" class="nav-link block text-base">Peta Situs</a>
                             </div>
                         </div>
                     </div>
