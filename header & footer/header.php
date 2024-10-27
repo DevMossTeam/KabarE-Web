@@ -108,25 +108,25 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
                             <i class="fas fa-user-circle text-3xl"></i>
                         </button>
                         <div id="profileMenu"
-                            class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-50">
+                            class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg py-4 z-50 transition-all duration-500 ease-in-out overflow-hidden transform scale-95">
                             <?php if ($isLoggedIn): ?>
-                                <div class="block px-4 py-2 text-gray-800">
-                                    <span id="userEmail" class="cursor-pointer"><?= htmlspecialchars($email) ?></span>
+                                <div class="mt-2 text-gray-800 font-bold text-center"><?= htmlspecialchars($email) ?></div>
+                                <div class="text-gray-500 text-center">Penulis</div>
+                                <div class="flex justify-center my-4">
+                                    <i class="fas fa-user-circle text-9xl text-gray-500"></i>
                                 </div>
-                                <hr class="border-gray-200">
-                                <a href="/saved-content.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
+                                <button id="editProfileButton" class="mt-2 bg-blue-500 text-white px-4 py-2 rounded-md mx-auto block" style="width: 80%;">Edit Profile</button>
+                                <hr class="my-2 border-gray-200">
+                                <a href="/saved-content.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-200 text-left">
                                     <i class="fas fa-bookmark mr-2"></i>Konten yang Disimpan
                                 </a>
-                                <hr class="border-gray-200">
-                                <a href="/liked-content.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
+                                <a href="/liked-content.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-200 text-left">
                                     <i class="fas fa-thumbs-up mr-2"></i>Konten yang Disukai
                                 </a>
-                                <hr class="border-gray-200">
-                                <a href="../settings/mainSetting.php?page=umum" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
+                                <a href="../settings/mainSetting.php?page=umum" class="block px-4 py-2 text-gray-800 hover:bg-gray-200 text-left">
                                     <i class="fas fa-cog mr-2"></i>Pengaturan
                                 </a>
-                                <hr class="border-gray-200">
-                                <a href="/logout.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
+                                <a href="/logout.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-200 text-left">
                                     <i class="fas fa-sign-out-alt mr-2"></i>Keluar
                                 </a>
                             <?php else: ?>
@@ -213,6 +213,7 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
         const otherCategoryMenuScroll = document.getElementById('otherCategoryMenuScroll');
         const uploadButton = document.getElementById('uploadButton');
         const reviewButton = document.getElementById('reviewButton');
+        const editProfileButton = document.getElementById('editProfileButton');
 
         otherCategoryButton.addEventListener('click', () => {
             otherCategoryMenu.classList.toggle('hidden');
@@ -220,6 +221,7 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
 
         profileButton.addEventListener('click', () => {
             profileMenu.classList.toggle('hidden');
+            profileMenu.classList.toggle('scale-100');
         });
 
         notificationButton.addEventListener('click', () => {
@@ -236,6 +238,10 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
 
         reviewButton.addEventListener('click', () => {
             location.href = '/reviews/reviewStat.php'; // Arahkan ke halaman reviewStat
+        });
+
+        editProfileButton.addEventListener('click', () => {
+            location.href = '../settings/umum.php';
         });
 
         let lastScrollTop = 0;
@@ -259,6 +265,7 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
             }
             if (!profileButton.contains(e.target) && !profileMenu.contains(e.target)) {
                 profileMenu.classList.add('hidden');
+                profileMenu.classList.remove('scale-100');
             }
             if (!notificationButton.contains(e.target) && !notificationMenu.contains(e.target)) {
                 notificationMenu.classList.add('hidden');
