@@ -82,9 +82,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <label for="usernameOrEmail" class="block text-sm font-bold mb-2" style="color: #7C7C7C;">USERNAME</label>
                 <input type="text" id="usernameOrEmail" name="usernameOrEmail" placeholder="Masukkan email atau username" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
             </div>
-            <div class="mb-6">
+            <div class="mb-6 relative">
                 <label for="password" class="block text-sm font-bold mb-2" style="color: #7C7C7C;">PASSWORD</label>
                 <input type="password" id="password" name="password" placeholder="Masukkan password" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                <i class="fas fa-eye absolute right-3 top-10 cursor-pointer"></i>
             </div>
             <div class="flex justify-end mb-2">
                 <a href="forgot_password.php" class="text-blue-500 hover:underline">Lupa Password?</a>
@@ -128,5 +129,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     </script>
     <?php endif; ?>
+    <script>
+        // Toggle password visibility
+        document.querySelectorAll('.fa-eye').forEach(icon => {
+            icon.addEventListener('click', function() {
+                const input = this.previousElementSibling;
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    this.classList.replace('fa-eye', 'fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    this.classList.replace('fa-eye-slash', 'fa-eye');
+                }
+            });
+        });
+    </script>
 </body>
 </html>

@@ -83,7 +83,7 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
                         </div>
                     </form>
 
-                    <!-- Ikon Notifikasi, Upload, dan Review -->
+                    <!-- Ikon Notifikasi, Draft, Upload, dan Review -->
                     <div class="relative z-30">
                         <button id="notificationButton" class="text-gray-500 hover:text-[#4A99FF] focus:outline-none">
                             <i class="fas fa-bell text-xl"></i>
@@ -91,6 +91,18 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
                         <div id="notificationMenu"
                             class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-30">
                             <div class="block px-4 py-2 text-gray-800">Tidak ada notifikasi baru</div>
+                        </div>
+                    </div>
+
+                    <div class="relative z-30">
+                        <button id="draftButton" class="text-gray-500 hover:text-[#4A99FF] focus:outline-none">
+                            <i class="fas fa-file-alt text-xl"></i>
+                        </button>
+                        <div id="draftMenu"
+                            class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-30">
+                            <a href="../authors/Main_author.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Tambah</a>
+                            <a href="../authors/draftAuthor.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Draf</a>
+                            <a href="../authors/reviewAuthor.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Dalam Peninjauan</a>
                         </div>
                     </div>
 
@@ -217,6 +229,8 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
         const uploadButton = document.getElementById('uploadButton');
         const reviewButton = document.getElementById('reviewButton');
         const editProfileButton = document.getElementById('editProfileButton');
+        const draftButton = document.getElementById('draftButton');
+        const draftMenu = document.getElementById('draftMenu');
 
         otherCategoryButton.addEventListener('click', () => {
             otherCategoryMenu.classList.toggle('hidden');
@@ -247,6 +261,10 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
             location.href = '../settings/umum.php';
         });
 
+        draftButton.addEventListener('click', () => {
+            draftMenu.classList.toggle('hidden');
+        });
+
         let lastScrollTop = 0;
         window.addEventListener('scroll', () => {
             let scrollTop = window.scrollY || document.documentElement.scrollTop;
@@ -275,6 +293,9 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
             }
             if (!otherCategoryButtonScroll.contains(e.target) && !otherCategoryMenuScroll.contains(e.target)) {
                 otherCategoryMenuScroll.classList.add('hidden');
+            }
+            if (!draftButton.contains(e.target) && !draftMenu.contains(e.target)) {
+                draftMenu.classList.add('hidden');
             }
         });
 
