@@ -103,6 +103,7 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
                             <a href="../authors/Main_author.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Tambah</a>
                             <a href="../authors/draftAuthor.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Draf</a>
                             <a href="../authors/reviewAuthor.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Dalam Peninjauan</a>
+                            <a href="../authors/publishAuthor.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Publikasi</a>
                         </div>
                     </div>
 
