@@ -1,4 +1,4 @@
-<?php include 'header.php'; ?>
+<?php include 'header & footer/header.php'; ?>
 <?php include 'connection/config.php'; ?>
 
 <?php
@@ -47,4 +47,4 @@ try {
 $conn->close();
 ?>
 
-<?php include 'footer.php'; ?>
+<?php include 'header & footer/footer.php'; ?>
