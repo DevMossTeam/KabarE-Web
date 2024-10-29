@@ -48,52 +48,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <script type="module">
-        // Import the functions you need from the SDKs you need
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-analytics.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-
-        // Your web app's Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyC111sZsBkCxTi6a8FxHEsYCQ9fnAcNFMw",
-            authDomain: "kabare-b4016.firebaseapp.com",
-            projectId: "kabare-b4016",
-            storageBucket: "kabare-b4016.appspot.com",
-            messagingSenderId: "650538781416",
-            appId: "1:650538781416:web:1b30de4a48d75bf2b7d75d",
-            measurementId: "G-XLM2XY2T8X"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-        const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
-
-        // Function to handle Google Sign-In
-        function signInWithGoogle() {
-            signInWithPopup(auth, provider)
-                .then((result) => {
-                    // This gives you a Google Access Token. You can use it to access the Google API.
-                    const credential = GoogleAuthProvider.credentialFromResult(result);
-                    const token = credential.accessToken;
-                    // The signed-in user info.
-                    const user = result.user;
-                    console.log('User signed in: ', user);
-                    // Redirect or perform actions after successful login
-                }).catch((error) => {
-                    // Handle Errors here.
-                    const errorCode = error.code;
-                    const errorMessage = error.message;
-                    // The email of the user's account used.
-                    const email = error.customData.email;
-                    // The AuthCredential type that was used.
-                    const credential = GoogleAuthProvider.credentialFromError(error);
-                    console.error('Error during sign-in: ', errorMessage);
-                });
-        }
-    </script>
 </head>
 <body class="flex h-screen m-0">
     <div class="flex-1 bg-blue-500 flex items-center justify-center relative">
@@ -155,14 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     </script>
     <?php endif; ?>
-    <script type="module">
-        import { signInWithGoogle } from './js/firebase-auth.js';
-
-        document.querySelector('.g_id_signin').addEventListener('click', (e) => {
-            e.preventDefault();
-            signInWithGoogle();
-        });
-
+    <script>
         // Toggle password visibility
         document.querySelectorAll('.fa-eye').forEach(icon => {
             icon.addEventListener('click', function() {
