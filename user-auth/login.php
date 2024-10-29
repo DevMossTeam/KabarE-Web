@@ -47,7 +47,59 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <title>Login</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBdDOQx-Yfl9ydoB5FIWEyn4DJrEwWjp5k",
+            authDomain: "kabare-web.test:81",
+            projectId: "kabare-cf940",
+            storageBucket: "kabare-cf940.appspot.com",
+            messagingSenderId: "675057825306",
+            appId: "1:675057825306:web:ebe75a0745d0971fbc43a3",
+            measurementId: "G-NVK1DR5YMN"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Function to handle Google Sign-In
+        window.signInWithGoogle = function() {
+            console.log("Attempting to sign in with Google...");
+            const provider = new GoogleAuthProvider();
+            signInWithPopup(auth, provider)
+                .then((result) => {
+                    return result.user.getIdToken();
+                })
+                .then((token) => {
+                    return fetch('verify_token.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ token })
+                    });
+                })
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    if (data.success) {
+                        window.location.href = 'index.php';
+                    } else {
+                        console.error('Token verification failed:', data.message);
+                        alert('Token verification failed. Please try again.');
+                    }
+                })
+                .catch((error) => {
+                    console.error('Google Sign-In error:', error);
+                    alert('An error occurred during Google Sign-In. Please try again: ' + error.message);
+                });
+        };
+    </script>
 </head>
 <body class="flex h-screen m-0">
     <div class="flex-1 bg-blue-500 flex items-center justify-center relative">
@@ -78,17 +130,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <span class="mx-2 text-sm text-gray-500">ATAU MASUK DENGAN</span>
                 <hr class="flex-grow border-t border-gray-300">
             </div>
-            <div id="g_id_onload"
-                 data-client_id="894068159772-teaqelumke1vmctgtg04921otomv6oa6.apps.googleusercontent.com"
-                 data-callback="handleCredentialResponse">
-            </div>
-            <div class="g_id_signin"
-                 data-type="standard"
-                 data-shape="rectangular"
-                 data-theme="outline"
-                 data-text="sign_in_with"
-                 data-size="large">
-            </div>
+            <button class="flex items-center justify-center w-full bg-white border border-gray-300 text-gray-700 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline hover:bg-gray-100" onclick="signInWithGoogle()">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo" class="w-5 h-5 mr-2">
+                Sign in with Google
+            </button>
             <p class="text-center text-gray-600 mt-4">Belum Memiliki akun? <a href="register.php" class="text-blue-500 hover:underline">Daftar</a></p>
             <p class="text-center mt-4 text-sm text-gray-500">Dengan login di KabarE, kamu menyetujui kebijakan kami terkait pengelolaan data, penggunaan aplikasi, dan ketentuan layanan yang berlaku.</p>
         </form>

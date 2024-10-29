@@ -8,8 +8,8 @@
         <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-1 gap-2 order-2 lg:order-1">
             <!-- Card 1 -->
             <a href="news-detail.php" class="flex flex-col lg:flex-row items-center lg:items-start transform lg:scale-105">
-                <img src="https://via.placeholder.com/200x150" class="w-full md:w-full lg:w-1/4 h-32 lg:h-40 object-cover rounded-lg mb-1 lg:mb-0 transition-transform duration-300 hover:scale-105 cursor-pointer">
-                <div class="text-center md:text-center lg:text-left lg:ml-6 lg:w-full lg:pr-8">
+                <img src="https://via.placeholder.com/200x150" class="w-full md:w-full lg:w-1/4 h-24 lg:h-32 object-cover rounded-lg mb-0.5 lg:mb-0 transition-transform duration-300 hover:scale-105 cursor-pointer">
+                <div class="flex flex-col justify-center text-center md:text-center lg:text-left lg:ml-6 lg:w-full lg:pr-8 lg:-mt-2">
                     <h3 class="text-lg font-bold mt-1 line-clamp-3">Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit, Sed Do Eiusmod Tempor</h3>
                     <p class="text-gray-500 mt-1 line-clamp-3">Ini adalah deskripsi singkat dari berita yang ditampilkan pada kartu ini.</p>
                     <span class="text-[#FF3232] font-bold mt-1 inline-block">Kategori</span>
@@ -18,8 +18,8 @@
             </a>
             <!-- Card 2 -->
             <a href="news-detail.php" class="flex flex-col lg:flex-row items-center lg:items-start transform lg:scale-105">
-                <img src="https://via.placeholder.com/200x150" class="w-full md:w-full lg:w-1/4 h-32 lg:h-40 object-cover rounded-lg mb-1 lg:mb-0 transition-transform duration-300 hover:scale-105 cursor-pointer">
-                <div class="text-center md:text-center lg:text-left lg:ml-6 lg:w-full lg:pr-8">
+                <img src="https://via.placeholder.com/200x150" class="w-full md:w-full lg:w-1/4 h-24 lg:h-32 object-cover rounded-lg mb-0.5 lg:mb-0 transition-transform duration-300 hover:scale-105 cursor-pointer">
+                <div class="flex flex-col justify-center text-center md:text-center lg:text-left lg:ml-6 lg:w-full lg:pr-8 lg:-mt-2">
                     <h3 class="text-lg font-bold mt-1 line-clamp-3">Consectetur Adipiscing Elit, Sed Do Eiusmod Tempor Incididunt Ut Labore Et Dolore</h3>
                     <p class="text-gray-500 mt-1 line-clamp-3">Ini adalah deskripsi singkat dari berita yang ditampilkan pada kartu ini.</p>
                     <span class="text-[#FF3232] font-bold mt-1 inline-block">Kategori</span>
@@ -28,8 +28,8 @@
             </a>
             <!-- Card 3 -->
             <a href="news-detail.php" class="flex flex-col lg:flex-row items-center lg:items-start transform lg:scale-105">
-                <img src="https://via.placeholder.com/200x150" class="w-full md:w-full lg:w-1/4 h-32 lg:h-40 object-cover rounded-lg mb-1 lg:mb-0 transition-transform duration-300 hover:scale-105 cursor-pointer">
-                <div class="text-center md:text-center lg:text-left lg:ml-6 lg:w-full lg:pr-8">
+                <img src="https://via.placeholder.com/200x150" class="w-full md:w-full lg:w-1/4 h-24 lg:h-32 object-cover rounded-lg mb-0.5 lg:mb-0 transition-transform duration-300 hover:scale-105 cursor-pointer">
+                <div class="flex flex-col justify-center text-center md:text-center lg:text-left lg:ml-6 lg:w-full lg:pr-8 lg:-mt-2">
                     <h3 class="text-lg font-bold mt-1 line-clamp-3">Sed Do Eiusmod Tempor, Magna Aliqua Ut Enim Ad Minim Veniam, Quis Nostrud Exercitation</h3>
                     <p class="text-gray-500 mt-1 line-clamp-3">Ini adalah deskripsi singkat dari berita yang ditampilkan pada kartu ini.</p>
                     <span class="text-[#FF3232] font-bold mt-1 inline-block">Kategori</span>
