@@ -22,12 +22,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_FILES['profile_pic'])) {
     if ($user_id && $field && $value) {
         $allowed_fields = ['nama_lengkap', 'username', 'kredensial'];
         if (in_array($field, $allowed_fields)) {
-            $stmt = $conn->prepare("UPDATE user SET $field = ? WHERE id = ?");
+            if ($field === 'kredensial') {
+                $stmt = $conn->prepare("SELECT kredensial FROM user WHERE id = ?");
+                $stmt->bind_param("i", $user_id);
+                $stmt->execute();
+                $stmt->bind_result($existing_kredensial);
+                $stmt->fetch();
+                $stmt->close();
+
+                if (empty($existing_kredensial)) {
+                    // Jika kredensial kosong, lakukan INSERT
+                    $stmt = $conn->prepare("UPDATE user SET kredensial = ? WHERE id = ?");
+                } else {
+                    // Jika kredensial sudah ada, lakukan UPDATE
+                    $stmt = $conn->prepare("UPDATE user SET kredensial = ? WHERE id = ?");
+                }
+            } else {
+                $stmt = $conn->prepare("UPDATE user SET $field = ? WHERE id = ?");
+            }
             $stmt->bind_param("si", $value, $user_id);
             $stmt->execute();
             $stmt->close();
         }
     }
+    // Refresh halaman setelah update
+    header("Location: umum.php");
     exit;
 }
 
@@ -175,35 +194,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_pic'])) {
     }
 
     function saveEdit(field) {
-        const textElement = document.getElementById(`${field}Text`);
         const infoElement = document.getElementById(`${field}Info`);
-
         if (infoElement.textContent.trim() !== '') {
-            textElement.textContent = infoElement.textContent;
-            updateDatabase(field, infoElement.textContent);
-        }
-        infoElement.contentEditable = false;
-        resetPlaceholder(infoElement);
-        currentEdit = null;
-    }
-
-    function resetPlaceholder(infoElement) {
-        if (infoElement.textContent.trim() === '') {
-            infoElement.textContent = infoElement.dataset.defaultText;
+            showConfirmationPopup(field, infoElement.textContent);
         }
     }
 
-    function cancelEdit(field) {
-        const infoElement = document.getElementById(`${field}Info`);
-        infoElement.textContent = infoElement.dataset.originalText; // Kembalikan teks asli
-        infoElement.contentEditable = false;
-        currentEdit = null;
+    function showConfirmationPopup(field, value) {
+        const confirmationPopup = document.getElementById('confirmationPopup');
+        confirmationPopup.querySelector('p').textContent = `Apakah Anda yakin ingin mengganti ${field}?`;
+        confirmationPopup.classList.remove('hidden');
+        confirmationPopup.querySelector('button[onclick="submitForm()"]').onclick = function() {
+            updateDatabase(field, value);
+            closePopup();
+        };
     }
 
     function updateDatabase(field, value) {
         const xhr = new XMLHttpRequest();
         xhr.open("POST", "", true);
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                // Perbarui teks di elemen yang sesuai
+                document.getElementById(`${field}Text`).textContent = value;
+                // Refresh halaman setelah update
+                window.location.reload();
+            }
+        };
         xhr.send(`field=${field}&value=${encodeURIComponent(value)}`);
     }
 

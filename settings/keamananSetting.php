@@ -1,3 +1,19 @@
+<?php
+session_start();
+include '../connection/config.php'; // Pastikan path ini benar
+
+// Ambil data pengguna dari database
+$user_id = $_SESSION['user_id'] ?? null;
+if ($user_id) {
+    $stmt = $conn->prepare("SELECT email FROM user WHERE id = ?");
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $stmt->bind_result($email);
+    $stmt->fetch();
+    $stmt->close();
+}
+?>
+
 <?php include '../header & footer/header_setting.php'; ?>
 
 <div class="container mx-auto mt-8 flex space-x-8">
@@ -24,7 +40,7 @@
                     <div class="flex-1 ml-10">
                         <div>
                             <p class="text-gray-600">Email</p>
-                            <p class="font-semibold" id="emailText">E4123@polije.ac.id</p>
+                            <p class="font-semibold" id="emailText"><?php echo htmlspecialchars($email); ?></p>
                             <p class="text-gray-500 border-b border-gray-300 focus:border-b-2 focus:border-blue-500 outline-none" id="emailInfo" contenteditable="false" data-default-text="Informasi ini harus akurat">Informasi ini harus akurat</p>
                         </div>
                     </div>
@@ -86,24 +102,42 @@
 
         if (infoElement.textContent.trim() !== '') {
             textElement.textContent = infoElement.textContent;
+            updateDatabase(field, infoElement.textContent);
         }
         infoElement.contentEditable = false;
         infoElement.classList.remove('focus:border-b-2', 'focus:border-blue-500');
-        infoElement.textContent = infoElement.getAttribute('data-default-text');
+        resetPlaceholder(infoElement);
         currentEdit = null;
+    }
+
+    function resetPlaceholder(infoElement) {
+        if (infoElement.textContent.trim() === '') {
+            infoElement.textContent = infoElement.getAttribute('data-default-text');
+        }
     }
 
     function cancelEdit(field) {
         const infoElement = document.getElementById(`${field}Info`);
         infoElement.contentEditable = false;
         infoElement.classList.remove('focus:border-b-2', 'focus:border-blue-500');
-        infoElement.textContent = infoElement.getAttribute('data-default-text');
+        resetPlaceholder(infoElement);
         currentEdit = null;
     }
 
+    function updateDatabase(field, value) {
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.send(`field=${field}&value=${encodeURIComponent(value)}`);
+    }
+
     document.addEventListener('click', function(event) {
-        if (currentEdit && !event.target.closest('.flex')) {
-            cancelEdit(currentEdit);
+        if (currentEdit) {
+            const infoElement = document.getElementById(`${currentEdit}Info`);
+            const pencilIcon = document.querySelector(`.fas.fa-pen[onclick="toggleEdit('${currentEdit}')"]`);
+            if (!infoElement.contains(event.target) && !pencilIcon.contains(event.target)) {
+                cancelEdit(currentEdit);
+            }
         }
     });
 
@@ -111,6 +145,8 @@
         if (event.key === 'Enter' && currentEdit) {
             event.preventDefault();
             saveEdit(currentEdit);
+        } else if (event.key === 'Escape' && currentEdit) {
+            cancelEdit(currentEdit);
         }
     });
 </script>
