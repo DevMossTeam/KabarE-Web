@@ -1,5 +1,5 @@
 {
-    "name": "vendor/google-signin-php",
+    "name": "vendor/kabare-web",
     "description": "A simple project to implement Google Sign-In with Firebase in PHP",
     "require": {
         "kreait/firebase-php": "^5.26"

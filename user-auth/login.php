@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         const firebaseConfig = {
             apiKey: "AIzaSyBdDOQx-Yfl9ydoB5FIWEyn4DJrEwWjp5k",
-            authDomain: "kabare-web.test:81",
+            authDomain: "kabare-cf940.firebaseapp.com",
             projectId: "kabare-cf940",
             storageBucket: "kabare-cf940.appspot.com",
             messagingSenderId: "675057825306",

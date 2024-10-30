@@ -2,18 +2,11 @@
 session_start();
 require 'firebase/config.php';
 
-header('Content-Type: application/json'); // Set header to JSON
-
 $firebase = new FirebaseConfig();
 $auth = $firebase->getAuth();
 
 $input = json_decode(file_get_contents('php://input'), true);
-$token = $input['token'] ?? null;
-
-if (!$token) {
-    echo json_encode(['success' => false, 'message' => 'Token is missing']);
-    exit();
-}
+$token = $input['token'];
 
 try {
     // Verify the token using Firebase Auth
