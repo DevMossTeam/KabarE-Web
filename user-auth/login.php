@@ -52,6 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
 
+        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBdDOQx-Yfl9ydoB5FIWEyn4DJrEwWjp5k",
             authDomain: "kabare-cf940.firebaseapp.com",
@@ -62,6 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             measurementId: "G-NVK1DR5YMN"
         };
 
+        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
@@ -69,30 +71,45 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         window.signInWithGoogle = function() {
             console.log("Attempting to sign in with Google...");
             const provider = new GoogleAuthProvider();
+
             signInWithPopup(auth, provider)
                 .then((result) => {
-                    return result.user.getIdToken();
+                    return result.user.getIdToken(); // Get the ID token
                 })
                 .then((token) => {
+                    console.log("ID Token:", token); // Log the token to check its value
+
+                    // Display the ID token on the page
+                    document.getElementById("id-token-display").innerText = token;
+
+                    // Optionally, send token to the server
                     return fetch('verify_token.php', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ token })
+                        body: JSON.stringify({ token }) // Make sure token is sent here
                     });
                 })
                 .then((response) => {
                     if (!response.ok) {
-                        throw new Error('Network response was not ok: ' + response.status);
+                        throw new Error('Server responded with an error: ' + response.status);
                     }
                     return response.json();
                 })
                 .then((data) => {
                     if (data.success) {
-                        window.location.href = 'index.php';
+                        // Simpan email ke session
+                        return fetch('set_session.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ email: data.email })
+                        });
                     } else {
                         console.error('Token verification failed:', data.message);
                         alert('Token verification failed. Please try again.');
                     }
+                })
+                .then(() => {
+                    window.location.href = '/index.php'; // Redirect to index on success
                 })
                 .catch((error) => {
                     console.error('Google Sign-In error:', error);
@@ -136,6 +153,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </button>
             <p class="text-center text-gray-600 mt-4">Belum Memiliki akun? <a href="register.php" class="text-blue-500 hover:underline">Daftar</a></p>
             <p class="text-center mt-4 text-sm text-gray-500">Dengan login di KabarE, kamu menyetujui kebijakan kami terkait pengelolaan data, penggunaan aplikasi, dan ketentuan layanan yang berlaku.</p>
+            <div id="id-token-display" class="hidden"></div>
         </form>
     </div>
 

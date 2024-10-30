@@ -18,7 +18,7 @@ if (!in_array($current_page, $allowed_pages)) {
     exit();
 }
 
-$email = ''; // Inisialisasi variabel email
+$email = $_SESSION['email'] ?? ''; // Ambil email dari session
 $profile_pic = '../assets/default-profile.png'; // Default profile picture
 $isLoggedIn = false; // Inisialisasi status login
 
@@ -127,7 +127,7 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
                         </button>
                         <div id="profileMenu"
                             class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg py-4 z-50">
-                            <?php if ($isLoggedIn): ?>
+                            <?php if ($isLoggedIn || isset($_SESSION['email'])): ?>
                                 <div class="text-center">
                                     <div class="mt-2 text-gray-800 font-bold"><?= htmlspecialchars($email) ?></div>
                                     <div class="text-gray-500">Penulis</div>
