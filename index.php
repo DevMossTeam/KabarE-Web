@@ -43,7 +43,9 @@
        <!-- Teks dan Label di atas Image Slider -->
             <div class="text-left mb-4">
                 <span class="inline-block bg-[#FF3232] text-white px-4 py-1 rounded-md transition-transform duration-500 ease-in-out transform translate-x-full opacity-0" id="category">Kategori 1</span>
-                <h2 class="text-2xl font-bold mt-2 transition-transform duration-500 ease-in-out transform translate-x-full opacity-0" id="headline">Lorem Ipsum Dolor Sit Amet 1</h2>
+                <a href="news-detail.php">
+                    <h2 class="text-2xl font-bold mt-2 transition-transform duration-500 ease-in-out transform translate-x-full opacity-0" id="headline">Lorem Ipsum Dolor Sit Amet 1</h2>
+                </a>
                 <p class="text-gray-600 mt-2 transition-transform duration-500 ease-in-out transform translate-x-full opacity-0" id="description">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
             </div>
 
@@ -86,25 +88,25 @@
         <!-- 3 Kartu Gambar di Atas -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <?php for ($i = 1; $i <= 3; $i++): ?>
-                <div class="relative overflow-hidden rounded-lg">
+                <a href="news-detail.php" class="relative overflow-hidden rounded-lg"> <!-- Tambahkan elemen <a> di sini -->
                     <img src="https://via.placeholder.com/300x200" class="w-full h-56 object-cover">
                     <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
                         <span class="text-white font-bold">Kategori | <?= $i * 3 ?> menit yang lalu</span>
                         <h3 class="text-white text-lg font-bold mt-1">Lorem Ipsum Dolor Sit Amet</h3>
                     </div>
-                </div>
+                </a> <!-- Tutup elemen <a> di sini -->
             <?php endfor; ?>
         </div>
         <!-- 3 Gambar di Bawah dengan Teks di Samping Kanan -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <?php for ($i = 1; $i <= 3; $i++): ?>
-                <div class="flex items-center">
+                <a href="news-detail.php" class="flex items-center"> <!-- Tambahkan elemen <a> di sini -->
                     <img src="https://via.placeholder.com/200x150" class="w-full md:w-1/2 lg:w-1/2 h-32 md:h-40 lg:h-48 object-cover rounded-lg">
                     <div class="ml-4">
                         <h3 class="text-md font-bold text-white">Lorem Ipsum Dolor Sit Amet</h3>
                         <p class="text-gray-300 text-sm">Ini adalah deskripsi singkat dari berita yang ditampilkan pada kartu ini.</p>
                     </div>
-                </div>
+                </a> <!-- Tutup elemen <a> di sini -->
             <?php endfor; ?>
         </div>
     </div>
@@ -120,11 +122,13 @@
                 </div>
                 <?php for ($i = 1; $i <= 3; $i++): ?>
                     <div class="flex mb-4 popular-card">
-                        <div class="flex-grow ml-4"> <!-- Geser ke kanan -->
+                        <a href="news-detail.php" class="flex-grow ml-4"> <!-- Tambahkan elemen <a> di sini -->
                             <h3 class="text-lg font-bold mt-2">Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit, Sed Do Eiusmod Tempor</h3>
                             <p class="text-gray-500 mt-1">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-                        </div>
-                        <img src="https://via.placeholder.com/400x300" class="w-64 h-40 object-cover rounded-lg ml-4"> <!-- Gambar di sebelah kanan -->
+                        </a> <!-- Tutup elemen <a> di sini -->
+                        <a href="news-detail.php"> <!-- Tambahkan elemen <a> di sini -->
+                            <img src="https://via.placeholder.com/400x300" class="w-64 h-40 object-cover rounded-lg ml-4"> <!-- Gambar di sebelah kanan -->
+                        </a> <!-- Tutup elemen <a> di sini -->
                     </div>
                 <?php endfor; ?>
             </div>
@@ -142,7 +146,9 @@
                                 <span class="text-blue-300 font-semibold italic text-5xl mr-6" style="font-family: 'Inter', sans-serif;"><?= $i ?></span>
                                 <div>
                                     <span class="text-gray-400 text-sm">2 jam yang lalu</span>
-                                    <h3 class="text-lg font-bold mt-1">Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit <?= $i ?></h3>
+                                    <a href="news-detail.php"> <!-- Tambahkan elemen <a> di sini -->
+                                        <h3 class="text-lg font-bold mt-1">Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit <?= $i ?></h3>
+                                    </a> <!-- Tutup elemen <a> di sini -->
                                     <?php if ($i === 6): ?> <!-- Tambahkan pembatas hanya pada item terakhir -->
                                         <div class="border-b border-gray-300 mt-2"></div>
                                     <?php endif; ?>
@@ -156,42 +162,70 @@
 
         <!-- Label dan Kampus Section -->
         <div class="flex flex-col lg:flex-row mt-8">
-            <!-- Label Section -->
-            <div class="w-full lg:w-1/2">
-                <span class="inline-block bg-green-500 text-white px-6 py-1 rounded-t-md">Label</span>
-                <div class="border-b-4 border-green-500 mt-0" style="width: 350px;"></div>
-                <div class="flex flex-wrap gap-2 mt-4" style="max-width: 350px;">
-                    <?php for ($i = 1; $i <= 5; $i++): ?>
-                        <span class="inline-block bg-white text-black border border-blue-500 px-3 py-1 rounded-full">Tag <?= $i ?></span>
-                    <?php endfor; ?>
-                </div>
-                <ul class="mt-4" style="max-width: 350px;">
-                    <?php for ($i = 1; $i <= 6; $i++): ?>
-                        <li class="mb-4">
-                            <div class="flex flex-col">
-                                <span class="text-gray-400 text-sm">2 jam yang lalu</span>
-                                <h3 class="text-lg font-bold mt-1">Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit <?= $i ?></h3>
-                                <div class="border-b border-gray-300 mt-2" style="width: 340px;"></div>
-                            </div>
-                        </li>
-                    <?php endfor; ?>
-                </ul>
-            </div>
-
             <!-- Kampus Section -->
-            <div class="w-full lg:w-1/2 mt-8 lg:mt-1 lg:-ml-72">
-                <div class="mb-4">
-                    <span class="inline-block bg-[#FF3232] text-white px-6 py-1 rounded-t-md">Kampus</span>
-                    <div class="border-b-4 border-[#FF3232] mt-0" style="width: calc(100% + 290px);"></div>
-                </div>
-                <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 relative">
-                    <div class="lg:col-span-3">
-                        <img src="https://via.placeholder.com/600x350" class="w-full h-auto object-cover rounded-lg">
+            <div class="mt-8">
+                <span class="inline-block bg-[#FF3232] text-white px-6 py-1 rounded-t-md">Kampus</span>
+                <div class="border-b-4 border-[#FF3232] mt-0 mb-4"></div>
+                <div class="flex flex-col lg:flex-row gap-4">
+                    <!-- Kartu Besar di Kiri -->
+                    <div class="flex flex-col w-full lg:w-1/2"> <!-- Sesuaikan lebar menjadi 1/2 -->
+                        <a href="news-detail.php"> <!-- Tambahkan elemen <a> di sini -->
+                            <img src="https://via.placeholder.com/600x330" class="w-full h-auto object-cover rounded-lg">
+                        </a> <!-- Tutup elemen <a> di sini -->
                         <div class="mt-4">
-                            <span class="text-red-500 font-bold">Kategori</span>
-                            <span class="text-gray-500 text-sm ml-2">25 Januari 2024</span>
-                            <h3 class="text-lg font-bold mt-2">Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit</h3>
-                            <p class="text-gray-500 mt-1">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                            <span class="text-red-500 font-bold">Politik</span>
+                            <span class="text-gray-500 text-sm ml-2">27 Januari 2025</span>
+                            <a href="news-detail.php"> <!-- Tambahkan elemen <a> di sini -->
+                                <h3 class="text-lg font-bold mt-2">Tim Bridge Polije Raih Juara 2 SEABF Cup 2024</h3>
+                            </a> <!-- Tutup elemen <a> di sini -->
+                            <p class="text-gray-500 mt-1">Tim Bridge Polije berhasil meraih Juara 2 dalam 7th South East Asia Bridge Federation (SEABF) Cup dan 40th ASEAN Bridge Club Championship...</p>
+                        </div>
+                    </div>
+
+                    <!-- 3 Gambar di Kanan dengan Teks di Samping -->
+                    <div class="flex flex-row w-full lg:w-1/2 gap-4">
+                        <div class="flex flex-col gap-4 w-1/2">
+                            <div class="relative overflow-hidden rounded-lg">
+                                <img src="https://via.placeholder.com/150x200" class="w-full h-48 object-cover">
+                                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
+                                    <h3 class="text-white text-lg font-bold">Mahasiswa Polije Juara 1 Journalism Photography</h3>
+                                </div>
+                            </div>
+                            <div class="relative overflow-hidden rounded-lg">
+                                <img src="https://via.placeholder.com/150x200" class="w-full h-48 object-cover">
+                                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
+                                    <h3 class="text-white text-lg font-bold">Polije Selenggarakan Kick Off Program WMK</h3>
+                                </div>
+                            </div>
+                            <div class="relative overflow-hidden rounded-lg">
+                                <img src="https://via.placeholder.com/150x200" class="w-full h-48 object-cover">
+                                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
+                                    <h3 class="text-white text-lg font-bold">Sinergi Polije Latih dan Uji Kompetensi Barista untuk Pemula</h3>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Daftar Berita di Samping Kanan -->
+                        <div class="flex flex-col w-1/2 mt-4">
+                            <a href="#" class="text-blue-500 font-bold mb-4">Lihat Lebih Banyak &rarr;</a>
+                            <ul>
+                                <li class="mb-4">
+                                    <span class="text-gray-400 text-sm">2 jam yang lalu</span>
+                                    <h3 class="text-lg font-bold mt-1">Alumnus Polije Ini Sukses Bangun Startup, Kliennya BUMN dan Luar Negeri</h3>
+                                </li>
+                                <li class="mb-4">
+                                    <span class="text-gray-400 text-sm">2 jam yang lalu</span>
+                                    <h3 class="text-lg font-bold mt-1">Politeknik Negeri Jember Sabet Juara 2 Porseni XIV, Bawa Pulang 14 Medali Emas</h3>
+                                </li>
+                                <li class="mb-4">
+                                    <span class="text-gray-400 text-sm">2 jam yang lalu</span>
+                                    <h3 class="text-lg font-bold mt-1">Wujudkan Tata Kelola Pemerintahan Inovatif, Polije Buat layanan Digital berbasis Artificial Intelligence</h3>
+                                </li>
+                                <li class="mb-4">
+                                    <span class="text-gray-400 text-sm">2 jam yang lalu</span>
+                                    <h3 class="text-lg font-bold mt-1">UKT Mahasiswa Belum Naik, Begini Respon Universitas Jember (Unej) dan Politeknik Negeri Jember (Polije)</h3>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -206,11 +240,15 @@
         <div class="flex flex-col lg:flex-row gap-4">
             <?php for ($i = 1; $i <= 2; $i++): ?>
                 <div class="flex flex-col w-full lg:w-1/2">
-                    <img src="https://via.placeholder.com/600x330" class="w-full h-auto object-cover rounded-lg">
+                    <a href="news-detail.php"> <!-- Tambahkan elemen <a> di sini -->
+                        <img src="https://via.placeholder.com/600x330" class="w-full h-auto object-cover rounded-lg">
+                    </a> <!-- Tutup elemen <a> di sini -->
                     <div class="mt-4">
                         <span class="text-red-500 font-bold">Kategori</span>
                         <span class="text-gray-500 text-sm ml-2">25 Januari 2025</span>
-                        <h3 class="text-lg font-bold mt-2">Lorem Ipsum Dolor Sit Amet</h3>
+                        <a href="news-detail.php"> <!-- Tambahkan elemen <a> di sini -->
+                            <h3 class="text-lg font-bold mt-2">Lorem Ipsum Dolor Sit Amet</h3>
+                        </a> <!-- Tutup elemen <a> di sini -->
                         <p class="text-gray-500 mt-1">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
                     </div>
                 </div>
@@ -231,10 +269,14 @@
                     <div class="flex mb-4 items-center"> <!-- Gunakan items-center untuk menyelaraskan -->
                         <div class="flex-grow">
                             <span class="text-gray-400 text-sm block mb-1">2 jam yang lalu</span> <!-- Pindahkan waktu ke pojok kiri atas -->
-                            <h3 class="text-lg font-bold mt-1">Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit <?= $i ?></h3>
+                            <a href="news-detail.php"> <!-- Tambahkan elemen <a> di sini -->
+                                <h3 class="text-lg font-bold mt-1">Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit <?= $i ?></h3>
+                            </a> <!-- Tutup elemen <a> di sini -->
                             <p class="text-gray-500 mt-1 mb-2">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p> <!-- Kurangi margin bawah -->
                         </div>
-                        <img src="https://via.placeholder.com/200x140" class="w-40 h-28 object-cover rounded-lg ml-4"> <!-- Hapus margin atas -->
+                        <a href="news-detail.php"> <!-- Tambahkan elemen <a> di sini -->
+                            <img src="https://via.placeholder.com/400x200" class="w-80 h-48 object-cover rounded-lg ml-4"> <!-- Kurangi tinggi gambar -->
+                        </a> <!-- Tutup elemen <a> di sini -->
                     </div>
                     <div class="border-b border-gray-300 mt-1 mb-4"></div> <!-- Kurangi margin atas pada garis dan tambahkan margin bawah -->
                 <?php endfor; ?>
@@ -252,13 +294,31 @@
                             <div class="flex items-center">
                                 <div>
                                     <span class="text-gray-400 text-sm">2 jam yang lalu</span>
-                                    <h3 class="text-lg font-bold mt-1">Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit <?= $i ?></h3>
+                                    <a href="news-detail.php"> <!-- Tambahkan elemen <a> di sini -->
+                                        <h3 class="text-lg font-bold mt-1">Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit <?= $i ?></h3>
+                                    </a> <!-- Tutup elemen <a> di sini -->
                                     <div class="border-b border-gray-300 mt-2"></div>
                                 </div>
                             </div>
                         </li>
                     <?php endfor; ?>
                 </ul>
+                <!-- Label Section -->
+                <div class="mt-8">
+                    <span class="inline-block bg-pink-500 text-white px-6 py-1 rounded-t-md">Label</span>
+                    <div class="border-b-4 border-pink-500 mt-0 mb-4"></div>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="inline-block bg-white text-blue-500 border border-blue-500 px-3 py-1 rounded-full">explant</span>
+                        <span class="inline-block bg-white text-blue-500 border border-blue-500 px-3 py-1 rounded-full">ukpm</span>
+                        <span class="inline-block bg-white text-blue-500 border border-blue-500 px-3 py-1 rounded-full">terasjti</span>
+                        <span class="inline-block bg-white text-blue-500 border border-blue-500 px-3 py-1 rounded-full">pkkmb24</span>
+                        <span class="inline-block bg-white text-blue-500 border border-blue-500 px-3 py-1 rounded-full">aom</span>
+                        <span class="inline-block bg-white text-blue-500 border border-blue-500 px-3 py-1 rounded-full">kwu</span>
+                        <span class="inline-block bg-white text-blue-500 border border-blue-500 px-3 py-1 rounded-full">hmj</span>
+                        <span class="inline-block bg-white text-blue-500 border border-blue-500 px-3 py-1 rounded-full">pungli</span>
+                        <span class="inline-block bg-white text-blue-500 border border-blue-500 px-3 py-1 rounded-full">inagurasi</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
