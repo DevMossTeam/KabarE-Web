@@ -43,14 +43,16 @@ if (isset($_POST['verify'])) {
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script>
         // Timer mundur 2 menit
-        let time = 120;
+        let time = 120; // 120 detik untuk 2 menit
         const timer = setInterval(() => {
             if (time <= 0) {
                 clearInterval(timer);
                 document.getElementById('timer').innerText = "Waktu Habis";
             } else {
                 time--;
-                document.getElementById('timer').innerText = `0:${time < 10 ? '0' : ''}${time}`;
+                const minutes = Math.floor(time / 60);
+                const seconds = time % 60;
+                document.getElementById('timer').innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
             }
         }, 1000);
     </script>
@@ -66,7 +68,7 @@ if (isset($_POST['verify'])) {
             <p class="text-gray-600 mb-2">Silahkan buka email anda dan konfirmasi</p>
             <p class="text-gray-600 mb-6">Kami telah mengirimkan link ke email</p>
             <p class="text-black font-bold mb-6"><?php echo htmlspecialchars($email); ?></p>
-            <div id="timer" class="text-4xl font-bold mb-6">2:00</div>
+            <div id="timer" class="text-4xl font-bold mb-6">2:00</div> <!-- Tampilan awal -->
             <p class="text-gray-600 mb-4">Tidak menerima pesan?</p>
             <form method="POST">
                 <button name="verify" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Verifikasi Email</button>

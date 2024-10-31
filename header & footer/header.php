@@ -192,11 +192,11 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
     <!-- Header yang muncul saat scroll -->
     <div id="scrollHeader"
         class="fixed top-0 left-0 right-0 bg-blue-500 p-2 transform -translate-y-full transition-transform duration-500 ease-out z-20">
-        <div class="container mx-auto flex justify-center items-center">
+        <div class="container mx-auto flex justify-between items-center">
             <a href="/index.php" class="text-white text-2xl font-bold">
                 <img src="../assets/web-icon/KabarE-UTDF.png" alt="Logo" class="w-10 h-10">
             </a>
-            <div class="flex space-x-4 ml-4">
+            <div class="flex space-x-16">
                 <a href="/category/kampus.php" class="nav-link text-white hover:text-blue-300">Kampus</a>
                 <a href="/category/prestasi.php" class="nav-link text-white hover:text-blue-300">Prestasi</a>
                 <a href="/category/politik.php" class="nav-link text-white hover:text-blue-300">Politik</a>
@@ -205,15 +205,15 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
                 <a href="/category/ekonomi.php" class="nav-link text-white hover:text-blue-300">Ekonomi</a>
                 <a href="/category/bisnis.php" class="nav-link text-white hover:text-blue-300">Bisnis</a>
                 <a href="/category/ukm.php" class="nav-link text-white hover:text-blue-300">UKM</a>
-                <div class="relative">
-                    <button id="otherCategoryButtonScroll" class="text-white hover:text-blue-300">
-                        <i class="fas fa-bars text-2xl"></i>
-                    </button>
-                    <div id="otherCategoryMenuScroll"
-                        class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-30">
-                        <a href="/category/other_category/berita_lainnya.php"
-                            class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Berita Lainnya</a>
-                    </div>
+            </div>
+            <div class="relative">
+                <button id="otherCategoryButtonScroll" class="text-white hover:text-blue-300">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+                <div id="otherCategoryMenuScroll"
+                    class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-30">
+                    <a href="/category/other_category/berita_lainnya.php"
+                        class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Berita Lainnya</a>
                 </div>
             </div>
         </div>

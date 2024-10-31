@@ -7,9 +7,13 @@
         <!-- Gambar Utama dan Paragraf -->
         <div class="w-full lg:w-2/3 pr-4">
             <span class="inline-block bg-red-500 text-white px-4 py-1 rounded-md">Kampus</span>
-            <h1 class="text-3xl font-bold mt-2">Tim Bridge Polije Raih Juara 2 SEABF Cup 2024</h1>
+            <a href="news-detail.php">
+                <h1 class="text-3xl font-bold mt-2">Tim Bridge Polije Raih Juara 2 SEABF Cup 2024</h1>
+            </a>
             <span class="text-gray-500 text-sm">KabarE - 27 Januari 2025, 10:24 WIB</span>
-            <img src="https://via.placeholder.com/800x450" class="w-full h-auto object-cover rounded-lg my-4">
+            <a href="news-detail.php">
+                <img src="https://via.placeholder.com/800x450" class="w-full h-auto object-cover rounded-lg my-4">
+            </a>
             <div class="flex items-start mt-4">
                 <div class="border-l-4 border-[#FF842D] mr-2">
                 <p class="text-gray-700 italic pl-4">
@@ -58,7 +62,9 @@
                             <span class="text-[#CAD2FF] font-semibold italic text-5xl mr-4"><?= $i ?></span>
                             <div>
                                 <span class="text-gray-400 text-sm">2 jam yang lalu</span>
-                                <h3 class="text-lg font-bold mt-1">Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit <?= $i ?></h3>
+                                <a href="news-detail.php">
+                                    <h3 class="text-lg font-bold mt-1">Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit <?= $i ?></h3>
+                                </a>
                                 <div class="border-b border-gray-300 mt-2"></div>
                             </div>
                         </div>
@@ -144,11 +150,15 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <?php for ($i = 1; $i <= 4; $i++): ?>
                 <div class="flex flex-col">
-                    <img src="https://via.placeholder.com/600x330" class="w-full h-auto object-cover rounded-lg">
+                    <a href="news-detail.php">
+                        <img src="https://via.placeholder.com/600x330" class="w-full h-auto object-cover rounded-lg">
+                    </a>
                     <div class="mt-4">
                         <span class="text-red-500 font-bold">Kategori</span>
                         <span class="text-gray-500 text-sm ml-2">25 Januari 2025</span>
-                        <h3 class="text-lg font-bold mt-2">Lorem Ipsum Dolor Sit Amet</h3>
+                        <a href="news-detail.php">
+                            <h3 class="text-lg font-bold mt-2">Lorem Ipsum Dolor Sit Amet</h3>
+                        </a>
                         <p class="text-gray-500 mt-1">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
                     </div>
                 </div>
