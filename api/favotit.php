@@ -77,11 +77,11 @@ function insert_favorit() {
     global $conn;
     $data = json_decode(file_get_contents("php://input"), true);
 
-    if (isset($data['pengguna_id'], $data['berita_id'], $data['tanggal_disukai'])) {
+    if (isset($data['user_id'], $data['berita_id'], $data['tanggal_disukai'])) {
         try {
-            $stmt = $conn->prepare("INSERT INTO favorit (pengguna_id, berita_id, tanggal_disukai) 
-                                    VALUES (:pengguna_id, :berita_id, :tanggal_disukai)");
-            $stmt->bindParam(':pengguna_id', $data['pengguna_id'], PDO::PARAM_INT);
+            $stmt = $conn->prepare("INSERT INTO favorit (user_id, berita_id, tanggal_disukai) 
+                                    VALUES (:user_id, :berita_id, :tanggal_disukai)");
+            $stmt->bindParam(':user_id', $data['user_id'], PDO::PARAM_STR);
             $stmt->bindParam(':berita_id', $data['berita_id'], PDO::PARAM_INT);
             $stmt->bindParam(':tanggal_disukai', $data['tanggal_disukai']);
 
@@ -104,11 +104,11 @@ function update_favorit() {
     global $conn;
     $data = json_decode(file_get_contents("php://input"), true);
 
-    if (isset($data['id'], $data['pengguna_id'], $data['berita_id'], $data['tanggal_disukai'])) {
+    if (isset($data['id'], $data['user_id'], $data['berita_id'], $data['tanggal_disukai'])) {
         try {
-            $stmt = $conn->prepare("UPDATE favorit SET pengguna_id = :pengguna_id, berita_id = :berita_id, 
+            $stmt = $conn->prepare("UPDATE favorit SET user_id = :user_id, berita_id = :berita_id, 
                                     tanggal_disukai = :tanggal_disukai WHERE id = :id");
-            $stmt->bindParam(':pengguna_id', $data['pengguna_id'], PDO::PARAM_INT);
+            $stmt->bindParam(':user_id', $data['user_id'], PDO::PARAM_STR);
             $stmt->bindParam(':berita_id', $data['berita_id'], PDO::PARAM_INT);
             $stmt->bindParam(':tanggal_disukai', $data['tanggal_disukai']);
             $stmt->bindParam(':id', $data['id'], PDO::PARAM_INT);

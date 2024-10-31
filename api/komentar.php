@@ -77,11 +77,11 @@ function insert_komentar() {
     global $conn;
     $data = json_decode(file_get_contents("php://input"), true);
 
-    if (isset($data['pengguna_id'], $data['berita_id'], $data['teks_komentar'], $data['tanggal_komentar'], $data['parent_komentar'])) {
+    if (isset($data['user_id'], $data['berita_id'], $data['teks_komentar'], $data['tanggal_komentar'], $data['parent_komentar'])) {
         try {
-            $stmt = $conn->prepare("INSERT INTO komentar (pengguna_id, berita_id, teks_komentar, tanggal_komentar, parent_komentar) 
-                                    VALUES (:pengguna_id, :berita_id, :teks_komentar, :tanggal_komentar, :parent_komentar)");
-            $stmt->bindParam(':pengguna_id', $data['pengguna_id'], PDO::PARAM_INT);
+            $stmt = $conn->prepare("INSERT INTO komentar (user_id, berita_id, teks_komentar, tanggal_komentar, parent_komentar) 
+                                    VALUES (:user_id, :berita_id, :teks_komentar, :tanggal_komentar, :parent_komentar)");
+            $stmt->bindParam(':user_id', $data['user_id'], PDO::PARAM_STR);
             $stmt->bindParam(':berita_id', $data['berita_id'], PDO::PARAM_INT);
             $stmt->bindParam(':teks_komentar', $data['teks_komentar'], PDO::PARAM_STR);
             $stmt->bindParam(':tanggal_komentar', $data['tanggal_komentar']);
@@ -106,11 +106,11 @@ function update_komentar() {
     global $conn;
     $data = json_decode(file_get_contents("php://input"), true);
 
-    if (isset($data['id'], $data['pengguna_id'], $data['berita_id'], $data['teks_komentar'], $data['tanggal_komentar'], $data['parent_komentar'])) {
+    if (isset($data['id'], $data['user_id'], $data['berita_id'], $data['teks_komentar'], $data['tanggal_komentar'], $data['parent_komentar'])) {
         try {
-            $stmt = $conn->prepare("UPDATE komentar SET pengguna_id = :pengguna_id, berita_id = :berita_id, teks_komentar = :teks_komentar, 
+            $stmt = $conn->prepare("UPDATE komentar SET user_id = :user_id, berita_id = :berita_id, teks_komentar = :teks_komentar, 
                                     tanggal_komentar = :tanggal_komentar, parent_komentar = :parent_komentar WHERE id = :id");
-            $stmt->bindParam(':pengguna_id', $data['pengguna_id'], PDO::PARAM_INT);
+            $stmt->bindParam(':user_id', $data['user_id'], PDO::PARAM_STR);
             $stmt->bindParam(':berita_id', $data['berita_id'], PDO::PARAM_INT);
             $stmt->bindParam(':teks_komentar', $data['teks_komentar'], PDO::PARAM_STR);
             $stmt->bindParam(':tanggal_komentar', $data['tanggal_komentar']);

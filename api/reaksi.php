@@ -40,7 +40,7 @@ switch ($request_method) {
 function fetch_all_reaksi() {
     global $conn;
     try {
-        $stmt = $conn->prepare("SELECT * FROM reaksi_berita");
+        $stmt = $conn->prepare("SELECT * FROM reaksi");
         $stmt->execute();
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
         echo json_encode(['data' => $data, 'message' => 'Reactions fetched successfully']);
@@ -53,7 +53,7 @@ function fetch_all_reaksi() {
 function fetch_reaksi($id) {
     global $conn;
     try {
-        $stmt = $conn->prepare("SELECT * FROM reaksi_berita WHERE id = :id");
+        $stmt = $conn->prepare("SELECT * FROM reaksi WHERE id = :id");
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -72,20 +72,20 @@ function insert_reaksi() {
     global $conn;
     $input = json_decode(file_get_contents("php://input"), true);
 
-    if (isset($input['pengguna_id'], $input['berita_id'], $input['jenis_reaksi'], $input['tanggal_reaksi'], $input['count'])) {
+    if (isset($input['pengguna_id'], $input['berita_id'], $input['komentar_id'], $input['jenis_reaksi'], $input['tanggal_reaksi'])) {
         try {
             $pengguna_id = $input['pengguna_id'];
             $berita_id = $input['berita_id'];
+            $komentar_id = $input['komentar_id'];
             $jenis_reaksi = $input['jenis_reaksi'];
             $tanggal_reaksi = $input['tanggal_reaksi'];
-            $count = $input['count'];
 
-            $stmt = $conn->prepare("INSERT INTO reaksi_berita (pengguna_id, berita_id, jenis_reaksi, tanggal_reaksi, count) VALUES (:pengguna_id, :berita_id, :jenis_reaksi, :tanggal_reaksi, :count)");
+            $stmt = $conn->prepare("INSERT INTO reaksi (pengguna_id, berita_id, komentar_id, jenis_reaksi, tanggal_reaksi) VALUES (:pengguna_id, :berita_id, :komentar_id, :jenis_reaksi, :tanggal_reaksi)");
             $stmt->bindParam(':pengguna_id', $pengguna_id, PDO::PARAM_INT);
             $stmt->bindParam(':berita_id', $berita_id, PDO::PARAM_INT);
+            $stmt->bindParam(':komentar_id', $komentar_id, PDO::PARAM_INT);
             $stmt->bindParam(':jenis_reaksi', $jenis_reaksi, PDO::PARAM_STR);
             $stmt->bindParam(':tanggal_reaksi', $tanggal_reaksi, PDO::PARAM_STR);
-            $stmt->bindParam(':count', $count, PDO::PARAM_INT);
 
             if ($stmt->execute()) {
                 echo json_encode(['message' => 'Reaction inserted successfully']);
@@ -105,22 +105,22 @@ function update_reaksi() {
     global $conn;
     $input = json_decode(file_get_contents("php://input"), true);
 
-    if (isset($input['id'], $input['pengguna_id'], $input['berita_id'], $input['jenis_reaksi'], $input['tanggal_reaksi'], $input['count'])) {
+    if (isset($input['id'], $input['pengguna_id'], $input['berita_id'], $input['komentar_id'], $input['jenis_reaksi'], $input['tanggal_reaksi'])) {
         try {
             $id = $input['id'];
             $pengguna_id = $input['pengguna_id'];
             $berita_id = $input['berita_id'];
+            $komentar_id = $input['komentar_id'];
             $jenis_reaksi = $input['jenis_reaksi'];
             $tanggal_reaksi = $input['tanggal_reaksi'];
-            $count = $input['count'];
             
-            $stmt = $conn->prepare("UPDATE reaksi_berita SET pengguna_id = :pengguna_id, berita_id = :berita_id, jenis_reaksi = :jenis_reaksi, tanggal_reaksi = :tanggal_reaksi, count = :count WHERE id = :id");
+            $stmt = $conn->prepare("UPDATE reaksi SET pengguna_id = :pengguna_id, berita_id = :berita_id, komentar_id = :komentar_id, jenis_reaksi = :jenis_reaksi, tanggal_reaksi = :tanggal_reaksi WHERE id = :id");
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             $stmt->bindParam(':pengguna_id', $pengguna_id, PDO::PARAM_INT);
             $stmt->bindParam(':berita_id', $berita_id, PDO::PARAM_INT);
+            $stmt->bindParam(':komentar_id', $komentar_id, PDO::PARAM_INT);
             $stmt->bindParam(':jenis_reaksi', $jenis_reaksi, PDO::PARAM_STR);
             $stmt->bindParam(':tanggal_reaksi', $tanggal_reaksi, PDO::PARAM_STR);
-            $stmt->bindParam(':count', $count, PDO::PARAM_INT);
 
             if ($stmt->execute()) {
                 echo json_encode(['message' => 'Reaction updated successfully']);
@@ -142,7 +142,7 @@ function delete_reaksi() {
 
     if (!empty($delete_vars['id'])) {
         try {
-            $stmt = $conn->prepare("DELETE FROM reaksi_berita WHERE id = :id");
+            $stmt = $conn->prepare("DELETE FROM reaksi WHERE id = :id");
             $stmt->bindParam(':id', $delete_vars['id'], PDO::PARAM_INT);
 
             if ($stmt->execute()) {

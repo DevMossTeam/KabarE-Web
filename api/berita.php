@@ -12,7 +12,7 @@ try {
     $conn = new PDO("mysql:host=$server;dbname=$db", $username, $password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
-    echo "Connection failed: " . $e->getMessage();
+    echo json_encode(['error' => "Connection failed: " . $e->getMessage()]);
     exit;
 }
 
@@ -43,6 +43,7 @@ switch ($request_method) {
 
 // Fetch all berita
 function fetch_beritas() {
+    $koneksi = getKoneksi();
     global $conn;
     try {
         $stmt = $conn->prepare("SELECT * FROM berita");
@@ -77,17 +78,17 @@ function insert_berita() {
     global $conn;
     $data = json_decode(file_get_contents("php://input"), true);
 
-    if (isset($data['judul'], $data['konten'], $data['status'], $data['tanggal_dibuat'])) {
+    if (isset($data['judul'], $data['image_cover'], $data['image_name'], $data['user_id'], $data['kategori_id'], $data['status'], $data['tanggal_dibuat'])) {
         try {
-            $stmt = $conn->prepare("INSERT INTO berita (judul, konten, pengguna_id, kategori_id, status, tanggal_dibuat, tanggal_diterbitkan) 
-                                    VALUES (:judul, :konten, :pengguna_id, :kategori_id, :status, :tanggal_dibuat, :tanggal_diterbitkan)");
+            $stmt = $conn->prepare("INSERT INTO berita (judul, image_cover, image_name, user_id, kategori_id, status, tanggal_dibuat) 
+                                    VALUES (:judul, :image_cover, :image_name, :user_id, :kategori_id, :status, :tanggal_dibuat)");
             $stmt->bindParam(':judul', $data['judul']);
-            $stmt->bindParam(':konten', $data['konten']);
-            $stmt->bindParam(':pengguna_id', $data['pengguna_id'], PDO::PARAM_INT);
+            $stmt->bindParam(':image_cover', $data['image_cover'], PDO::PARAM_LOB); // Using LOB for binary data
+            $stmt->bindParam(':image_name', $data['image_name']);
+            $stmt->bindParam(':user_id', $data['user_id'], PDO::PARAM_STR);
             $stmt->bindParam(':kategori_id', $data['kategori_id'], PDO::PARAM_INT);
             $stmt->bindParam(':status', $data['status']);
             $stmt->bindParam(':tanggal_dibuat', $data['tanggal_dibuat']);
-            $stmt->bindParam(':tanggal_diterbitkan', $data['tanggal_diterbitkan']);
 
             if ($stmt->execute()) {
                 $last_id = $conn->lastInsertId(); // Get the last inserted ID
@@ -108,14 +109,15 @@ function update_berita() {
     global $conn;
     $data = json_decode(file_get_contents("php://input"), true);
 
-    if (isset($data['id'], $data['judul'], $data['konten'], $data['status'], $data['tanggal_dibuat'])) {
+    if (isset($data['id'], $data['judul'], $data['image_cover'], $data['image_name'], $data['user_id'], $data['kategori_id'], $data['status'], $data['tanggal_dibuat'])) {
         try {
-            $stmt = $conn->prepare("UPDATE berita SET judul = :judul, konten = :konten, pengguna_id = :pengguna_id, 
+            $stmt = $conn->prepare("UPDATE berita SET judul = :judul, image_cover = :image_cover, image_name = :image_name, user_id = :user_id, 
                                     kategori_id = :kategori_id, status = :status, tanggal_dibuat = :tanggal_dibuat, 
                                     tanggal_diterbitkan = :tanggal_diterbitkan WHERE id = :id");
             $stmt->bindParam(':judul', $data['judul']);
-            $stmt->bindParam(':konten', $data['konten']);
-            $stmt->bindParam(':pengguna_id', $data['pengguna_id'], PDO::PARAM_INT);
+            $stmt->bindParam(':image_cover', $data['image_cover'], PDO::PARAM_LOB); // Using LOB for binary data
+            $stmt->bindParam(':image_name', $data['image_name']);
+            $stmt->bindParam(':user_id', $data['user_id'], PDO::PARAM_STR);
             $stmt->bindParam(':kategori_id', $data['kategori_id'], PDO::PARAM_INT);
             $stmt->bindParam(':status', $data['status']);
             $stmt->bindParam(':tanggal_dibuat', $data['tanggal_dibuat']);
