@@ -8,8 +8,6 @@ if (!$email) {
     header('Location: register.php');
     exit;
 }
-
-// Kode untuk mengirim email verifikasi dihapus
 ?>
 
 <!DOCTYPE html>
@@ -33,20 +31,23 @@ if (!$email) {
         }, 1000);
     </script>
 </head>
-<body class="bg-white flex items-center justify-center h-screen">
-    <div class="absolute top-0 left-0 m-4">
-        <img src="../assets/web-icon/KabarE-UTDK.png" alt="Logo" class="h-12">
+<body class="flex h-screen">
+    <div class="flex-1 bg-blue-500 flex items-center justify-center relative">
+        <img src="../assets/web-icon/KabarE-UTDF.png" alt="Logo" class="h-12 absolute top-0 left-0 m-4">
+        <img src="../assets/web-icon/your-icon.png" alt="Icon" class="h-64">
     </div>
-    <div class="w-full max-w-md text-center">
-        <h2 class="text-3xl font-bold mb-2" style="color: #61A6FF;">Verifikasi Email</h2>
-        <p class="text-gray-600 mb-2">Silahkan buka email anda dan konfirmasi</p>
-        <p class="text-gray-600 mb-6">Kami telah mengirimkan link ke email</p>
-        <p class="font-bold mb-6"><?php echo htmlspecialchars($email); ?></p>
-        <div id="timer" class="text-4xl font-bold mb-6">1:00</div>
-        <p class="text-gray-600 mb-4">Tidak menerima pesan?</p>
-        <form method="POST">
-            <button name="resend" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Kirim Ulang</button>
-        </form>
+    <div class="flex-1 flex items-center justify-center bg-white">
+        <div class="w-full max-w-md text-center">
+            <h2 class="text-3xl font-bold mb-2" style="color: #61A6FF;">Verifikasi Email</h2>
+            <p class="text-gray-600 mb-2">Silahkan buka email anda dan konfirmasi</p>
+            <p class="text-gray-600 mb-6">Kami telah mengirimkan link ke email</p>
+            <p class="text-black font-bold mb-6"><?php echo htmlspecialchars($email); ?></p>
+            <div id="timer" class="text-4xl font-bold mb-6">1:00</div>
+            <p class="text-gray-600 mb-4">Tidak menerima pesan?</p>
+            <form method="POST">
+                <button name="resend" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Kirim Ulang</button>
+            </form>
+        </div>
     </div>
 </body>
 </html>
