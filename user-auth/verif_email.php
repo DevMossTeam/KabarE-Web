@@ -1,8 +1,9 @@
 <?php
 session_start();
+require __DIR__ . '/vendor/autoload.php'; // Menggunakan autoloader Composer
 
-// Tambahkan Firebase SDK
-require '../path/to/firebase_sdk.php'; // Sesuaikan dengan path SDK Anda
+use Kreait\Firebase\Factory;
+use Kreait\Firebase\Auth;
 
 $email = $_SESSION['email'] ?? '';
 
@@ -14,14 +15,21 @@ if (!$email) {
 
 // Logika untuk memverifikasi email
 if (isset($_POST['verify'])) {
-    $auth = new \Firebase\Auth\Token\Verifier('your-project-id');
-    $isVerified = $auth->checkEmailVerification($email);
+    $factory = (new Factory)->withServiceAccount(__DIR__ . '/firebase/kabare-cf940-firebase-adminsdk-8qu0w-017b632945.json');
+    $auth = $factory->createAuth();
 
-    if ($isVerified) {
-        header('Location: create_password.php');
-        exit;
-    } else {
-        $error = "Email belum diverifikasi. Silakan cek email Anda.";
+    try {
+        $user = $auth->getUserByEmail($email);
+        if ($user->emailVerified) {
+            header('Location: create_password.php');
+            exit;
+        } else {
+            $error = "Email belum diverifikasi. Silakan cek email Anda.";
+        }
+    } catch (\Kreait\Firebase\Exception\Auth\UserNotFound $e) {
+        $error = "Pengguna tidak ditemukan.";
+    } catch (\Exception $e) {
+        $error = "Terjadi kesalahan: " . $e->getMessage();
     }
 }
 ?>
@@ -34,8 +42,8 @@ if (isset($_POST['verify'])) {
     <title>Verifikasi Email</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script>
-        // Timer mundur 1 menit
-        let time = 60;
+        // Timer mundur 2 menit
+        let time = 120;
         const timer = setInterval(() => {
             if (time <= 0) {
                 clearInterval(timer);
@@ -58,11 +66,14 @@ if (isset($_POST['verify'])) {
             <p class="text-gray-600 mb-2">Silahkan buka email anda dan konfirmasi</p>
             <p class="text-gray-600 mb-6">Kami telah mengirimkan link ke email</p>
             <p class="text-black font-bold mb-6"><?php echo htmlspecialchars($email); ?></p>
-            <div id="timer" class="text-4xl font-bold mb-6">1:00</div>
+            <div id="timer" class="text-4xl font-bold mb-6">2:00</div>
             <p class="text-gray-600 mb-4">Tidak menerima pesan?</p>
             <form method="POST">
                 <button name="verify" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Verifikasi Email</button>
             </form>
+            <?php if (isset($error)): ?>
+                <div class="text-red-500 mt-4"><?php echo $error; ?></div>
+            <?php endif; ?>
         </div>
     </div>
 </body>

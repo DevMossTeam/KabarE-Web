@@ -1,6 +1,6 @@
 <?php
 session_start();
-require __DIR__ . '../../vendor/autoload.php'; // Menggunakan autoloader Composer
+require __DIR__ . '/vendor/autoload.php'; // Menggunakan autoloader Composer
 
 use Kreait\Firebase\Factory;
 use Kreait\Firebase\Auth;
@@ -16,9 +16,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $_SESSION['nama_lengkap'] = $namaLengkap;
 
     // Kirim email verifikasi menggunakan Firebase
-    $factory = (new Factory)->withServiceAccount(__DIR__ . '/../path/to/your/firebase_credentials.json'); // Sesuaikan dengan path file kredensial Anda
+    $factory = (new Factory)->withServiceAccount(__DIR__ . '/firebase/kabare-cf940-firebase-adminsdk-8qu0w-017b632945.json');
     $auth = $factory->createAuth();
-    $auth->sendEmailVerification($email);
+
+    try {
+        $user = $auth->getUserByEmail($email);
+        $auth->sendEmailVerificationLink($email);
+    } catch (\Kreait\Firebase\Exception\Auth\UserNotFound $e) {
+        // Handle the case where the user is not found
+        echo 'User not found: ' . $e->getMessage();
+    } catch (\Exception $e) {
+        // Handle other exceptions
+        echo 'Error: ' . $e->getMessage();
+    }
 
     // Arahkan ke halaman verifikasi email
     header('Location: verif_email.php');
