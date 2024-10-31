@@ -19,7 +19,7 @@ if (!in_array($current_page, $allowed_pages)) {
 }
 
 $email = $_SESSION['email'] ?? ''; // Ambil email dari session
-$profile_pic = $_SESSION['profile_pic'] ?? 'default-profile.png'; // Ambil foto profil dari session
+$profile_pic = $_SESSION['profile_pic'] ?? ''; // Ambil foto profil dari session
 $isLoggedIn = false; // Inisialisasi status login
 
 if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
@@ -27,7 +27,7 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
 
     $stmt = $conn->prepare("SELECT email, profile_pic FROM user WHERE uid = ?");
     if ($stmt) {
-        $stmt->bind_param("i", $user_id);
+        $stmt->bind_param("s", $user_id);
         $stmt->execute();
         $result = $stmt->get_result();
 
@@ -123,7 +123,7 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
 
                     <div class="relative z-30">
                         <button id="profileButton" class="flex items-center text-gray-500 focus:outline-none">
-                            <img src="../settings/uploads/<?= htmlspecialchars($profile_pic) ?>" alt="Profile Picture" class="w-8 h-8 rounded-full">
+                            <img src="data:image/jpeg;base64,<?= base64_encode($profile_pic) ?>" alt="Profile Picture" class="w-8 h-8 rounded-full">
                         </button>
                         <div id="profileMenu"
                             class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg py-4 z-50">
@@ -131,7 +131,7 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
                                 <div class="text-center">
                                     <div class="mt-2 text-gray-800 font-bold"><?= htmlspecialchars($email) ?></div>
                                     <div class="flex justify-center items-center mb-4 mt-4">
-                                        <img src="../settings/uploads/<?= htmlspecialchars($profile_pic) ?>" alt="Profile Picture" class="w-20 h-20 rounded-full">
+                                        <img src="data:image/jpeg;base64,<?= base64_encode($profile_pic) ?>" alt="Profile Picture" class="w-20 h-20 rounded-full">
                                     </div>
                                     <div class="text-gray-500">Penulis</div>
                                 </div>
@@ -192,7 +192,7 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
     <!-- Header yang muncul saat scroll -->
     <div id="scrollHeader"
         class="fixed top-0 left-0 right-0 bg-blue-500 p-2 transform -translate-y-full transition-transform duration-500 ease-out z-20">
-        <div class="container mx-auto flex justify-between items-center">
+        <div class="container mx-auto flex justify-center items-center">
             <a href="/index.php" class="text-white text-2xl font-bold">
                 <img src="../assets/web-icon/KabarE-UTDF.png" alt="Logo" class="w-10 h-10">
             </a>
@@ -202,17 +202,15 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
                 <a href="/category/politik.php" class="nav-link text-white hover:text-blue-300">Politik</a>
                 <a href="/category/kesehatan.php" class="nav-link text-white hover:text-blue-300">Kesehatan</a>
                 <a href="/category/olahraga.php" class="nav-link text-white hover:text-blue-300">Olahraga</a>
+                <a href="/category/ekonomi.php" class="nav-link text-white hover:text-blue-300">Ekonomi</a>
+                <a href="/category/bisnis.php" class="nav-link text-white hover:text-blue-300">Bisnis</a>
+                <a href="/category/ukm.php" class="nav-link text-white hover:text-blue-300">UKM</a>
                 <div class="relative">
                     <button id="otherCategoryButtonScroll" class="text-white hover:text-blue-300">
                         <i class="fas fa-bars text-2xl"></i>
                     </button>
                     <div id="otherCategoryMenuScroll"
                         class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-30">
-                        <a href="/category/ekonomi.php"
-                            class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Ekonomi</a>
-                        <a href="/category/bisnis.php"
-                            class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Bisnis</a>
-                        <a href="/category/ukm.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">UKM</a>
                         <a href="/category/other_category/berita_lainnya.php"
                             class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Berita Lainnya</a>
                     </div>
