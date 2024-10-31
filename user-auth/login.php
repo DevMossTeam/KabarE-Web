@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $password = $_POST['password'] ?? null;
 
     if ($input && $password) {
-        $stmt = $conn->prepare("SELECT id, email, password FROM user WHERE (username = ? OR email = ?)");
+        $stmt = $conn->prepare("SELECT uid, email, password, profile_pic FROM user WHERE (username = ? OR email = ?)");
         if ($stmt) {
             $stmt->bind_param("ss", $input, $input);
             $stmt->execute();
@@ -18,9 +18,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if ($result->num_rows > 0) {
                 $user = $result->fetch_assoc();
                 if (password_verify($password, $user['password'])) {
-                    $_SESSION['user_id'] = $user['id'];
+                    $_SESSION['user_id'] = $user['uid'];
                     $_SESSION['email'] = $user['email'];
-                    setcookie('user_id', $user['id'], time() + (86400 * 30), "/");
+                    $_SESSION['profile_pic'] = $user['profile_pic'] ?: 'default-profile.png'; // Default jika kosong
+                    setcookie('user_id', $user['uid'], time() + (86400 * 30), "/");
                     setcookie('email', $user['email'], time() + (86400 * 30), "/");
                     header("Location: /index.php");
                     exit();
@@ -97,11 +98,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 })
                 .then((data) => {
                     if (data.success) {
-                        // Simpan email ke session
+                        // Simpan email dan foto profil ke session
                         return fetch('set_session.php', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ email: data.email })
+                            body: JSON.stringify({ email: data.email, profile_pic: data.picture })
                         });
                     } else {
                         console.error('Token verification failed:', data.message);

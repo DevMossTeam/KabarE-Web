@@ -1,6 +1,9 @@
 <?php
 session_start();
-require '../connection/config.php'; // Menggunakan file config.php untuk koneksi database
+require __DIR__ . '../../vendor/autoload.php'; // Menggunakan autoloader Composer
+
+use Kreait\Firebase\Factory;
+use Kreait\Firebase\Auth;
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = $_POST['username'];
@@ -11,6 +14,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $_SESSION['username'] = $username;
     $_SESSION['email'] = $email;
     $_SESSION['nama_lengkap'] = $namaLengkap;
+
+    // Kirim email verifikasi menggunakan Firebase
+    $factory = (new Factory)->withServiceAccount(__DIR__ . '/../path/to/your/firebase_credentials.json'); // Sesuaikan dengan path file kredensial Anda
+    $auth = $factory->createAuth();
+    $auth->sendEmailVerification($email);
 
     // Arahkan ke halaman verifikasi email
     header('Location: verif_email.php');

@@ -12,7 +12,7 @@ $isLoggedIn = false;
 if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
     $user_id = $_SESSION['user_id'] ?? $_COOKIE['user_id'];
 
-    $stmt = $conn->prepare("SELECT email, profile_pic FROM user WHERE id = ?");
+    $stmt = $conn->prepare("SELECT email, profile_pic FROM user WHERE uid = ?");
     if ($stmt) {
         $stmt->bind_param("i", $user_id);
         $stmt->execute();

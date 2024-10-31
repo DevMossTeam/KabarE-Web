@@ -19,13 +19,13 @@ if (!in_array($current_page, $allowed_pages)) {
 }
 
 $email = $_SESSION['email'] ?? ''; // Ambil email dari session
-$profile_pic = '../assets/default-profile.png'; // Default profile picture
+$profile_pic = $_SESSION['profile_pic'] ?? 'default-profile.png'; // Ambil foto profil dari session
 $isLoggedIn = false; // Inisialisasi status login
 
 if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
     $user_id = $_SESSION['user_id'] ?? $_COOKIE['user_id'];
 
-    $stmt = $conn->prepare("SELECT email, profile_pic FROM user WHERE id = ?");
+    $stmt = $conn->prepare("SELECT email, profile_pic FROM user WHERE uid = ?");
     if ($stmt) {
         $stmt->bind_param("i", $user_id);
         $stmt->execute();
@@ -123,15 +123,17 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
 
                     <div class="relative z-30">
                         <button id="profileButton" class="flex items-center text-gray-500 focus:outline-none">
-                            <i class="fas fa-user-circle text-3xl"></i> <!-- Ikon dari FontAwesome dengan ukuran lebih besar -->
+                            <img src="../settings/uploads/<?= htmlspecialchars($profile_pic) ?>" alt="Profile Picture" class="w-8 h-8 rounded-full">
                         </button>
                         <div id="profileMenu"
                             class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg py-4 z-50">
                             <?php if ($isLoggedIn || isset($_SESSION['email'])): ?>
                                 <div class="text-center">
                                     <div class="mt-2 text-gray-800 font-bold"><?= htmlspecialchars($email) ?></div>
+                                    <div class="flex justify-center items-center mb-4 mt-4">
+                                        <img src="../settings/uploads/<?= htmlspecialchars($profile_pic) ?>" alt="Profile Picture" class="w-20 h-20 rounded-full">
+                                    </div>
                                     <div class="text-gray-500">Penulis</div>
-                                    <i class="fas fa-user-circle text-8xl text-gray-500 mt-2"></i> <!-- Ikon dari FontAwesome dengan ukuran lebih besar -->
                                 </div>
                                 <button id="editProfileButton" class="mt-2 bg-blue-500 text-white px-4 py-2 rounded-md mx-auto block" style="width: 80%;">Edit Profile</button>
                                 <hr class="my-2 border-gray-200">

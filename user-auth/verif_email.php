@@ -1,12 +1,28 @@
 <?php
 session_start();
 
+// Tambahkan Firebase SDK
+require '../path/to/firebase_sdk.php'; // Sesuaikan dengan path SDK Anda
+
 $email = $_SESSION['email'] ?? '';
 
 // Jika email tidak ada, arahkan kembali ke halaman registrasi
 if (!$email) {
     header('Location: register.php');
     exit;
+}
+
+// Logika untuk memverifikasi email
+if (isset($_POST['verify'])) {
+    $auth = new \Firebase\Auth\Token\Verifier('your-project-id');
+    $isVerified = $auth->checkEmailVerification($email);
+
+    if ($isVerified) {
+        header('Location: create_password.php');
+        exit;
+    } else {
+        $error = "Email belum diverifikasi. Silakan cek email Anda.";
+    }
 }
 ?>
 
@@ -45,7 +61,7 @@ if (!$email) {
             <div id="timer" class="text-4xl font-bold mb-6">1:00</div>
             <p class="text-gray-600 mb-4">Tidak menerima pesan?</p>
             <form method="POST">
-                <button name="resend" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Kirim Ulang</button>
+                <button name="verify" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Verifikasi Email</button>
             </form>
         </div>
     </div>

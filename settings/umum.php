@@ -5,7 +5,7 @@ include '../connection/config.php'; // Pastikan path ini benar
 // Ambil data pengguna dari database
 $user_id = $_SESSION['user_id'] ?? null;
 if ($user_id) {
-    $stmt = $conn->prepare("SELECT profile_pic, nama_lengkap, username, kredensial FROM user WHERE id = ?");
+    $stmt = $conn->prepare("SELECT profile_pic, nama_lengkap, username, kredensial FROM user WHERE uid = ?");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $stmt->bind_result($profile_pic, $nama_lengkap, $username, $kredensial);
@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_FILES['profile_pic'])) {
         $allowed_fields = ['nama_lengkap', 'username', 'kredensial'];
         if (in_array($field, $allowed_fields)) {
             if ($field === 'kredensial') {
-                $stmt = $conn->prepare("SELECT kredensial FROM user WHERE id = ?");
+                $stmt = $conn->prepare("SELECT kredensial FROM user WHERE uid = ?");
                 $stmt->bind_param("i", $user_id);
                 $stmt->execute();
                 $stmt->bind_result($existing_kredensial);
@@ -32,13 +32,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_FILES['profile_pic'])) {
 
                 if (empty($existing_kredensial)) {
                     // Jika kredensial kosong, lakukan INSERT
-                    $stmt = $conn->prepare("UPDATE user SET kredensial = ? WHERE id = ?");
+                    $stmt = $conn->prepare("UPDATE user SET kredensial = ? WHERE uid = ?");
                 } else {
                     // Jika kredensial sudah ada, lakukan UPDATE
-                    $stmt = $conn->prepare("UPDATE user SET kredensial = ? WHERE id = ?");
+                    $stmt = $conn->prepare("UPDATE user SET kredensial = ? WHERE uid = ?");
                 }
             } else {
-                $stmt = $conn->prepare("UPDATE user SET $field = ? WHERE id = ?");
+                $stmt = $conn->prepare("UPDATE user SET $field = ? WHERE uid = ?");
             }
             $stmt->bind_param("si", $value, $user_id);
             $stmt->execute();
@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_pic'])) {
     $target_file = $target_dir . basename($profile_pic);
 
     if (move_uploaded_file($_FILES['profile_pic']['tmp_name'], $target_file)) {
-        $stmt = $conn->prepare("SELECT profile_pic FROM user WHERE id = ?");
+        $stmt = $conn->prepare("SELECT profile_pic FROM user WHERE uid = ?");
         $stmt->bind_param("i", $user_id);
         $stmt->execute();
         $stmt->bind_result($existing_profile_pic);
@@ -66,11 +66,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_pic'])) {
 
         if (empty($existing_profile_pic)) {
             // Jika profile_pic kosong, lakukan INSERT
-            $stmt = $conn->prepare("UPDATE user SET profile_pic = ? WHERE id = ?");
+            $stmt = $conn->prepare("UPDATE user SET profile_pic = ? WHERE uid = ?");
             $stmt->bind_param("si", $profile_pic, $user_id);
         } else {
             // Jika profile_pic sudah ada, lakukan UPDATE
-            $stmt = $conn->prepare("UPDATE user SET profile_pic = ? WHERE id = ?");
+            $stmt = $conn->prepare("UPDATE user SET profile_pic = ? WHERE uid = ?");
             $stmt->bind_param("si", $profile_pic, $user_id);
         }
 
@@ -99,8 +99,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_pic'])) {
                     <form id="uploadForm" action="" method="POST" enctype="multipart/form-data">
                         <input type="file" name="profile_pic" id="profilePicInput" class="hidden" accept="image/*" onchange="previewImage(event)">
                         <div class="w-40 h-40 rounded-full bg-gray-200 flex items-center justify-center mb-2">
-                            <img id="profilePicPreview" src="<?php echo 'uploads/' . htmlspecialchars($profile_pic); ?>" alt="Profile Picture" class="w-full h-full rounded-full object-cover <?php echo empty($profile_pic) ? 'hidden' : ''; ?>">
-                            <i id="defaultIcon" class="fas fa-user text-8xl text-gray-500 <?php echo !empty($profile_pic) ? 'hidden' : ''; ?>"></i>
+                            <img id="profilePicPreview" src="<?php echo 'uploads/' . htmlspecialchars($_SESSION['profile_pic'] ?? 'default-profile.png'); ?>" alt="Profile Picture" class="w-full h-full rounded-full object-cover <?php echo empty($_SESSION['profile_pic']) ? 'hidden' : ''; ?>">
+                            <i id="defaultIcon" class="fas fa-user text-8xl text-gray-500 <?php echo !empty($_SESSION['profile_pic']) ? 'hidden' : ''; ?>"></i>
                             <div class="absolute bottom-1 right-1 bg-blue-500 text-white px-3 py-2 rounded-full cursor-pointer" onclick="document.getElementById('profilePicInput').click()">
                                 <i class="fas fa-camera text-white text-lg"></i>
                             </div>
@@ -160,7 +160,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_pic'])) {
                     <div class="flex-1 ml-10">
                         <div>
                             <p class="text-gray-600">Kredensial</p>
-                            <p class="font-semibold" id="infoLainnyaText"><?php echo htmlspecialchars($kredensial); ?></p>
+                            <p class="font-semibold" id="infoLainnyaText">
+                                <?php echo htmlspecialchars($kredensial ?: 'isi kredensial dibawah'); ?>
+                            </p>
                             <p class="text-gray-500 border-b border-gray-300 focus:border-b-2 focus:border-blue-500 outline-none" id="infoLainnyaInfo" contenteditable="false" data-default-text="Nama ini akan terlihat pembaca dan tertera sebagai editor">Nama ini akan terlihat pembaca dan tertera sebagai editor</p>
                         </div>
                     </div>

@@ -5,7 +5,7 @@ include '../connection/config.php'; // Pastikan path ini benar
 // Ambil data pengguna dari database
 $user_id = $_SESSION['user_id'] ?? null;
 if ($user_id) {
-    $stmt = $conn->prepare("SELECT email FROM user WHERE id = ?");
+    $stmt = $conn->prepare("SELECT email FROM user WHERE uid = ?");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $stmt->bind_result($email);

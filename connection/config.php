@@ -2,7 +2,7 @@
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "kabare_project";
+$dbname = "kabare_db";
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);

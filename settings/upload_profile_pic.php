@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_pic'])) {
             $fileData = file_get_contents($_FILES["profile_pic"]["tmp_name"]);
 
             // Simpan data biner ke database
-            $stmt = $conn->prepare("UPDATE user SET profile_pic = ? WHERE id = ?");
+            $stmt = $conn->prepare("UPDATE user SET profile_pic = ? WHERE uid = ?");
             $stmt->bind_param("bi", $fileData, $user_id); // "b" untuk data biner
             if ($stmt->execute()) {
                 $_SESSION['profile_pic'] = $fileData;
