@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-100">
+<body class="bg-white">
     <?php include '../header & footer/header_AuthRev.php'; ?>
 
     <div class="container mx-auto p-6">
@@ -17,7 +17,7 @@
             <div class="w-2/3 pr-8">
                 <div class="mb-4">
                     <label for="title" class="block text-lg font-semibold mb-2">Judul Artikel</label>
-                    <input type="text" name="title" id="title" placeholder="Tulis judul artikelmu sendiri" class="w-full border-b-2 border-gray-300 outline-none">
+                    <input type="text" name="title" id="title" placeholder="Tulis judul artikelmu sendiri" class="w-full border-b-2 border-gray-300 outline-none focus:border-blue-500">
                 </div>
 
                 <div class="mb-2">
@@ -70,8 +70,8 @@
                             <button type="button" onclick="toggleCommand(this, 'outdent')" class="p-2 hover:bg-gray-300 border-2 border-transparent rounded"><i class="fas fa-outdent"></i></button>
                         </div>
                         <span class="border-r border-gray-300 h-6"></span>
-                        <button type="button" onclick="toggleCommand(this, 'insertOrderedList')" class="p-2 hover:bg-gray-300 border-2 border-transparent rounded"><i class="fas fa-list-ol"></i></button>
-                        <button type="button" onclick="toggleCommand(this, 'insertUnorderedList')" class="p-2 hover:bg-gray-300 border-2 border-transparent rounded"><i class="fas fa-list-ul"></i></button>
+                        <button type="button" onclick="document.execCommand('insertOrderedList', false, null)" class="p-2 hover:bg-gray-300 border-2 border-transparent rounded"><i class="fas fa-list-ol"></i></button>
+                        <button type="button" onclick="document.execCommand('insertUnorderedList', false, null)" class="p-2 hover:bg-gray-300 border-2 border-transparent rounded"><i class="fas fa-list-ul"></i></button>
                         <span class="border-r border-gray-300 h-6"></span>
                         <button type="button" onclick="toggleCommand(this, 'blockquote')" class="p-2 hover:bg-gray-300 border-2 border-transparent rounded"><i class="fas fa-quote-right"></i></button>
                         <button type="button" onclick="toggleCommand(this, 'removeFormat')" class="p-2 hover:bg-gray-300 border-2 border-transparent rounded"><i class="fas fa-eraser"></i></button>
@@ -92,38 +92,44 @@
                     </button>
                 </div>
 
-                <h2 class="text-lg font-bold mb-2">Pengaturan Publikasi</h2>
-                <div class="mb-4">
-                    <h2 class="font-semibold">Visibilitas</h2>
-                    <p class="text-sm text-gray-600">Atur visibilitas artikel agar dapat dilihat oleh kelompok yang diinginkan.</p>
-                    <div class="mt-2">
-                        <label class="inline-flex items-center">
-                            <input type="radio" name="visibility" value="public" class="form-radio" checked>
-                            <span class="ml-2">Public</span>
-                        </label>
-                        <label class="inline-flex items-center ml-4">
-                            <input type="radio" name="visibility" value="private" class="form-radio">
-                            <span class="ml-2">Private</span>
-                        </label>
+                <div class="mt-20">
+                    <h2 class="text-lg font-bold my-4 text-center">Pengaturan Publikasi</h2>
+                    <div class="mb-4">
+                        <h2 class="font-semibold">Visibilitas</h2>
+                        <p class="text-sm text-gray-600">Atur visibilitas artikel agar dapat dilihat oleh kelompok yang diinginkan.</p>
+                        <div class="mt-2">
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="visibility" value="public" class="form-radio" checked>
+                                <span class="ml-2">Public</span>
+                            </label>
+                            <label class="inline-flex items-center ml-4">
+                                <input type="radio" name="visibility" value="private" class="form-radio">
+                                <span class="ml-2">Private</span>
+                            </label>
+                        </div>
                     </div>
-                </div>
-                <div class="mb-4">
-                    <h2 class="font-semibold">Tambahkan Tag</h2>
-                    <p class="text-sm text-gray-600">Tambahkan tag untuk membantu pembaca menemukan berita artikel.</p>
-                    <div id="tagContainer" class="flex flex-wrap mb-2"></div>
-                    <input type="text" id="tagInput" placeholder="Tambah tag" class="w-full border-b-2 border-gray-300 focus:outline-none">
-                </div>
-                <div>
-                    <h2 class="font-semibold">Kategori</h2>
-                    <p class="text-sm text-gray-600">Menambah kategori untuk mempermudah pencarian artikel.</p>
-                    <select class="w-full border-b-2 border-gray-300 focus:outline-none mt-2">
-                        <option>Politik</option>
-                        <option>Ekonomi</option>
-                        <option>Teknologi</option>
-                        <option>Olahraga</option>
-                        <option>Hiburan</option>
-                        <option>Kesehatan</option>
-                    </select>
+                    <div class="mb-4">
+                        <h2 class="font-semibold">Tambahkan Tag</h2>
+                        <p class="text-sm text-gray-600">Tambahkan tag untuk membantu pembaca menemukan berita artikel.</p>
+                        <div id="tagContainer" class="flex flex-wrap mb-2"></div>
+                        <input type="text" id="tagInput" placeholder="Tambah tag" class="w-full border-b-2 border-gray-300 focus:outline-none">
+                    </div>
+                    <div>
+                        <h2 class="font-semibold">Kategori</h2>
+                        <p class="text-sm text-gray-600">Menambah kategori untuk mempermudah pencarian artikel.</p>
+                        <select id="categorySelect" class="w-full border-b-2 border-gray-300 focus:outline-none mt-2">
+                            <option disabled selected>Pilih Kategori</option>
+                            <option>Kampus</option>
+                            <option>Prestasi</option>
+                            <option>Politik</option>
+                            <option>Kesehatan</option>
+                            <option>Olahraga</option>
+                            <option>Ekonomi</option>
+                            <option>Bisnis</option>
+                            <option>UKM</option>
+                            <option>Berita Lainnya</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>
@@ -442,6 +448,80 @@
             typingTimer = setTimeout(() => {
                 cloudIcon.classList.remove('loading');
             }, 2000);
+        });
+
+        const tagInput = document.getElementById('tagInput');
+        const tagContainer = document.getElementById('tagContainer');
+
+        tagInput.addEventListener('keydown', function(event) {
+            if (event.key === ',') {
+                event.preventDefault();
+                const tagText = tagInput.value.trim().replace(',', '');
+                if (tagText) {
+                    createTag(tagText);
+                    tagInput.value = '';
+                }
+            }
+        });
+
+        function createTag(text) {
+            const tag = document.createElement('span');
+            tag.className = 'bg-gray-200 text-black rounded-full px-3 py-1 m-1 flex items-center';
+            tag.innerHTML = `<button type="button" class="mr-2 text-black" onclick="removeTag(this)">×</button>${text}`;
+            tagContainer.appendChild(tag);
+        }
+
+        function removeTag(button) {
+            const tag = button.parentElement;
+            tagContainer.removeChild(tag);
+        }
+
+        const categorySelect = document.getElementById('categorySelect');
+
+        categorySelect.addEventListener('click', function() {
+            if (this.size === 1) {
+                this.size = 5;
+            } else {
+                this.size = 1;
+            }
+        });
+
+        categorySelect.addEventListener('change', function() {
+            this.size = 1;
+        });
+
+        categorySelect.addEventListener('blur', function() {
+            this.size = 1;
+        });
+
+        function toggleList(command) {
+            document.execCommand(command, false, null);
+            editor.focus();
+        }
+
+        editor.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                setTimeout(() => {
+                    const selection = window.getSelection();
+                    const range = selection.getRangeAt(0);
+                    const parentNode = range.startContainer.parentNode;
+
+                    if (parentNode.tagName === 'LI') {
+                        const list = parentNode.parentNode;
+                        if (list.tagName === 'OL') {
+                            const items = list.querySelectorAll('li');
+                            items.forEach((item, index) => {
+                                item.textContent = `${index + 1}. ${item.textContent.replace(/^\d+\.\s*/, '')}`;
+                            });
+                        } else if (list.tagName === 'UL') {
+                            const items = list.querySelectorAll('li');
+                            items.forEach(item => {
+                                item.textContent = `• ${item.textContent.replace(/^•\s*/, '')}`;
+                            });
+                        }
+                    }
+                }, 0);
+            }
         });
     </script>
 </body>
