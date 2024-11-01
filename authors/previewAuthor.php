@@ -29,6 +29,15 @@ $currentDate = date('l, d F Y');
 $author = "Anonym";
 ?>
 
+<style>
+    .content img {
+        max-width: 600px;
+        max-height: 400px;
+        height: auto;
+        width: auto;
+    }
+</style>
+
 <div class="container mx-auto p-4">
     <div class="bg-white shadow-md rounded-lg p-6">
         <div class="flex justify-between items-center mb-4">
@@ -40,7 +49,7 @@ $author = "Anonym";
         <?php if ($coverPath): ?>
             <img src="<?php echo $coverPath; ?>" alt="Cover Image" class="w-full h-auto mb-4">
         <?php endif; ?>
-        <div class="text-gray-800 mb-4">
+        <div class="text-gray-800 mb-4 content">
             <?php echo $content; ?>
         </div>
     </div>
