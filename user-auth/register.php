@@ -20,8 +20,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $auth = $factory->createAuth();
 
     try {
-        $user = $auth->getUserByEmail($email);
-        $auth->sendEmailVerificationLink($email);
+        // Buat link verifikasi email
+        $actionCodeSettings = [
+            'continueUrl' => 'http://kabare-web.test:81/user-auth/create-password.php',
+            'handleCodeInApp' => true,
+        ];
+        $link = $auth->getEmailVerificationLink($email, $actionCodeSettings);
+
+        // Kirim email menggunakan fungsi mail() atau library lain
+        mail($email, "Verifikasi Email Anda", "Klik link berikut untuk verifikasi: $link");
+
+        echo "Email verifikasi telah dikirim.";
     } catch (\Kreait\Firebase\Exception\Auth\UserNotFound $e) {
         // Handle the case where the user is not found
         echo 'User not found: ' . $e->getMessage();

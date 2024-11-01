@@ -128,8 +128,8 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
                         <div id="profileMenu"
                             class="hidden absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg py-4 z-50">
                             <?php if ($isLoggedIn || isset($_SESSION['email'])): ?>
-                                <div class="text-center">
-                                    <div class="mt-2 text-gray-800 font-bold"><?= htmlspecialchars($email) ?></div>
+                                <div class="text-center px-4">
+                                    <div class="mt-2 text-gray-800 font-bold truncate"><?= htmlspecialchars($email) ?></div>
                                     <div class="flex justify-center items-center mb-4 mt-4">
                                         <img src="data:image/jpeg;base64,<?= base64_encode($profile_pic) ?>" alt="Profile Picture" class="w-20 h-20 rounded-full">
                                     </div>
