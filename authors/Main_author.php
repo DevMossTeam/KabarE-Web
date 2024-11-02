@@ -202,8 +202,7 @@
                 showPopup('Konten artikel tidak boleh kosong!', false);
             } else {
                 hiddenContent.value = quill.root.innerHTML;
-                articleForm.action = 'previewAuthor.php';
-                articleForm.submit();
+                // Kode terkait previewAuthor.php dihapus
             }
         });
 
@@ -238,17 +237,44 @@
             document.querySelector('#popup div').classList.remove('scale-100');
         });
 
+        let selectedImage = null;
+
+        // Tambahkan event listener untuk gambar
         quill.on('text-change', function(delta, oldDelta, source) {
             if (source === 'user') {
                 const images = document.querySelectorAll('.ql-editor img');
-                images.forEach(img => {
+                images.forEach((img, index) => {
                     img.style.maxWidth = '600px';
                     img.style.maxHeight = '400px';
                     img.style.height = 'auto';
                     img.style.width = 'auto';
+
+                    // Simpan referensi ke gambar yang dipilih
+                    img.addEventListener('click', () => {
+                        selectedImage = img;
+                    });
+
+                    // Jadikan gambar pertama sebagai cover
+                    if (index === 0) {
+                        img.classList.add('cover-image');
+                    }
                 });
             }
         });
+
+        // Fungsi untuk mengatur align gambar
+        function alignImage(align) {
+            if (selectedImage) {
+                selectedImage.style.display = 'block';
+                selectedImage.style.marginLeft = align === 'left' ? '0' : align === 'center' ? 'auto' : 'auto';
+                selectedImage.style.marginRight = align === 'right' ? '0' : align === 'center' ? 'auto' : 'auto';
+            }
+        }
+
+        // Event listener untuk tombol align
+        document.getElementById('alignLeft').addEventListener('click', () => alignImage('left'));
+        document.getElementById('alignCenter').addEventListener('click', () => alignImage('center'));
+        document.getElementById('alignRight').addEventListener('click', () => alignImage('right'));
     </script>
 </body>
 </html>
