@@ -136,7 +136,6 @@
                         <button class="dislike-button flex items-center transition-colors duration-300" data-disliked="false">
                             <i class="fas fa-thumbs-down mr-1"></i> <span class="dislike-count">2</span>
                         </button>
-                        <span class="ml-4">Balasan</span>
                     </div>
                 </div>
             <?php endfor; ?>
@@ -166,6 +165,20 @@
         </div>
     </div>
 
+    <div id="popup" class="fixed inset-0 bg-gray-800 bg-opacity-50 hidden flex items-center justify-center">
+        <div class="bg-white p-6 rounded-lg shadow-lg transform transition-transform scale-0">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-exclamation-circle text-red-500 text-2xl mr-2"></i>
+                <h2 class="text-xl font-bold" id="popupTitle">Konfirmasi</h2>
+            </div>
+            <p class="mb-4" id="popupMessage">Apakah Anda yakin ingin menghapus komentar ini?</p>
+            <div class="flex justify-end">
+                <button id="confirmDelete" class="bg-red-500 text-white px-4 py-2 rounded mr-2">Hapus</button>
+                <button id="cancelDelete" class="bg-gray-300 text-black px-4 py-2 rounded">Batal</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         function updateCommentCount() {
             const commentCount = document.getElementById('commentsContainer').children.length;
@@ -181,7 +194,7 @@
                     const commentDate = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
 
                     const commentHtml = `
-                        <div class="mb-4">
+                        <div class="mb-4 user-comment">
                             <div class="flex items-center">
                                 <i class="fas fa-user-circle text-2xl text-gray-500 mr-2"></i>
                                 <div>
@@ -196,7 +209,7 @@
                                 <button class="dislike-button flex items-center transition-colors duration-300" data-disliked="false">
                                     <i class="fas fa-thumbs-down mr-1"></i> <span class="dislike-count">0</span>
                                 </button>
-                                <span class="ml-4">Balasan</span>
+                                <button class="options-button ml-4">:</button>
                             </div>
                         </div>
                     `;
@@ -212,6 +225,7 @@
         document.getElementById('commentsContainer').addEventListener('click', function (e) {
             const likeButton = e.target.closest('.like-button');
             const dislikeButton = e.target.closest('.dislike-button');
+            const optionsButton = e.target.closest('.options-button');
 
             if (likeButton) {
                 const likeCount = likeButton.querySelector('.like-count');
@@ -245,6 +259,14 @@
                 dislikeCount.textContent = parseInt(dislikeCount.textContent) + (disliked ? -1 : 1);
                 dislikeButton.classList.toggle('text-blue-500', !disliked);
                 dislikeButton.classList.toggle('text-gray-500', disliked);
+            }
+
+            if (optionsButton) {
+                const commentDiv = optionsButton.closest('.mb-4');
+                if (commentDiv.classList.contains('user-comment')) {
+                    commentToDelete = commentDiv;
+                    showPopup();
+                }
             }
         });
 
@@ -293,6 +315,30 @@
 
         // Initial update of comment count
         updateCommentCount();
+
+        let commentToDelete = null;
+
+        function showPopup() {
+            const popup = document.getElementById('popup');
+            popup.classList.remove('hidden');
+            document.querySelector('#popup div').classList.add('scale-100');
+        }
+
+        document.getElementById('confirmDelete').addEventListener('click', function () {
+            if (commentToDelete) {
+                commentToDelete.remove();
+                updateCommentCount();
+                closePopup();
+            }
+        });
+
+        document.getElementById('cancelDelete').addEventListener('click', closePopup);
+
+        function closePopup() {
+            const popup = document.getElementById('popup');
+            popup.classList.add('hidden');
+            document.querySelector('#popup div').classList.remove('scale-100');
+        }
     </script>
 </div>
 
