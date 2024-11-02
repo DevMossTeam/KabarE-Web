@@ -3,16 +3,16 @@ session_start();
 include '../connection/config.php'; // Pastikan path ini benar
 
 // Inisialisasi variabel
-$profile_pic = $nama_lengkap = $username = $role = $kredensial = '';
+$profile_pic = $nama_lengkap = $nama_pengguna = $role = $kredensial = '';
 
 // Ambil data pengguna dari database
 $user_id = $_SESSION['user_id'] ?? null;
 if ($user_id) {
-    $stmt = $conn->prepare("SELECT profile_pic, nama_lengkap, username, role, kredensial FROM user WHERE uid = ?");
+    $stmt = $conn->prepare("SELECT profile_pic, nama_lengkap, nama_pengguna, role, kredensial FROM user WHERE uid = ?");
     $stmt->bind_param("s", $user_id); // Gunakan "s" untuk string
     $stmt->execute();
     $stmt->store_result();
-    $stmt->bind_result($profile_pic, $nama_lengkap, $username, $role, $kredensial);
+    $stmt->bind_result($profile_pic, $nama_lengkap, $nama_pengguna, $role, $kredensial);
     $stmt->fetch();
     $stmt->close();
 }
@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_FILES['profile_pic'])) {
     $value = $_POST['value'] ?? null;
 
     if ($user_id && $field && $value) {
-        $allowed_fields = ['nama_lengkap', 'username', 'kredensial'];
+        $allowed_fields = ['nama_lengkap', 'nama_pengguna', 'kredensial'];
         if (in_array($field, $allowed_fields)) {
             if ($field === 'kredensial') {
                 $stmt = $conn->prepare("SELECT kredensial FROM user WHERE uid = ?");
@@ -115,7 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_pic'])) {
                     <div class="flex-1 ml-10">
                         <div>
                             <p class="text-gray-600">Username</p>
-                            <p class="font-semibold" id="usernameText"><?php echo htmlspecialchars($username); ?></p>
+                            <p class="font-semibold" id="usernameText"><?php echo htmlspecialchars($nama_pengguna); ?></p>
                             <p class="text-gray-500 border-b border-gray-300 focus:border-b-2 focus:border-blue-500 outline-none" id="usernameInfo" contenteditable="false" data-default-text="Nama ini akan terlihat pembaca dan tertera sebagai editor">Nama ini akan terlihat pembaca dan tertera sebagai editor</p>
                         </div>
                     </div>

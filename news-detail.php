@@ -1,4 +1,12 @@
 <?php include 'header & footer/header.php'; ?>
+<?php include 'connection/config.php'; ?>
+
+<?php
+$userId = 1; // Ganti dengan ID pengguna yang sesuai
+$query = "SELECT nama_lengkap FROM user WHERE uid = $userId";
+$result = mysqli_query($conn, $query);
+$userName = mysqli_fetch_assoc($result)['nama_lengkap'];
+?>
 
 <!-- Tambahkan link Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -112,7 +120,7 @@
 
     <!-- Label dan Komentar -->
     <div class="mt-4">
-        <span id="commentCount" class="block text-gray-700 font-bold">Komentar (2)</span>
+        <span id="commentCount" class="block text-gray-700 font-bold">Komentar (4)</span>
         <div class="flex items-center mt-2 mb-4">
             <div class="bg-blue-500 px-2 py-1 rounded-l-md">
                 <i class="fas fa-comment-dots text-white text-2xl"></i>
@@ -165,6 +173,7 @@
         </div>
     </div>
 
+    <!-- Popup Konfirmasi Hapus Komentar -->
     <div id="popup" class="fixed inset-0 bg-gray-800 bg-opacity-50 hidden flex items-center justify-center">
         <div class="bg-white p-6 rounded-lg shadow-lg transform transition-transform scale-0">
             <div class="flex items-center mb-4">
@@ -190,7 +199,7 @@
                 e.preventDefault();
                 const commentText = this.value.trim();
                 if (commentText) {
-                    const userName = 'NamaUser'; // Ganti dengan nama user yang login
+                    const userName = '<?= $userName ?>'; // Gunakan nama pengguna dari database
                     const commentDate = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
 
                     const commentHtml = `
