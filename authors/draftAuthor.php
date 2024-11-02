@@ -7,7 +7,7 @@ renderCategoryHeader('Draft');
 
 <div class="container mx-auto mt-4" id="draftContainer">
     <?php for ($i = 0; $i < 6; $i++): ?>
-        <div class="card flex items-center justify-between p-4 mb-4">
+        <div class="card flex items-center justify-between p-4 mb-4 relative">
             <div class="flex items-center">
                 <img src="https://via.placeholder.com/128x64" alt="Thumbnail" class="w-32 h-16 mr-4 rounded-md">
                 <div>
@@ -27,9 +27,9 @@ renderCategoryHeader('Draft');
     <?php endfor; ?>
 </div>
 
-<div id="emptyMessage" class="hidden text-center mt-8">
-    <i class="fas fa-folder-open text-gray-400 text-6xl mb-4"></i>
-    <p class="text-gray-500">Konten draft saat ini tidak ada.</p>
+<div id="emptyMessage" class="hidden flex flex-col items-center justify-center mt-8">
+    <i class="fas fa-book-open text-gray-400 text-8xl mb-4"></i>
+    <p class="text-gray-500 mt-4">Tidak ada konten draft saat ini.</p>
 </div>
 
 <!-- Popup Konfirmasi Hapus -->
@@ -50,10 +50,10 @@ renderCategoryHeader('Draft');
 <script>
     let cardToDelete = null;
 
-    document.querySelectorAll('.delete-card').forEach(button => {
-        button.addEventListener('click', (e) => {
+    document.querySelectorAll('.delete-card').forEach(option => {
+        option.addEventListener('click', (e) => {
             e.preventDefault();
-            cardToDelete = button.closest('.card');
+            cardToDelete = option.closest('.card');
             showPopup();
         });
     });
