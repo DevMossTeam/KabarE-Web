@@ -19,7 +19,10 @@
 <body class="bg-white">
     <?php include '../header & footer/header_AuthRev.php'; ?>
 
-    <div class="container mx-auto p-6">
+    <div class="container mx-auto p-6 relative">
+        <div class="absolute top-4 right-4 bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center cursor-pointer z-50 sm:flex md:flex lg:hidden xl:hidden" id="toggleSidebar">
+            <i class="fas fa-cog"></i>
+        </div>
         <h1 class="text-2xl font-bold mb-6">Penulisan Artikel</h1>
 
         <form id="articleForm" method="post">
@@ -45,7 +48,7 @@
                                 <i class="fas fa-times"></i>
                             </button>
                         </div>
-                        <div class="flex space-x-2 items-center mb-4">
+                        <div class="flex space-x-2 items-center mb-4" style="margin-top: -40px; margin-bottom: 40px;">
                             <i class="fas fa-cloud cloud-icon" id="cloudIcon"></i>
                             <button type="button" id="previewButton" class="text-gray-800 border border-gray-400 px-4 py-2 rounded hover:bg-gray-300 flex items-center">
                                 <i class="fas fa-eye mr-2"></i> Pratinjau
@@ -55,7 +58,7 @@
                             </button>
                         </div>
 
-                        <h2 class="text-lg font-bold my-4 text-center">Pengaturan Publikasi</h2>
+                        <h2 class="text-lg font-bold my-4 text-center" style="margin-top: 40px;">Pengaturan Publikasi</h2>
                         <div class="mb-4">
                             <h2 class="font-semibold">Visibilitas</h2>
                             <p class="text-sm text-gray-600">Atur visibilitas artikel agar dapat dilihat oleh kelompok yang diinginkan.</p>
@@ -98,11 +101,6 @@
                 </div>
             </div>
         </form>
-
-        <!-- Toggle Button -->
-        <button id="toggleSidebar" class="fixed top-4 right-4 lg:hidden bg-blue-500 text-white p-3 rounded-full shadow-lg">
-            <i class="fas fa-cog"></i>
-        </button>
     </div>
 
     <div id="popup" class="fixed inset-0 bg-gray-800 bg-opacity-50 hidden flex items-center justify-center">
@@ -160,10 +158,14 @@
         });
 
         labelInput.addEventListener('keydown', function(event) {
-            if (event.key === ',' || event.key === 'Enter') {
+            if ((event.key === ',' || event.key === 'Enter') && labelInput.value.trim() !== '') {
                 event.preventDefault();
                 const labelText = labelInput.value.trim().replace(',', '');
-                if (labelText) {
+                if (labelText.length > 15) {
+                    showPopup('Tag tidak boleh lebih dari 15 karakter!', false);
+                } else if (labelContainer.children.length >= 10) {
+                    showPopup('Anda hanya dapat menambahkan hingga 10 tag!', false);
+                } else {
                     createLabel(labelText);
                     labelInput.value = '';
                 }
@@ -175,11 +177,21 @@
             label.className = 'bg-gray-200 text-black rounded-full px-3 py-1 m-1 flex items-center';
             label.innerHTML = `<button type="button" class="mr-2 text-black" onclick="removeLabel(this)">×</button>${text}`;
             labelContainer.appendChild(label);
+            updateLabelInputState();
         }
 
         function removeLabel(button) {
             const label = button.parentElement;
             labelContainer.removeChild(label);
+            updateLabelInputState();
+        }
+
+        function updateLabelInputState() {
+            if (labelContainer.children.length >= 10) {
+                labelInput.disabled = true;
+            } else {
+                labelInput.disabled = false;
+            }
         }
 
         categorySelect.addEventListener('click', function() {
@@ -194,11 +206,17 @@
         previewButton.addEventListener('click', () => {
             const titleInput = document.getElementById('title').value.trim();
             const contentText = quill.getText().trim();
+            const selectedCategory = categorySelect.value;
+            const firstImage = document.querySelector('.ql-editor img');
 
             if (titleInput === '') {
                 showPopup('Judul artikel tidak boleh kosong!', false);
             } else if (contentText === '') {
                 showPopup('Konten artikel tidak boleh kosong!', false);
+            } else if (selectedCategory === 'Pilih Kategori') {
+                showPopup('Silakan pilih kategori terlebih dahulu!', false);
+            } else if (!firstImage) {
+                showPopup('Tambahkan foto pertama sebagai cover artikel!', false);
             } else {
                 hiddenContent.value = quill.root.innerHTML;
                 // Kode terkait previewAuthor.php dihapus
@@ -206,9 +224,18 @@
         });
 
         publishButton.addEventListener('click', (e) => {
+            const selectedCategory = categorySelect.value;
+            const firstImage = document.querySelector('.ql-editor img');
+
             if (quill.getText().trim() === '') {
                 e.preventDefault();
                 showPopup('Konten artikel tidak boleh kosong!', false);
+            } else if (selectedCategory === 'Pilih Kategori') {
+                e.preventDefault();
+                showPopup('Silakan pilih kategori terlebih dahulu!', false);
+            } else if (!firstImage) {
+                e.preventDefault();
+                showPopup('Tambahkan foto pertama sebagai cover artikel!', false);
             } else {
                 hiddenContent.value = quill.root.innerHTML;
                 articleForm.action = 'publishAuthor.php';
