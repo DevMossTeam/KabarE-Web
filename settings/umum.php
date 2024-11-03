@@ -9,7 +9,7 @@ $profile_pic = $nama_lengkap = $nama_pengguna = $role = $kredensial = '';
 $user_id = $_SESSION['user_id'] ?? null;
 if ($user_id) {
     $stmt = $conn->prepare("SELECT profile_pic, nama_lengkap, nama_pengguna, role, kredensial FROM user WHERE uid = ?");
-    $stmt->bind_param("s", $user_id); // Gunakan "s" untuk string
+    $stmt->bind_param("s", $user_id);
     $stmt->execute();
     $stmt->store_result();
     $stmt->bind_result($profile_pic, $nama_lengkap, $nama_pengguna, $role, $kredensial);
@@ -17,7 +17,7 @@ if ($user_id) {
     $stmt->close();
 }
 
-// Update data pengguna
+// Update atau insert data pengguna
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_FILES['profile_pic'])) {
     $field = $_POST['field'] ?? null;
     $value = $_POST['value'] ?? null;
@@ -25,26 +25,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_FILES['profile_pic'])) {
     if ($user_id && $field && $value) {
         $allowed_fields = ['nama_lengkap', 'nama_pengguna', 'kredensial'];
         if (in_array($field, $allowed_fields)) {
-            if ($field === 'kredensial') {
-                $stmt = $conn->prepare("SELECT kredensial FROM user WHERE uid = ?");
-                $stmt->bind_param("s", $user_id);
-                $stmt->execute();
-                $stmt->bind_result($existing_kredensial);
-                $stmt->fetch();
-                $stmt->close();
-
-                $stmt = $conn->prepare("UPDATE user SET kredensial = ? WHERE uid = ?");
-            } else {
-                $stmt = $conn->prepare("UPDATE user SET $field = ? WHERE uid = ?");
-            }
+            $stmt = $conn->prepare("UPDATE user SET $field = ? WHERE uid = ?");
             $stmt->bind_param("ss", $value, $user_id);
-            $stmt->execute();
+
+            if ($stmt->execute()) {
+                $_SESSION[$field] = $value; // Simpan ke sesi
+                echo json_encode(['success' => true, 'field' => $field, 'value' => $value]); // Kirim data yang diperbarui
+            } else {
+                echo json_encode(['success' => false, 'error' => $stmt->error]);
+            }
             $stmt->close();
+            exit;
         }
     }
-    // Refresh halaman setelah update
-    header("Location: umum.php");
-    exit;
 }
 
 // Update atau insert foto profil
@@ -52,20 +45,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_pic'])) {
     $fileData = file_get_contents($_FILES['profile_pic']['tmp_name']);
 
     $stmt = $conn->prepare("UPDATE user SET profile_pic = ? WHERE uid = ?");
-    $stmt->bind_param("bs", $fileData, $user_id); // "b" untuk data biner
+    $stmt->bind_param("bs", $fileData, $user_id);
     $stmt->send_long_data(0, $fileData);
-    $stmt->execute();
+    if ($stmt->execute()) {
+        $_SESSION['profile_pic'] = $fileData;
+        echo json_encode(['success' => true]);
+    } else {
+        echo json_encode(['success' => false, 'error' => $stmt->error]);
+    }
     $stmt->close();
-
-    // Perbarui sesi dengan gambar baru
-    $_SESSION['profile_pic'] = $fileData;
-
-    // Kirim respons JSON
-    echo json_encode(['success' => true]);
     exit();
 }
 ?>
-
 <?php include '../header & footer/header_setting.php'; ?>
 
 <div class="container mx-auto mt-8 flex space-x-8">
@@ -154,7 +145,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_pic'])) {
 
 <div id="confirmationPopup" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
     <div class="bg-white p-4 rounded-lg shadow-md">
-        <p>Apakah Anda yakin ingin mengganti foto profil?</p>
+        <p>Apakah Anda yakin ingin mengganti kredensial?</p>
         <div class="flex justify-end space-x-2 mt-4">
             <button class="bg-red-500 text-white px-4 py-2 rounded" onclick="closePopup()">Batal</button>
             <button class="bg-green-500 text-white px-4 py-2 rounded" onclick="submitForm()">Ya</button>
@@ -165,10 +156,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_pic'])) {
 <script>
     let currentEdit = null;
 
+    const fieldLabels = {
+        namaLengkap: "Nama Lengkap",
+        username: "Username",
+        infoLainnya: "Kredensial"
+    };
+
     function toggleEdit(field) {
         const infoElement = document.getElementById(`${field}Info`);
-        infoElement.dataset.originalText = infoElement.textContent; // Simpan teks asli
-        infoElement.textContent = ''; // Kosongkan teks saat mulai mengedit
+        infoElement.dataset.originalText = infoElement.textContent;
+        infoElement.textContent = '';
         infoElement.contentEditable = true;
         infoElement.focus();
         currentEdit = field;
@@ -181,9 +178,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_pic'])) {
         }
     }
 
+    function cancelEdit(field) {
+        const infoElement = document.getElementById(`${field}Info`);
+        infoElement.textContent = infoElement.dataset.originalText;
+        infoElement.contentEditable = false;
+        currentEdit = null;
+    }
+
     function showConfirmationPopup(field, value) {
         const confirmationPopup = document.getElementById('confirmationPopup');
-        confirmationPopup.querySelector('p').textContent = `Apakah Anda yakin ingin mengganti ${field}?`;
+        const fieldLabel = fieldLabels[field] || field;
+        confirmationPopup.querySelector('p').textContent = `Apakah Anda yakin ingin mengganti ${fieldLabel}?`;
         confirmationPopup.classList.remove('hidden');
         confirmationPopup.querySelector('button[onclick="submitForm()"]').onclick = function() {
             updateDatabase(field, value);
@@ -192,18 +197,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_pic'])) {
     }
 
     function updateDatabase(field, value) {
-        const xhr = new XMLHttpRequest();
-        xhr.open("POST", "", true);
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                // Perbarui teks di elemen yang sesuai
-                document.getElementById(`${field}Text`).textContent = value;
-                // Refresh halaman setelah update
-                window.location.reload();
+        const formData = new FormData();
+        formData.append('field', field);
+        formData.append('value', value);
+
+        console.log('Sending data:', field, value);
+
+        fetch(window.location.href, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Response:', data);
+            if (data.success) {
+                document.getElementById(`${field}Text`).textContent = data.value;
+                document.getElementById(`${field}Info`).contentEditable = false;
+                currentEdit = null;
+            } else {
+                console.error('Error:', data.error);
             }
-        };
-        xhr.send(`field=${field}&value=${encodeURIComponent(value)}`);
+        })
+        .catch(error => console.error('Error:', error));
     }
 
     document.addEventListener('keydown', function(event) {
@@ -247,6 +262,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_pic'])) {
 
     function submitForm() {
         const formData = new FormData(document.getElementById('uploadForm'));
+        
+        // Tambahkan data field dan value jika ada perubahan
+        if (currentEdit) {
+            const infoElement = document.getElementById(`${currentEdit}Info`);
+            formData.append('field', currentEdit);
+            formData.append('value', infoElement.textContent.trim());
+        }
+
         fetch('', {
             method: 'POST',
             body: formData
@@ -254,11 +277,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_pic'])) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Perbarui gambar profil di tampilan
-                document.getElementById('profilePicPreview').src = 'data:image/jpeg;base64,' + btoa(data.profile_pic);
-                document.getElementById('profilePicPreview').classList.remove('hidden');
-                document.getElementById('defaultIcon').classList.add('hidden');
-                // Redirect ke umum.php setelah berhasil
+                if (data.profile_pic) {
+                    document.getElementById('profilePicPreview').src = 'data:image/jpeg;base64,' + btoa(data.profile_pic);
+                    document.getElementById('profilePicPreview').classList.remove('hidden');
+                    document.getElementById('defaultIcon').classList.add('hidden');
+                }
                 window.location.href = 'umum.php';
             }
             closePopup();
