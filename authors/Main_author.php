@@ -32,7 +32,7 @@
         <div class="absolute top-4 right-4 text-gray-500 rounded-full w-10 h-10 flex items-center justify-center cursor-pointer z-50 sm:flex md:flex lg:hidden xl:hidden transition-transform duration-300 ease-in-out" id="toggleSidebar">
             <i class="fas fa-cog text-2xl transition-transform duration-300 ease-in-out" id="toggleIcon"></i>
         </div>
-        <h1 class="text-2xl font-bold mb-6">Penulisan Artikel</h1>
+        <h1 class="text-2xl font-bold mb-6 md:hidden" id="pageTitle">Penulisan Artikel</h1>
 
         <form id="articleForm" method="post">
             <div class="flex">
@@ -118,6 +118,20 @@
                 </div>
             </div>
         </form>
+
+        <!-- Tambahkan div untuk pratinjau -->
+        <div id="previewContainer" class="hidden">
+            <div class="flex flex-col lg:flex-row">
+                <div class="w-full lg:w-2/3 pr-4">
+                    <span id="previewCategory" class="inline-block bg-red-500 text-white px-4 py-1 rounded-md"></span>
+                    <h1 id="previewTitle" class="text-3xl font-bold mt-2"></h1>
+                    <span class="text-gray-500 text-sm">Pratinjau - <span id="previewDate"></span></span>
+                    <img id="previewImage" src="" class="w-full h-auto object-cover rounded-lg my-4">
+                    <p id="previewContent" class="mt-4 text-gray-700"></p>
+                </div>
+            </div>
+            <button id="backToEditor" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded">Kembali ke Editor</button>
+        </div>
     </div>
 
     <div id="popup" class="fixed inset-0 bg-gray-800 bg-opacity-50 hidden flex items-center justify-center">
@@ -267,29 +281,50 @@
             this.blur();
         });
 
-        previewButton.addEventListener('click', () => {
-            const titleInput = document.getElementById('title').value.trim();
-            const contentText = quill.getText().trim();
-            const selectedCategory = categorySelect.value;
-            const firstImage = document.querySelector('.ql-editor img');
+        // Gabungkan event listener untuk tombol pratinjau
+        const previewButtons = document.querySelectorAll('#previewButton, #previewButtonLg');
+        previewButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const titleInput = document.getElementById('title').value.trim();
+                const contentHtml = quill.root.innerHTML;
+                const selectedCategory = categorySelect.value;
 
-            if (titleInput === '') {
-                showPopup('Judul artikel tidak boleh kosong!', false);
-            } else if (contentText === '') {
-                showPopup('Konten artikel tidak boleh kosong!', false);
-            } else if (selectedCategory === 'Pilih Kategori') {
-                showPopup('Silakan pilih kategori terlebih dahulu!', false);
-            } else if (!firstImage) {
-                showPopup('Tambahkan foto pertama sebagai cover artikel!', false);
-            } else {
-                hiddenContent.value = quill.root.innerHTML;
-                // Kode terkait previewAuthor.php dihapus
-            }
+                if (titleInput === '') {
+                    showPopup('Judul artikel tidak boleh kosong!', false);
+                } else if (contentHtml === '') {
+                    showPopup('Konten artikel tidak boleh kosong!', false);
+                } else if (selectedCategory === 'Pilih Kategori') {
+                    showPopup('Silakan pilih kategori terlebih dahulu!', false);
+                } else {
+                    // Set data pratinjau
+                    document.getElementById('previewTitle').textContent = titleInput || 'Penulisan Artikel';
+                    document.getElementById('previewContent').innerHTML = contentHtml;
+                    document.getElementById('previewCategory').textContent = selectedCategory;
+                    document.getElementById('previewDate').textContent = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+
+                    // Sembunyikan elemen yang tidak diperlukan pada layar md ke bawah
+                    document.getElementById('pageTitle').classList.add('hidden');
+                    document.getElementById('toggleSidebar').classList.add('hidden'); // Sembunyikan toggle sidebar
+
+                    // Tampilkan pratinjau dan sembunyikan editor
+                    document.getElementById('articleForm').classList.add('hidden');
+                    document.getElementById('previewContainer').classList.remove('hidden');
+                }
+            });
+        });
+
+        document.getElementById('backToEditor').addEventListener('click', () => {
+            // Kembali ke editor
+            document.getElementById('articleForm').classList.remove('hidden');
+            document.getElementById('previewContainer').classList.add('hidden');
+
+            // Tampilkan kembali elemen yang disembunyikan
+            document.getElementById('pageTitle').classList.remove('hidden');
+            document.getElementById('toggleSidebar').classList.remove('hidden'); // Tampilkan kembali toggle sidebar
         });
 
         publishButton.addEventListener('click', (e) => {
             const selectedCategory = categorySelect.value;
-            const firstImage = document.querySelector('.ql-editor img');
 
             if (quill.getText().trim() === '') {
                 e.preventDefault();
@@ -297,9 +332,6 @@
             } else if (selectedCategory === 'Pilih Kategori') {
                 e.preventDefault();
                 showPopup('Silakan pilih kategori terlebih dahulu!', false);
-            } else if (!firstImage) {
-                e.preventDefault();
-                showPopup('Tambahkan foto pertama sebagai cover artikel!', false);
             } else {
                 hiddenContent.value = quill.root.innerHTML;
                 articleForm.action = 'publishAuthor.php';

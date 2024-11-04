@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $password = $_POST['password'] ?? null;
 
     if ($input && $password) {
-        $stmt = $conn->prepare("SELECT uid, email, password, profile_pic FROM user WHERE (username = ? OR email = ?)");
+        $stmt = $conn->prepare("SELECT uid, email, password, profile_pic FROM user WHERE (nama_pengguna = ? OR email = ?)");
         if ($stmt) {
             $stmt->bind_param("ss", $input, $input);
             $stmt->execute();

@@ -6,12 +6,12 @@ use Kreait\Firebase\Factory;
 use Kreait\Firebase\Auth;
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $username = $_POST['username'];
+    $nama_pengguna = $_POST['nama_pengguna'];
     $email = $_POST['email'];
     $namaLengkap = $_POST['fullname'];
 
     // Simpan data di sesi
-    $_SESSION['username'] = $username;
+    $_SESSION['nama_pengguna'] = $nama_pengguna;
     $_SESSION['email'] = $email;
     $_SESSION['nama_lengkap'] = $namaLengkap;
 
