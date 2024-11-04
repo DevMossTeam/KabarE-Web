@@ -39,23 +39,8 @@ if (isset($_POST['verify'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verifikasi Email</title>
+    <title>Verifikasi OTP</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <script>
-        // Timer mundur 2 menit
-        let time = 120; // 120 detik untuk 2 menit
-        const timer = setInterval(() => {
-            if (time <= 0) {
-                clearInterval(timer);
-                document.getElementById('timer').innerText = "Waktu Habis";
-            } else {
-                time--;
-                const minutes = Math.floor(time / 60);
-                const seconds = time % 60;
-                document.getElementById('timer').innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-            }
-        }, 1000);
-    </script>
 </head>
 <body class="flex h-screen">
     <div class="flex-1 bg-blue-500 flex items-center justify-center relative">
@@ -64,14 +49,19 @@ if (isset($_POST['verify'])) {
     </div>
     <div class="flex-1 flex items-center justify-center bg-white">
         <div class="w-full max-w-md text-center">
-            <h2 class="text-3xl font-bold mb-2" style="color: #61A6FF;">Verifikasi Email</h2>
+            <h2 class="text-3xl font-bold mb-2" style="color: #61A6FF;">Verifikasi OTP</h2>
             <p class="text-gray-600 mb-2">Silahkan buka email anda dan konfirmasi</p>
-            <p class="text-gray-600 mb-6">Kami telah mengirimkan link ke email</p>
+            <p class="text-gray-600 mb-6">Kami telah mengirimkan kode otp ke email</p>
             <p class="text-black font-bold mb-6"><?php echo htmlspecialchars($email); ?></p>
-            <div id="timer" class="text-4xl font-bold mb-6">2:00</div> <!-- Tampilan awal -->
-            <p class="text-gray-600 mb-4">Tidak menerima pesan?</p>
+            <div class="flex justify-center mb-6">
+                <!-- Kotak input OTP -->
+                <?php for ($i = 0; $i < 6; $i++): ?>
+                    <input type="text" maxlength="1" class="w-12 h-12 border-2 border-gray-300 rounded text-center mx-1">
+                <?php endfor; ?>
+            </div>
+            <p class="text-gray-600 mb-4">Tidak menerima kode OTP?</p>
             <form method="POST">
-                <button name="verify" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Verifikasi Email</button>
+                <button name="verify" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Kirim Ulang</button>
             </form>
             <?php if (isset($error)): ?>
                 <div class="text-red-500 mt-4"><?php echo $error; ?></div>
