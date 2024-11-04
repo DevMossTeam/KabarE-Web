@@ -9,10 +9,19 @@
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <style>
         .ql-editor img {
-            max-width: 600px;
-            max-height: 400px;
+            max-width: 80%;
+            max-height: 300px;
             height: auto;
             width: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        .ql-editor iframe {
+            max-width: 80%;
+            height: 300px;
+            display: block;
+            margin: 0 auto;
+            background-color: #f0f0f0;
         }
     </style>
 </head>
@@ -20,8 +29,8 @@
     <?php include '../header & footer/header_AuthRev.php'; ?>
 
     <div class="container mx-auto p-6 relative">
-        <div class="absolute top-4 right-4 bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center cursor-pointer z-50 sm:flex md:flex lg:hidden xl:hidden" id="toggleSidebar">
-            <i class="fas fa-cog"></i>
+        <div class="absolute top-4 right-4 text-gray-500 rounded-full w-10 h-10 flex items-center justify-center cursor-pointer z-50 sm:flex md:flex lg:hidden xl:hidden transition-transform duration-300 ease-in-out" id="toggleSidebar">
+            <i class="fas fa-cog text-2xl transition-transform duration-300 ease-in-out" id="toggleIcon"></i>
         </div>
         <h1 class="text-2xl font-bold mb-6">Penulisan Artikel</h1>
 
@@ -41,15 +50,15 @@
                 </div>
 
                 <!-- Sidebar -->
-                <div id="sidebar" class="fixed inset-y-0 right-0 transform translate-x-full lg:translate-x-0 lg:relative lg:w-1/4 bg-white transition-transform duration-300 ease-in-out">
+                <div id="sidebar" class="fixed inset-y-0 right-0 transform translate-x-full lg:translate-x-0 lg:relative lg:w-1/4 md:w-1/2 bg-white transition-transform duration-300 ease-in-out">
                     <div class="p-8">
                         <div class="flex justify-end lg:hidden">
                             <button id="closeSidebar" class="text-gray-800">
                                 <i class="fas fa-times"></i>
                             </button>
                         </div>
-                        <div class="flex space-x-2 items-center mb-4" style="margin-top: -40px; margin-bottom: 40px;">
-                            <i class="fas fa-cloud cloud-icon" id="cloudIcon"></i>
+                        <div class="flex space-x-4 items-center mt-24 mb-6 lg:hidden justify-center">
+                            <i class="fas fa-cloud text-gray-800"></i>
                             <button type="button" id="previewButton" class="text-gray-800 border border-gray-400 px-4 py-2 rounded hover:bg-gray-300 flex items-center">
                                 <i class="fas fa-eye mr-2"></i> Pratinjau
                             </button>
@@ -57,8 +66,16 @@
                                 <i class="fas fa-paper-plane mr-2"></i> Publikasi
                             </button>
                         </div>
-
-                        <h2 class="text-lg font-bold my-4 text-center" style="margin-top: 40px;">Pengaturan Publikasi</h2>
+                        <div class="hidden lg:flex space-x-2 items-center mb-4 justify-center" style="margin-top: -40px; margin-bottom: 40px;">
+                            <i class="fas fa-cloud cloud-icon" id="cloudIcon"></i>
+                            <button type="button" id="previewButtonLg" class="text-gray-800 border border-gray-400 px-4 py-2 rounded hover:bg-gray-300 flex items-center">
+                                <i class="fas fa-eye mr-2"></i> Pratinjau
+                            </button>
+                            <button type="submit" id="publishButtonLg" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex items-center">
+                                <i class="fas fa-paper-plane mr-2"></i> Publikasi
+                            </button>
+                        </div>
+                        <h2 class="text-lg font-bold my-4 text-center">Pengaturan Publikasi</h2>
                         <div class="mb-4">
                             <h2 class="font-semibold">Visibilitas</h2>
                             <p class="text-sm text-gray-600">Atur visibilitas artikel agar dapat dilihat oleh kelompok yang diinginkan.</p>
@@ -114,22 +131,43 @@
         </div>
     </div>
 
+    <input type="file" id="videoInput" accept="video/*" style="display: none;">
+
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     <script>
         const quill = new Quill('#quillEditor', {
             theme: 'snow',
             modules: {
-                toolbar: [
-                    [{ 'font': [] }, { 'size': [] }],
-                    ['bold', 'italic', 'underline', 'strike'],
-                    [{ 'color': [] }, { 'background': [] }],
-                    [{ 'script': 'sub' }, { 'script': 'super' }],
-                    [{ 'header': '1' }, { 'header': '2' }, 'blockquote', 'code-block'],
-                    [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
-                    [{ 'direction': 'rtl' }, { 'align': [] }],
-                    ['link', 'image', 'video'],
-                    ['clean']
-                ]
+                toolbar: {
+                    container: [
+                        [{ 'font': [] }, { 'size': [] }],
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{ 'color': [] }, { 'background': [] }],
+                        [{ 'script': 'sub' }, { 'script': 'super' }],
+                        [{ 'header': '1' }, { 'header': '2' }, 'blockquote', 'code-block'],
+                        [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
+                        [{ 'direction': 'rtl' }, { 'align': [] }],
+                        ['link', 'image', 'video'],
+                        ['clean']
+                    ],
+                    handlers: {
+                        video: function() {
+                            // Trigger click on the hidden file input
+                            document.getElementById('videoInput').click();
+                        },
+                        link: function() {
+                            const range = quill.getSelection();
+                            if (range) {
+                                const url = prompt('Masukkan URL:');
+                                if (url) {
+                                    quill.format('link', url);
+                                }
+                            } else {
+                                alert('Silakan pilih teks atau gambar yang ingin Anda tambahkan tautan.');
+                            }
+                        }
+                    }
+                }
             }
         });
 
@@ -143,18 +181,44 @@
         const articleForm = document.getElementById('articleForm');
         const cloudIcon = document.getElementById('cloudIcon');
         const toggleSidebar = document.getElementById('toggleSidebar');
+        const toggleIcon = document.getElementById('toggleIcon');
         const sidebar = document.getElementById('sidebar');
         const closeSidebar = document.getElementById('closeSidebar');
         const labelInput = document.getElementById('labelInput');
         const labelContainer = document.getElementById('labelContainer');
         const categorySelect = document.getElementById('categorySelect');
 
+        const videoInput = document.getElementById('videoInput');
+
+        videoInput.addEventListener('change', function() {
+            const file = videoInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const range = quill.getSelection();
+                    if (range) {
+                        const videoTag = `<video controls src="${e.target.result}" style="max-width: 80%; max-height: 300px; display: block; margin: 0 auto;"></video>`;
+                        quill.clipboard.dangerouslyPasteHTML(range.index, videoTag);
+                    } else {
+                        alert('Silakan pilih lokasi di editor untuk menyisipkan video.');
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
         toggleSidebar.addEventListener('click', () => {
             sidebar.classList.toggle('translate-x-full');
+            if (sidebar.classList.contains('translate-x-full')) {
+                toggleIcon.classList.replace('fa-times', 'fa-cog');
+            } else {
+                toggleIcon.classList.replace('fa-cog', 'fa-times');
+            }
         });
 
         closeSidebar.addEventListener('click', () => {
             sidebar.classList.add('translate-x-full');
+            toggleIcon.classList.replace('fa-times', 'fa-cog');
         });
 
         labelInput.addEventListener('keydown', function(event) {
@@ -174,7 +238,7 @@
 
         function createLabel(text) {
             const label = document.createElement('span');
-            label.className = 'bg-gray-200 text-black rounded-full px-3 py-1 m-1 flex items-center';
+            label.className = 'bg-gray-200 text-black rounded-full px-2 py-0.5 m-1 flex items-center';
             label.innerHTML = `<button type="button" class="mr-2 text-black" onclick="removeLabel(this)">×</button>${text}`;
             labelContainer.appendChild(label);
             updateLabelInputState();
@@ -263,20 +327,26 @@
             document.querySelector('#popup div').classList.remove('scale-100');
         });
 
-        // Tambahkan event listener untuk gambar
+        // Tambahkan event listener untuk gambar dan video
         quill.on('text-change', function(delta, oldDelta, source) {
             if (source === 'user') {
                 const images = document.querySelectorAll('.ql-editor img');
-                images.forEach((img, index) => {
-                    img.style.maxWidth = '600px';
-                    img.style.maxHeight = '400px';
+                images.forEach((img) => {
+                    img.style.maxWidth = '80%';
+                    img.style.maxHeight = '300px';
                     img.style.height = 'auto';
                     img.style.width = 'auto';
+                    img.style.display = 'block';
+                    img.style.margin = '0 auto';
+                });
 
-                    // Jadikan gambar pertama sebagai cover
-                    if (index === 0) {
-                        img.classList.add('cover-image');
-                    }
+                const iframes = document.querySelectorAll('.ql-editor iframe');
+                iframes.forEach((iframe) => {
+                    iframe.style.maxWidth = '80%';
+                    iframe.style.height = '300px';
+                    iframe.style.display = 'block';
+                    iframe.style.margin = '0 auto';
+                    iframe.style.backgroundColor = '#f0f0f0';
                 });
             }
         });
