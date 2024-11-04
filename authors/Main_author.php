@@ -26,6 +26,10 @@
     </style>
 </head>
 <body class="bg-white">
+    <!-- Animasi Loading -->
+    <div id="loading" class="fixed inset-0 bg-gray-800 bg-opacity-75 hidden flex items-center justify-center z-50">
+        <div class="w-16 h-16 border-4 border-t-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
+    </div>
     <?php include '../header & footer/header_AuthRev.php'; ?>
 
     <div class="container mx-auto p-6 relative">
@@ -149,6 +153,18 @@
 
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     <script>
+        // Sembunyikan animasi loading saat halaman dimuat
+        window.addEventListener('load', function() {
+            document.getElementById('loading').classList.add('hidden');
+        });
+
+        // Memaksa refresh halaman jika dimuat dari cache
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+
         const quill = new Quill('#quillEditor', {
             theme: 'snow',
             modules: {
@@ -187,13 +203,10 @@
 
         const hiddenContent = document.getElementById('hiddenContent');
         const previewButton = document.getElementById('previewButton');
-        const publishButton = document.getElementById('publishButton');
         const popup = document.getElementById('popup');
         const closePopup = document.getElementById('closePopup');
         const popupTitle = document.getElementById('popupTitle');
         const popupMessage = document.getElementById('popupMessage');
-        const articleForm = document.getElementById('articleForm');
-        const cloudIcon = document.getElementById('cloudIcon');
         const toggleSidebar = document.getElementById('toggleSidebar');
         const toggleIcon = document.getElementById('toggleIcon');
         const sidebar = document.getElementById('sidebar');
@@ -323,22 +336,6 @@
             document.getElementById('toggleSidebar').classList.remove('hidden'); // Tampilkan kembali toggle sidebar
         });
 
-        publishButton.addEventListener('click', (e) => {
-            const selectedCategory = categorySelect.value;
-
-            if (quill.getText().trim() === '') {
-                e.preventDefault();
-                showPopup('Konten artikel tidak boleh kosong!', false);
-            } else if (selectedCategory === 'Pilih Kategori') {
-                e.preventDefault();
-                showPopup('Silakan pilih kategori terlebih dahulu!', false);
-            } else {
-                hiddenContent.value = quill.root.innerHTML;
-                articleForm.action = 'publishAuthor.php';
-                articleForm.submit();
-            }
-        });
-
         function showPopup(message, success = true) {
             const icon = document.querySelector('#popup i');
             popupTitle.textContent = success ? 'Sukses' : 'Kesalahan';
@@ -380,6 +377,54 @@
                     iframe.style.margin = '0 auto';
                     iframe.style.backgroundColor = '#f0f0f0';
                 });
+            }
+        });
+
+        document.getElementById('publishButton').addEventListener('click', function(event) {
+            event.preventDefault(); // Mencegah form submit dan refresh halaman
+            const titleInput = document.getElementById('title').value.trim();
+            const contentHtml = quill.root.innerHTML.trim();
+            const isContentEmpty = contentHtml === '<p><br></p>'; // Quill's default empty content
+            const selectedCategory = categorySelect.value;
+
+            if (titleInput === '') {
+                showPopup('Judul artikel tidak boleh kosong!', false);
+            } else if (isContentEmpty) {
+                showPopup('Konten artikel tidak boleh kosong!', false);
+            } else if (selectedCategory === 'Pilih Kategori') {
+                showPopup('Silakan pilih kategori terlebih dahulu!', false);
+            } else {
+                // Tampilkan animasi loading
+                document.getElementById('loading').classList.remove('hidden');
+
+                // Simulasi delay sebelum pindah halaman
+                setTimeout(() => {
+                    window.location.href = 'draftAuthor.php';
+                }, 2000); // 2 detik delay
+            }
+        });
+
+        document.getElementById('publishButtonLg').addEventListener('click', function(event) {
+            event.preventDefault(); // Mencegah form submit dan refresh halaman
+            const titleInput = document.getElementById('title').value.trim();
+            const contentHtml = quill.root.innerHTML.trim();
+            const isContentEmpty = contentHtml === '<p><br></p>'; // Quill's default empty content
+            const selectedCategory = categorySelect.value;
+
+            if (titleInput === '') {
+                showPopup('Judul artikel tidak boleh kosong!', false);
+            } else if (isContentEmpty) {
+                showPopup('Konten artikel tidak boleh kosong!', false);
+            } else if (selectedCategory === 'Pilih Kategori') {
+                showPopup('Silakan pilih kategori terlebih dahulu!', false);
+            } else {
+                // Tampilkan animasi loading
+                document.getElementById('loading').classList.remove('hidden');
+
+                // Simulasi delay sebelum pindah halaman
+                setTimeout(() => {
+                    window.location.href = 'draftAuthor.php';
+                }, 2000); // 2 detik delay
             }
         });
     </script>
