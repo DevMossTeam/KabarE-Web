@@ -4,39 +4,54 @@
 
 <!-- Main Content -->
 <div class="container mx-auto mt-8 mb-16">
-    <!-- 4 Gambar -->
+    <!-- 4 Berita -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         <?php for ($i = 1; $i <= 4; $i++): ?>
             <div class="relative">
                 <a href="../news-detail.php">
                     <img src="https://via.placeholder.com/600x350" class="w-full h-auto object-cover rounded-lg">
                 </a>
-                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
-                    <span class="text-white font-bold">Kategori | 27 Januari 2025</span>
+                <div class="p-4">
+                    <span class="text-red-500 font-bold">Kampus</span> <span class="text-gray-500">| 27 Januari 2025</span>
                     <a href="../news-detail.php">
-                        <h3 class="text-white text-lg font-bold mt-1">Judul Berita <?= $i ?></h3>
+                        <h3 class="text-lg font-bold mt-1">Judul Berita Kampus <?= $i ?></h3>
                     </a>
-                    <p class="text-white">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                    <p class="text-gray-700">Deskripsi singkat berita kampus <?= $i ?>...</p>
                 </div>
             </div>
         <?php endfor; ?>
     </div>
 
-    <!-- 6 Gambar -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <?php for ($i = 1; $i <= 6; $i++): ?>
-            <div class="relative">
-                <a href="../news-detail.php">
-                    <img src="https://via.placeholder.com/300x200" class="w-full h-auto object-cover rounded-lg">
-                </a>
+    <!-- Berita Populer -->
+    <div class="py-8 mt-8">
+        <div class="mb-4">
+            <span class="inline-block bg-red-600 text-white px-6 py-1 rounded-t-md">Populer</span>
+            <div class="border-b-4 border-red-600 mt-0"></div>
+        </div>
+        <!-- 3 Kartu Gambar -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
+            <a href="../news-detail.php" class="relative overflow-hidden rounded-lg">
+                <img src="https://via.placeholder.com/300x200" class="w-full h-56 object-cover">
                 <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
-                    <span class="text-white font-bold">Kategori | <?= $i * 3 ?> menit yang lalu</span>
-                    <a href="../news-detail.php">
-                        <h3 class="text-white text-lg font-bold mt-1">Judul Berita <?= $i ?></h3>
-                    </a>
+                    <span class="text-white font-bold">Kampus | 3 menit lalu</span>
+                    <h3 class="text-white text-lg font-bold mt-1">Judul Berita Populer Kampus 1</h3>
                 </div>
-            </div>
-        <?php endfor; ?>
+            </a>
+            <a href="../news-detail.php" class="relative overflow-hidden rounded-lg">
+                <img src="https://via.placeholder.com/300x200" class="w-full h-56 object-cover">
+                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
+                    <span class="text-white font-bold">Kampus | 3 menit lalu</span>
+                    <h3 class="text-white text-lg font-bold mt-1">Judul Berita Populer Kampus 2</h3>
+                </div>
+            </a>
+            <a href="../news-detail.php" class="relative overflow-hidden rounded-lg">
+                <img src="https://via.placeholder.com/300x200" class="w-full h-56 object-cover">
+                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
+                    <span class="text-white font-bold">Kampus | 3 menit lalu</span>
+                    <h3 class="text-white text-lg font-bold mt-1">Judul Berita Populer Kampus 3</h3>
+                </div>
+            </a>
+        </div>
     </div>
 
     <!-- Berita Lainnya dan Baru Baru Ini -->
