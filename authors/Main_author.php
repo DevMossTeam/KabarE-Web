@@ -149,6 +149,20 @@
         </div>
     </div>
 
+    <div id="confirmPopup" class="fixed inset-0 bg-gray-800 bg-opacity-50 hidden flex items-center justify-center">
+        <div class="bg-white p-6 rounded-lg shadow-lg transform transition-transform scale-0">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-question-circle text-blue-500 text-2xl mr-2"></i>
+                <h2 class="text-xl font-bold">Konfirmasi Publikasi</h2>
+            </div>
+            <p class="mb-4">Apakah Anda yakin ingin mempublikasikan artikel ini?</p>
+            <div class="flex justify-end">
+                <button id="confirmYes" class="bg-blue-500 text-white px-4 py-2 rounded mr-2">Ya</button>
+                <button id="confirmNo" class="bg-gray-500 text-white px-4 py-2 rounded">Tidak</button>
+            </div>
+        </div>
+    </div>
+
     <input type="file" id="videoInput" accept="video/*" style="display: none;">
 
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
@@ -380,6 +394,34 @@
             }
         });
 
+        const confirmPopup = document.getElementById('confirmPopup');
+        const confirmYes = document.getElementById('confirmYes');
+        const confirmNo = document.getElementById('confirmNo');
+
+        function showConfirmPopup() {
+            confirmPopup.classList.remove('hidden');
+            document.querySelector('#confirmPopup div').classList.add('scale-100');
+        }
+
+        function hideConfirmPopup() {
+            confirmPopup.classList.add('hidden');
+            document.querySelector('#confirmPopup div').classList.remove('scale-100');
+        }
+
+        confirmYes.addEventListener('click', () => {
+            hideConfirmPopup(); // Sembunyikan pop-up konfirmasi
+
+            // Tampilkan animasi loading
+            document.getElementById('loading').classList.remove('hidden');
+
+            // Simulasi delay sebelum pindah halaman
+            setTimeout(() => {
+                window.location.href = 'draftAuthor.php';
+            }, 2000); // 2 detik delay
+        });
+
+        confirmNo.addEventListener('click', hideConfirmPopup);
+
         document.getElementById('publishButton').addEventListener('click', function(event) {
             event.preventDefault(); // Mencegah form submit dan refresh halaman
             const titleInput = document.getElementById('title').value.trim();
@@ -394,13 +436,7 @@
             } else if (selectedCategory === 'Pilih Kategori') {
                 showPopup('Silakan pilih kategori terlebih dahulu!', false);
             } else {
-                // Tampilkan animasi loading
-                document.getElementById('loading').classList.remove('hidden');
-
-                // Simulasi delay sebelum pindah halaman
-                setTimeout(() => {
-                    window.location.href = 'draftAuthor.php';
-                }, 2000); // 2 detik delay
+                showConfirmPopup();
             }
         });
 
@@ -418,13 +454,7 @@
             } else if (selectedCategory === 'Pilih Kategori') {
                 showPopup('Silakan pilih kategori terlebih dahulu!', false);
             } else {
-                // Tampilkan animasi loading
-                document.getElementById('loading').classList.remove('hidden');
-
-                // Simulasi delay sebelum pindah halaman
-                setTimeout(() => {
-                    window.location.href = 'draftAuthor.php';
-                }, 2000); // 2 detik delay
+                showConfirmPopup();
             }
         });
     </script>

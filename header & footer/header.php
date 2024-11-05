@@ -3,7 +3,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-include __DIR__ . '/../connection/config.php';
+include __DIR__ . '../../connection/config.php';
 
 // Redirect ke index.php jika halaman ini diakses langsung dan bukan halaman yang diizinkan
 $allowed_pages = ['index.php', 'previewAuthor.php', 'publishAuthor.php', 'Main_author.php', 
@@ -137,10 +137,10 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
                                 </div>
                                 <button id="editProfileButton" class="mt-2 bg-blue-500 text-white px-4 py-2 rounded-md mx-auto block" style="width: 80%;">Edit Profile</button>
                                 <hr class="my-2 border-gray-200">
-                                <a href="/saved-content.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-200 text-left">
+                                <a href="../profile/mainEditor.php?page=bacaNanti" class="block px-4 py-2 text-gray-800 hover:bg-gray-200 text-left">
                                     <i class="fas fa-bookmark mr-2"></i>Konten yang Disimpan
                                 </a>
-                                <a href="/liked-content.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-200 text-left">
+                                <a href="../profile/mainEditor.php?page=liked" class="block px-4 py-2 text-gray-800 hover:bg-gray-200 text-left">
                                     <i class="fas fa-thumbs-up mr-2"></i>Konten yang Disukai
                                 </a>
                                 <a href="../settings/mainSetting.php?page=umum" class="block px-4 py-2 text-gray-800 hover:bg-gray-200 text-left">
