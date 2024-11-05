@@ -5,24 +5,43 @@ include '../header & footer/header.php'; // Sertakan header
 
 // Cek apakah pengguna sudah login
 $isLoggedIn = isset($_SESSION['user_id']);
+$userData = [];
+
+if ($isLoggedIn) {
+    $user_id = $_SESSION['user_id'];
+    $stmt = $conn->prepare("SELECT profile_pic, nama_lengkap, role, nama_pengguna FROM user WHERE uid = ?");
+    if ($stmt) {
+        $stmt->bind_param("s", $user_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows > 0) {
+            $userData = $result->fetch_assoc();
+        }
+        $stmt->close();
+    }
+}
 ?>
 
 <div class="flex ml-12 mt-4"> <!-- Kurangi margin atas di sini -->
     <!-- Sidebar -->
     <div class="w-1/6 p-4 mt-4"> <!-- Kurangi margin atas di sini -->
         <div class="flex justify-center">
-            <i class="fas fa-user-circle text-9xl text-gray-500"></i> <!-- Perbesar ikon profil -->
+            <?php if (!empty($userData['profile_pic'])): ?>
+                <img src="data:image/jpeg;base64,<?= base64_encode($userData['profile_pic']) ?>" alt="Profile Picture" class="w-24 h-24 rounded-full">
+            <?php else: ?>
+                <i class="fas fa-user-circle text-9xl text-gray-500"></i> <!-- Perbesar ikon profil -->
+            <?php endif; ?>
         </div>
-        <h2 class="text-center text-2xl font-semibold mt-4">Chiquita Clairina K</h2> <!-- Ukuran font 24 untuk nama di bawah profil, semi-bold -->
-        <p class="text-center text-sm text-[#9F9F9F]">@chiquita</p> <!-- Tambahkan username dengan warna dan ukuran lebih kecil -->
+        <h2 class="text-center text-2xl font-semibold mt-4"><?= htmlspecialchars($userData['nama_lengkap'] ?? 'Nama Pengguna') ?></h2> <!-- Ukuran font 24 untuk nama di bawah profil, semi-bold -->
+        <p class="text-center text-sm text-[#9F9F9F]">@<?= htmlspecialchars($userData['nama_pengguna'] ?? 'username') ?></p> <!-- Tambahkan username dengan warna dan ukuran lebih kecil -->
         <p class="text-center text-gray-600 text-lg">Mahasiswa Jurusan Teknologi Informasi</p> <!-- Ukuran font 16 -->
-        <button class="mt-4 w-full bg-blue-500 text-white py-2 rounded">Edit Profile</button>
+        <a href="../settings/umum.php" class="mt-4 w-full bg-blue-500 text-white py-2 rounded block text-center">Edit Profile</a> <!-- Ubah menjadi elemen <a> -->
     </div>
 
     <!-- Main Content -->
     <div class="w-5/6 ml-12 mt-4"> <!-- Tambahkan margin kiri untuk menggeser ke kanan -->
         <h2 class="text-4xl font-semibold mt-4 mb-2 ml-4">
-            Chiquita Clairina K <span class="text-4xl text-gray-600">(pembaca)</span> <!-- Ukuran teks sama -->
+            <?= htmlspecialchars($userData['nama_lengkap'] ?? 'Nama Pengguna') ?> <span class="text-4xl text-gray-600">(<?= htmlspecialchars($userData['role'] ?? 'pembaca') ?>)</span> <!-- Ukuran teks sama -->
         </h2> <!-- Ukuran font 48 untuk nama di atas pilihan menu, semi-bold, geser ke kanan -->
         <div class="relative flex mt-4 border-b ml-4"> <!-- Geser pilihan menu ke kanan -->
             <a href="/profile/mainEditor.php?page=bacaNanti" class="menu-item mr-4 pb-2 text-sm">BACA NANTI</a> <!-- Ubah ukuran font -->
