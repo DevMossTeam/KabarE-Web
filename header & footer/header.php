@@ -137,12 +137,20 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
                                 </div>
                                 <button id="editProfileButton" class="mt-2 bg-blue-500 text-white px-4 py-2 rounded-md mx-auto block" style="width: 80%;">Edit Profile</button>
                                 <hr class="my-2 border-gray-200">
-                                <a href="../profile/mainEditor.php?page=bacaNanti" class="block px-4 py-2 text-gray-800 hover:bg-gray-200 text-left">
-                                    <i class="fas fa-bookmark mr-2"></i>Konten yang Disimpan
-                                </a>
-                                <a href="../profile/mainEditor.php?page=liked" class="block px-4 py-2 text-gray-800 hover:bg-gray-200 text-left">
-                                    <i class="fas fa-thumbs-up mr-2"></i>Konten yang Disukai
-                                </a>
+                                <div class="relative">
+                                    <button id="contentButton" class="block px-4 py-2 text-gray-800 hover:bg-gray-200 text-left w-full flex justify-between items-center">
+                                        <span><i class="fas fa-folder-open mr-2"></i>Konten Anda</span>
+                                        <i class="fas fa-chevron-down transition-transform duration-300"></i>
+                                    </button>
+                                    <div id="contentMenu" class="hidden pl-6 transition-all duration-300 overflow-hidden">
+                                        <a href="../profile/mainEditor.php?page=bacaNanti" class="block px-4 py-2 text-gray-800 hover:bg-gray-200 text-left">
+                                            Konten yang Disimpan
+                                        </a>
+                                        <a href="../profile/mainEditor.php?page=liked" class="block px-4 py-2 text-gray-800 hover:bg-gray-200 text-left">
+                                            Konten yang Disukai
+                                        </a>
+                                    </div>
+                                </div>
                                 <a href="../settings/mainSetting.php?page=umum" class="block px-4 py-2 text-gray-800 hover:bg-gray-200 text-left">
                                     <i class="fas fa-cog mr-2"></i>Pengaturan
                                 </a>
@@ -234,6 +242,8 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
         const editProfileButton = document.getElementById('editProfileButton');
         const draftButton = document.getElementById('draftButton');
         const draftMenu = document.getElementById('draftMenu');
+        const contentButton = document.getElementById('contentButton');
+        const contentMenu = document.getElementById('contentMenu');
 
         otherCategoryButton.addEventListener('click', () => {
             otherCategoryMenu.classList.toggle('hidden');
@@ -268,6 +278,11 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
             draftMenu.classList.toggle('hidden');
         });
 
+        contentButton.addEventListener('click', () => {
+            contentMenu.classList.toggle('hidden');
+            contentButton.querySelector('.fa-chevron-down').classList.toggle('rotate-180');
+        });
+
         let lastScrollTop = 0;
         window.addEventListener('scroll', () => {
             let scrollTop = window.scrollY || document.documentElement.scrollTop;
@@ -299,6 +314,10 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
             }
             if (!draftButton.contains(e.target) && !draftMenu.contains(e.target)) {
                 draftMenu.classList.add('hidden');
+            }
+            if (!contentButton.contains(e.target) && !contentMenu.contains(e.target)) {
+                contentMenu.classList.add('hidden');
+                contentButton.querySelector('.fa-chevron-down').classList.remove('rotate-180');
             }
         });
 

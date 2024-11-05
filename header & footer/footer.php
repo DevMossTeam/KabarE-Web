@@ -21,12 +21,11 @@
                                     <p class="text-xs">Pemberitaan: beritapro3@rri.go.id</p>
                                 </div>
                             </div>
-                            <div class="text-right space-y-2 lg:space-y-0 lg:space-x-4 w-full lg:w-auto mb-4 lg:mb-0 ml-auto lg:ml-0">
+                            <div class="text-right space-y-2 lg:space-y-0 lg:space-x-4 w-full lg:w-auto mb-4 lg:mb-0 ml-auto lg:ml-0 mt-8">
                                 <a href="/header & footer/footer-info/terms.php" class="nav-link block text-base">Ketentuan</a>
                                 <a href="/header & footer/footer-info/privacy.php" class="nav-link block text-base">Kebijakan Privasi</a>
                                 <a href="/header & footer/footer-info/media-guidelines.php" class="nav-link block text-base">Pedoman Media Siber</a>
                                 <a href="/header & footer/footer-info/about-us.php" class="nav-link block text-base">Tentang Kami</a>
-                                <a href="/header & footer/footer-info/site-map.php" class="nav-link block text-base">Peta Situs</a>
                             </div>
                         </div>
                     </div>
