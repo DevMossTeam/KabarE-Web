@@ -72,7 +72,7 @@
                             </a>
                             <p class="text-gray-500 mt-1 mb-2">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
                         </div>
-                        <img src="https://via.placeholder.com/200x140" class="w-40 h-28 object-cover rounded-lg ml-4">
+                        <img src="https://via.placeholder.com/400x300" class="w-80 h-60 object-cover rounded-lg ml-4">
                     </div>
                     <div class="border-b border-gray-300 mt-1 mb-4"></div>
                 <?php endfor; ?>
@@ -85,7 +85,7 @@
                     <div class="border-b-4 border-[#FFC300] mt-0"></div>
                 </div>
                 <ul class="pl-4">
-                    <?php for ($i = 1; $i <= 6; $i++): ?>
+                    <?php for ($i = 1; $i <= 10; $i++): ?>
                         <li class="mb-4">
                             <div class="flex items-center">
                                 <div>
