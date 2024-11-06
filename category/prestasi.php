@@ -12,7 +12,7 @@
                     <img src="https://via.placeholder.com/600x350" class="w-full h-auto object-cover rounded-lg">
                 </a>
                 <div class="p-4">
-        a            <span class="text-red-500 font-bold">Politik</span> <span class="text-gray-500">| 27 Januari 2025</span>
+                    <span class="text-red-500 font-bold">Politik</span> <span class="text-gray-500">| 27 Januari 2025</span>
                     <a href="../news-detail.php">
                         <h3 class="text-lg font-bold mt-1">Tim Bridge Polije Raih Juara 2 SEABF Cup 2024</h3>
                     </a>

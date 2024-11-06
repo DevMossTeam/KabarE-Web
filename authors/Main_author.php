@@ -12,11 +12,22 @@ function generateId($conn) {
     return $newId;
 }
 
+function generateTagId($conn) {
+    $prefix = "TDB";
+    $query = "SELECT MAX(CAST(SUBSTRING(id, 4) AS UNSIGNED)) AS max_id FROM tag WHERE id LIKE '$prefix%'";
+    $result = $conn->query($query);
+    $row = $result->fetch_assoc();
+    $maxId = $row['max_id'] ? $row['max_id'] : 0;
+    $newId = $prefix . ($maxId + 1);
+    return $newId;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
     $id = generateId($conn);
     $title = $_POST['title'];
     $content = $_POST['content'];
     $category = $_POST['category'];
+    $visibility = isset($_POST['visibility']) ? $_POST['visibility'] : 'public'; // Set default ke 'public'
     $status = 'publikasi';
     $created_at = date('Y-m-d H:i:s');
 
@@ -28,11 +39,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
         exit;
     }
 
-    $query = "INSERT INTO berita (id, judul, konten_artikel, kategori, status_publikasi, tanggal_dibuat, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    if ($visibility === null) {
+        echo "Visibilitas tidak boleh kosong.";
+        exit;
+    }
+
+    $query = "INSERT INTO berita (id, judul, konten_artikel, kategori, status_publikasi, tanggal_dibuat, user_id, visibilitas) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($query);
-    $stmt->bind_param('sssssss', $id, $title, $content, $category, $status, $created_at, $user_id);
+    $stmt->bind_param('ssssssss', $id, $title, $content, $category, $status, $created_at, $user_id, $visibility);
 
     if ($stmt->execute()) {
+        // Ambil tag dari input dan simpan ke database
+        if (!empty($_POST['tags'])) {
+            $tags = explode(',', $_POST['tags']);
+            foreach ($tags as $tag) {
+                $tagId = generateTagId($conn);
+                $tagQuery = "INSERT INTO tag (id, nama_tag, berita_id) VALUES (?, ?, ?)";
+                $tagStmt = $conn->prepare($tagQuery);
+                $tagStmt->bind_param('sss', $tagId, trim($tag), $id);
+                $tagStmt->execute();
+                $tagStmt->close();
+            }
+        }
         echo "Artikel berhasil dipublikasikan!";
     } else {
         echo "Gagal mempublikasikan artikel.";
@@ -167,6 +195,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
                     </div>
                 </div>
             </div>
+            <input type="hidden" name="tags" id="hiddenTags">
         </form>
 
         <!-- Tambahkan div untuk pratinjau -->
@@ -518,6 +547,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
             } else {
                 showConfirmPopup();
             }
+            // Ambil semua tag dari labelContainer
+            const tags = Array.from(document.getElementById('labelContainer').children)
+            .map(label => label.textContent.trim().replace('×', ''));
+
+            // Set nilai input hidden untuk tag
+            document.getElementById('hiddenTags').value = tags.join(',');
+
+            // Lanjutkan dengan validasi dan submit form
+            document.getElementById('articleForm').submit();
         });
 
         document.getElementById('publishButtonLg').addEventListener('click', function(event) {
