@@ -5,30 +5,12 @@ include '../header & footer/category_header.php';
 renderCategoryHeader('Draft');
 ?>
 
-<div class="container mx-auto mt-4" id="draftContainer">
-    <?php for ($i = 0; $i < 6; $i++): ?>
-        <div class="card flex items-center justify-between p-4 mb-4 relative">
-            <div class="flex items-center">
-                <img src="https://via.placeholder.com/128x64" alt="Thumbnail" class="w-32 h-16 mr-4 rounded-md">
-                <div>
-                    <div class="text-gray-500 text-sm">12 September 2024 | Diperbarui 2 jam yang lalu</div>
-                    <div class="text-black font-semibold">Ribuan Mahasiswa Baru Ikut PKKMB Polije, Ditempa Jadi Generasi Tangguh</div>
-                </div>
-            </div>
-            <div class="flex space-x-4">
-                <a href="#" class="text-blue-500 hover:underline flex items-center">
-                    <i class="fas fa-edit mr-1"></i>Edit
-                </a>
-                <a href="#" class="text-red-500 hover:underline flex items-center delete-card">
-                    <i class="fas fa-trash-alt mr-1"></i>Hapus
-                </a>
-            </div>
-        </div>
-    <?php endfor; ?>
+<div class="container mx-auto mt-4 hidden" id="draftContainer">
+    <!-- Konten berita dihapus -->
 </div>
 
-<div id="emptyMessage" class="hidden flex flex-col items-center justify-center mt-8">
-    <i class="fas fa-book-open text-gray-400 text-8xl mb-4"></i>
+<div id="emptyMessage" class="flex flex-col items-center justify-center mt-8">
+    <i class="fas fa-sticky-note text-gray-400 text-8xl mb-4"></i>
     <p class="text-gray-500 mt-4">Tidak ada konten draft saat ini.</p>
 </div>
 

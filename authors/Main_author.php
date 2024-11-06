@@ -1,3 +1,49 @@
+<?php
+session_start(); // Mulai sesi
+include '../connection/config.php'; // Pastikan path ini sesuai dengan struktur folder Anda
+
+function generateId($conn) {
+    $prefix = "BRT";
+    $query = "SELECT MAX(CAST(SUBSTRING(id, 4) AS UNSIGNED)) AS max_id FROM berita WHERE id LIKE '$prefix%'";
+    $result = $conn->query($query);
+    $row = $result->fetch_assoc();
+    $maxId = $row['max_id'] ? $row['max_id'] : 0;
+    $newId = $prefix . ($maxId + 1);
+    return $newId;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
+    $id = generateId($conn);
+    $title = $_POST['title'];
+    $content = $_POST['content'];
+    $category = $_POST['category'];
+    $status = 'publikasi';
+    $created_at = date('Y-m-d H:i:s');
+
+    // Ambil user_id dari sesi atau sumber lain
+    $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
+
+    if ($user_id === null) {
+        echo "User ID tidak ditemukan.";
+        exit;
+    }
+
+    $query = "INSERT INTO berita (id, judul, konten_artikel, kategori, status_publikasi, tanggal_dibuat, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param('sssssss', $id, $title, $content, $category, $status, $created_at, $user_id);
+
+    if ($stmt->execute()) {
+        echo "Artikel berhasil dipublikasikan!";
+    } else {
+        echo "Gagal mempublikasikan artikel.";
+    }
+    $stmt->close();
+    $conn->close();
+    exit;
+}
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -165,6 +211,15 @@
 
     <input type="file" id="videoInput" accept="video/*" style="display: none;">
 
+    <div id="successPopup" class="fixed inset-0 bg-gray-800 bg-opacity-50 hidden flex items-center justify-center">
+        <div class="bg-white p-6 rounded-lg shadow-lg flex flex-col items-center">
+            <i class="fas fa-check-circle text-green-500 text-4xl mb-4"></i>
+            <h2 class="text-xl font-bold mb-2">Berhasil!</h2>
+            <p>Artikel berhasil dipublikasikan!</p>
+            <button id="closeSuccessPopup" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded">Tutup</button>
+        </div>
+    </div>
+
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     <script>
         // Sembunyikan animasi loading saat halaman dimuat
@@ -315,6 +370,7 @@
                 const titleInput = document.getElementById('title').value.trim();
                 const contentHtml = quill.root.innerHTML;
                 const selectedCategory = categorySelect.value;
+                const hasImage = checkForImage();
 
                 if (titleInput === '') {
                     showPopup('Judul artikel tidak boleh kosong!', false);
@@ -322,6 +378,8 @@
                     showPopup('Konten artikel tidak boleh kosong!', false);
                 } else if (selectedCategory === 'Pilih Kategori') {
                     showPopup('Silakan pilih kategori terlebih dahulu!', false);
+                } else if (!hasImage) {
+                    showPopup('Silakan tambahkan gambar ke dalam artikel sebelum pratinjau!', false);
                 } else {
                     // Set data pratinjau
                     document.getElementById('previewTitle').textContent = titleInput || 'Penulisan Artikel';
@@ -414,13 +472,32 @@
             // Tampilkan animasi loading
             document.getElementById('loading').classList.remove('hidden');
 
-            // Simulasi delay sebelum pindah halaman
-            setTimeout(() => {
-                window.location.href = 'draftAuthor.php';
-            }, 2000); // 2 detik delay
+            // Ambil data dari form
+            const titleInput = document.getElementById('title').value.trim();
+            const contentHtml = quill.root.innerHTML.trim();
+            const selectedCategory = categorySelect.value;
+
+            // Kirim data ke server menggunakan AJAX
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', 'Main_author.php', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    alert(xhr.responseText);
+                    window.location.href = 'draftAuthor.php'; // Redirect setelah berhasil
+                } else {
+                    alert('Terjadi kesalahan saat mempublikasikan artikel.');
+                }
+            };
+            xhr.send(`publish=true&title=${encodeURIComponent(titleInput)}&content=${encodeURIComponent(contentHtml)}&category=${encodeURIComponent(selectedCategory)}`);
         });
 
         confirmNo.addEventListener('click', hideConfirmPopup);
+
+        function checkForImage() {
+            const images = quill.root.querySelectorAll('img');
+            return images.length > 0;
+        }
 
         document.getElementById('publishButton').addEventListener('click', function(event) {
             event.preventDefault(); // Mencegah form submit dan refresh halaman
@@ -428,6 +505,7 @@
             const contentHtml = quill.root.innerHTML.trim();
             const isContentEmpty = contentHtml === '<p><br></p>'; // Quill's default empty content
             const selectedCategory = categorySelect.value;
+            const hasImage = checkForImage();
 
             if (titleInput === '') {
                 showPopup('Judul artikel tidak boleh kosong!', false);
@@ -435,6 +513,8 @@
                 showPopup('Konten artikel tidak boleh kosong!', false);
             } else if (selectedCategory === 'Pilih Kategori') {
                 showPopup('Silakan pilih kategori terlebih dahulu!', false);
+            } else if (!hasImage) {
+                showPopup('Silakan tambahkan gambar ke dalam artikel sebelum publikasi!', false);
             } else {
                 showConfirmPopup();
             }
@@ -446,6 +526,7 @@
             const contentHtml = quill.root.innerHTML.trim();
             const isContentEmpty = contentHtml === '<p><br></p>'; // Quill's default empty content
             const selectedCategory = categorySelect.value;
+            const hasImage = checkForImage();
 
             if (titleInput === '') {
                 showPopup('Judul artikel tidak boleh kosong!', false);
@@ -453,10 +534,33 @@
                 showPopup('Konten artikel tidak boleh kosong!', false);
             } else if (selectedCategory === 'Pilih Kategori') {
                 showPopup('Silakan pilih kategori terlebih dahulu!', false);
+            } else if (!hasImage) {
+                showPopup('Silakan tambahkan gambar ke dalam artikel sebelum publikasi!', false);
             } else {
                 showConfirmPopup();
             }
         });
+
+        function showSuccessPopup() {
+            const successPopup = document.getElementById('successPopup');
+            successPopup.classList.remove('hidden');
+        }
+
+        document.getElementById('closeSuccessPopup').addEventListener('click', () => {
+            const successPopup = document.getElementById('successPopup');
+            successPopup.classList.add('hidden');
+        });
+
+        // Panggil showSuccessPopup() setelah artikel berhasil dipublikasikan
+        if (xhr.status === 200) {
+            showSuccessPopup();
+            // Redirect setelah beberapa detik jika diperlukan
+            setTimeout(() => {
+                window.location.href = 'draftAuthor.php';
+            }, 3000);
+        } else {
+            alert('Terjadi kesalahan saat mempublikasikan artikel.');
+        }
     </script>
 </body>
 </html>
