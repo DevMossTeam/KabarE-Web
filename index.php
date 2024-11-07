@@ -1,6 +1,3 @@
-<?php include 'header & footer/header.php'; ?>
-<?php include 'connection/config.php'; ?>
-
 <?php
 function timeAgo($datetime) {
     $now = new DateTime();
@@ -13,6 +10,32 @@ function timeAgo($datetime) {
     if ($interval->h > 0) return $interval->h . " jam yang lalu";
     if ($interval->i > 0) return $interval->i . " menit yang lalu";
     return "baru saja";
+}
+?>
+
+<?php include 'header & footer/header.php'; ?>
+<?php include 'connection/config.php'; ?>
+
+<?php
+function formatDate($datetime) {
+    $date = new DateTime($datetime);
+    return $date->format('d F Y, H:i');
+}
+
+// Query untuk mengambil data untuk slider secara acak
+$querySlider = "SELECT id, judul, konten_artikel, kategori, tanggal_dibuat FROM berita ORDER BY RAND() LIMIT 7";
+$resultSlider = $conn->query($querySlider);
+$sliderData = [];
+
+if ($resultSlider && $resultSlider->num_rows > 0) {
+    while ($row = $resultSlider->fetch_assoc()) {
+        $firstImage = '';
+        if (preg_match('/<img.+src=[\'"](?P<src>.+?)[\'"].*>/i', $row['konten_artikel'], $image)) {
+            $firstImage = $image['src'];
+        }
+        $row['firstImage'] = $firstImage;
+        $sliderData[] = $row;
+    }
 }
 
 // Query untuk mengambil 6 berita terbaru
@@ -50,7 +73,7 @@ if ($result && $result->num_rows > 0) {
                     <img src="<?= $firstImage ?: 'https://via.placeholder.com/200x150' ?>" class="w-48 h-32 object-cover rounded-lg mb-0.5 lg:mb-0 transition-transform duration-300 hover:scale-105 cursor-pointer">
                     <div class="flex flex-col justify-center text-center md:text-center lg:text-left lg:ml-6 lg:w-full lg:pr-8 lg:-mt-2">
                         <h3 class="text-md font-bold mt-1 line-clamp-3"><?= $title ?></h3>
-                        <p class="text-gray-500 mt-1 line-clamp-3"><?= $description ?></p>
+                        <p class="text-gray-500 mt-1 line-clamp-3 text-xs"><?= $description ?></p>
                         <span class="text-sm mt-1 inline-block">
                             <span class="text-red-500 font-bold"><?= $row['kategori'] ?></span>
                             <span class="text-gray-400"> | <?= timeAgo($row['tanggal_dibuat']) ?></span>
@@ -62,35 +85,31 @@ if ($result && $result->num_rows > 0) {
 
         <!-- Image Slider -->
         <div class="relative mb-8 md:mb-0 group order-1 lg:order-2 z-0">
-            <!-- Teks dan Label di atas Image Slider -->
-            <div class="text-left mb-4">
-                <span class="inline-block bg-[#FF3232] text-white px-4 py-1 rounded-md transition-transform duration-500 ease-in-out transform translate-x-full opacity-0" id="category">Kategori 1</span>
-                <a href="news-detail.php">
-                    <h2 class="text-2xl font-bold mt-2 transition-transform duration-500 ease-in-out transform translate-x-full opacity-0" id="headline">Lorem Ipsum Dolor Sit Amet 1</h2>
-                </a>
-                <p class="text-gray-600 mt-2 transition-transform duration-500 ease-in-out transform translate-x-full opacity-0" id="description">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-            </div>
-
             <div class="relative overflow-hidden h-96 rounded-lg">
                 <div class="flex transition-transform duration-500 ease-in-out" id="slider">
-                    <?php for ($i = 1; $i <= 7; $i++): ?>
-                        <img src="https://via.placeholder.com/800x600?text=Image+<?= $i ?>" 
-                             class="w-full h-full object-cover transition duration-300 ease-in-out group-hover:brightness-75 transform -translate-y-24"
-                             loading="lazy">
-                    <?php endfor; ?>
+                    <?php foreach ($sliderData as $data): ?>
+                        <div class="relative w-full h-full flex-shrink-0">
+                            <img src="<?= $data['firstImage'] ?: 'https://via.placeholder.com/800x600' ?>" 
+                                 class="w-full h-full object-cover transition duration-300 ease-in-out brightness-75 hover:brightness-50">
+                            <div class="absolute top-4 left-4 text-white">
+                                <span class="font-bold"><?= $data['kategori'] ?></span>
+                                <h3 class="text-lg font-bold mt-1"><?= $data['judul'] ?></h3>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
                 </div>
 
                 <!-- Left and Right Toggle inside the slider -->
-                <button id="prev" class="absolute top-1/2 left-4 transform -translate-y-1/2 p-3 bg-gray-800 text-white rounded-md z-10">
+                <button id="prev" class="absolute top-1/2 left-4 transform -translate-y-1/2 p-3 bg-black bg-opacity-50 hover:bg-opacity-75 text-white rounded-md z-10">
                     &#10094;
                 </button>
-                <button id="next" class="absolute top-1/2 right-4 transform -translate-y-1/2 p-3 bg-gray-800 text-white rounded-md z-10">
+                <button id="next" class="absolute top-1/2 right-4 transform -translate-y-1/2 p-3 bg-black bg-opacity-50 hover:bg-opacity-75 text-white rounded-md z-10">
                     &#10095;
                 </button>
 
                 <!-- Indicator Dots inside the slider -->
                 <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
-                    <?php for ($i = 0; $i < 7; $i++): ?>
+                    <?php for ($i = 0; $i < count($sliderData); $i++): ?>
                         <button class="w-3 h-3 rounded-full bg-gray-400 transition-all duration-300 ease-in-out" data-slide="<?= $i ?>"></button>
                     <?php endfor; ?>
                 </div>
@@ -154,6 +173,7 @@ if ($result && $result->num_rows > 0) {
 </div>
 
 <?php include 'header & footer/footer.php'; ?>
+
 <script>
     const slider = document.getElementById('slider');
     const prevButton = document.getElementById('prev');
@@ -161,59 +181,14 @@ if ($result && $result->num_rows > 0) {
     const dots = document.querySelectorAll('[data-slide]');
     let currentSlide = 0;
 
-    const headlines = [
-        "Lorem Ipsum Dolor Sit Amet 1",
-        "Lorem Ipsum Dolor Sit Amet 2",
-        "Lorem Ipsum Dolor Sit Amet 3",
-        "Lorem Ipsum Dolor Sit Amet 4",
-        "Lorem Ipsum Dolor Sit Amet 5",
-        "Lorem Ipsum Dolor Sit Amet 6",
-        "Lorem Ipsum Dolor Sit Amet 7"
-    ];
-
-    const descriptions = [
-        "27 Januari 2024, 20:20 | 2 menit yang lalu",
-        "28 Januari 2024, 14:15 | 5 menit yang lalu",
-        "29 Januari 2024, 09:30 | 10 menit yang lalu",
-        "30 Januari 2024, 18:45 | 15 menit yang lalu",
-        "31 Januari 2024, 12:00 | 20 menit yang lalu",
-        "1 Februari 2024, 08:00 | 25 menit yang lalu",
-        "2 Februari 2024, 16:30 | 30 menit yang lalu"
-    ];
-
-    const categories = [
-        "Kategori 1",
-        "Kategori 2",
-        "Kategori 3",
-        "Kategori 4",
-        "Kategori 5",
-        "Kategori 6",
-        "Kategori 7"
-    ];
-
-    const headlineElement = document.getElementById('headline');
-    const descriptionElement = document.getElementById('description');
-    const categoryElement = document.getElementById('category');
+    const headlines = <?= json_encode(array_column($sliderData, 'judul')) ?>;
+    const categories = <?= json_encode(array_column($sliderData, 'kategori')) ?>;
 
     function updateSlider() {
         slider.style.transform = `translateX(-${currentSlide * 100}%)`;
         dots.forEach(dot => dot.classList.remove('bg-gray-800', 'w-6', 'h-2'));
         dots.forEach(dot => dot.classList.add('w-3', 'h-3', 'rounded-full'));
         dots[currentSlide].classList.add('bg-gray-800', 'w-6', 'h-2', 'rounded-full');
-
-        headlineElement.classList.remove('translate-x-0', 'opacity-100');
-        descriptionElement.classList.remove('translate-x-0', 'opacity-100');
-        categoryElement.classList.remove('translate-x-0', 'opacity-100');
-
-        setTimeout(() => {
-            headlineElement.textContent = headlines[currentSlide];
-            descriptionElement.textContent = descriptions[currentSlide];
-            categoryElement.textContent = categories[currentSlide];
-
-            headlineElement.classList.add('translate-x-0', 'opacity-100');
-            descriptionElement.classList.add('translate-x-0', 'opacity-100');
-            categoryElement.classList.add('translate-x-0', 'opacity-100');
-        }, 100);
     }
 
     nextButton.addEventListener('click', () => {
@@ -234,26 +209,4 @@ if ($result && $result->num_rows > 0) {
     });
 
     updateSlider();
-
-    // Latest News Slider
-    const latestNewsSlider = document.getElementById('latest-news-slider');
-    const latestPrevButton = document.getElementById('latest-prev');
-    const latestNextButton = document.getElementById('latest-next');
-    let latestCurrentSlide = 0;
-
-    function updateLatestNewsSlider() {
-        latestNewsSlider.style.transform = `translateX(-${latestCurrentSlide * 14.2857}%)`;
-    }
-
-    latestNextButton.addEventListener('click', () => {
-        latestCurrentSlide = (latestCurrentSlide + 1) % 10;
-        updateLatestNewsSlider();
-    });
-
-    latestPrevButton.addEventListener('click', () => {
-        latestCurrentSlide = (latestCurrentSlide - 1 + 10) % 10;
-        updateLatestNewsSlider();
-    });
-
-    updateLatestNewsSlider();
 </script>

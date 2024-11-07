@@ -538,6 +538,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
 
             if (titleInput === '') {
                 showPopup('Judul artikel tidak boleh kosong!', false);
+            } else if (titleInput.length > 100) {
+                showPopup('Judul artikel tidak boleh lebih dari 100 karakter!', false);
             } else if (isContentEmpty) {
                 showPopup('Konten artikel tidak boleh kosong!', false);
             } else if (selectedCategory === 'Pilih Kategori') {
@@ -568,6 +570,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
 
             if (titleInput === '') {
                 showPopup('Judul artikel tidak boleh kosong!', false);
+            } else if (titleInput.length > 100) {
+                showPopup('Judul artikel tidak boleh lebih dari 100 karakter!', false);
             } else if (isContentEmpty) {
                 showPopup('Konten artikel tidak boleh kosong!', false);
             } else if (selectedCategory === 'Pilih Kategori') {
