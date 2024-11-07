@@ -1,25 +1,58 @@
+<?php
+function timeAgo($datetime) {
+    $now = new DateTime();
+    $posted = new DateTime($datetime);
+    $interval = $now->diff($posted);
+
+    if ($interval->y > 0) return $interval->y . " tahun yang lalu";
+    if ($interval->m > 0) return $interval->m . " bulan yang lalu";
+    if ($interval->d > 0) return $interval->d . " hari yang lalu";
+    if ($interval->h > 0) return $interval->h . " jam yang lalu";
+    if ($interval->i > 0) return $interval->i . " menit yang lalu";
+    return "baru saja";
+}
+?>
+
 <?php include '../header & footer/header.php'; ?>
 <?php include '../header & footer/category_header.php'; ?>
+<?php include '../connection/config.php'; ?>
+
 <?php renderCategoryHeader('Kesehatan'); ?>
 
 <!-- Main Content -->
 <div class="container mx-auto mt-8 mb-16">
     <!-- 4 Berita -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        <?php for ($i = 1; $i <= 4; $i++): ?>
+        <?php
+        $query = "SELECT id, judul, konten_artikel, kategori, tanggal_dibuat FROM berita WHERE kategori = 'Kesehatan' ORDER BY RAND() LIMIT 4";
+        $result = $conn->query($query);
+
+        while ($row = $result->fetch_assoc()):
+            $firstImage = ''; // Default jika tidak ada gambar
+            if (preg_match('/<img.+src=[\'"](?P<src>.+?)[\'"].*>/i', $row['konten_artikel'], $image)) {
+                $firstImage = $image['src'];
+            }
+
+            // Ambil deskripsi singkat dari konten_artikel
+            $description = strip_tags($row['konten_artikel']);
+            $description = substr($description, 0, 150) . '...'; // Potong deskripsi
+
+            // Format tanggal
+            $formattedDate = date('d F Y', strtotime($row['tanggal_dibuat']));
+        ?>
             <div class="relative">
-                <a href="../news-detail.php">
-                    <img src="https://via.placeholder.com/600x350" class="w-full h-auto object-cover rounded-lg">
+                <a href="../news-detail.php?id=<?= $row['id'] ?>">
+                    <img src="<?= $firstImage ?: 'https://via.placeholder.com/600x350' ?>" class="w-full h-96 object-cover rounded-lg">
                 </a>
                 <div class="p-4">
-                    <span class="text-red-500 font-bold">Politik</span> <span class="text-gray-500">| 27 Januari 2025</span>
-                    <a href="../news-detail.php">
-                        <h3 class="text-lg font-bold mt-1">Tim Bridge Polije Raih Juara 2 SEABF Cup 2024</h3>
+                    <span class="text-red-500 font-bold"><?= $row['kategori'] ?></span> <span class="text-gray-500">| <?= $formattedDate ?></span>
+                    <a href="../news-detail.php?id=<?= $row['id'] ?>">
+                        <h3 class="text-lg font-bold mt-1"><?= $row['judul'] ?></h3>
                     </a>
-                    <p class="text-gray-700">Tim Bridge Polije berhasil meraih Juara 2 dalam 7th South East Asia Bridge Federation (SEABF) Cup dan 40th ASEAN Bridge Club Championship...</p>
+                    <p class="text-gray-700 mt-2"><?= $description ?></p>
                 </div>
             </div>
-        <?php endfor; ?>
+        <?php endwhile; ?>
     </div>
 
     <!-- Berita Populer -->
@@ -30,27 +63,27 @@
         </div>
         <!-- 3 Kartu Gambar -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
-            <a href="../news-detail.php" class="relative overflow-hidden rounded-lg">
-                <img src="https://via.placeholder.com/300x200" class="w-full h-56 object-cover">
-                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
-                    <span class="text-white font-bold">Iptek | 3 menit lalu</span>
-                    <h3 class="text-white text-lg font-bold mt-1">Tim Dosen Polije Bantu Masalah Usaha Mikro Penetasan Telur</h3>
-                </div>
-            </a>
-            <a href="../news-detail.php" class="relative overflow-hidden rounded-lg">
-                <img src="https://via.placeholder.com/300x200" class="w-full h-56 object-cover">
-                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
-                    <span class="text-white font-bold">Iptek | 3 menit lalu</span>
-                    <h3 class="text-white text-lg font-bold mt-1">Kolaborasi Dosen dan Mahasiswa Polije Ciptakan Bibit Tembakau Kasturi dengan Daya Kecambah 87%</h3>
-                </div>
-            </a>
-            <a href="../news-detail.php" class="relative overflow-hidden rounded-lg">
-                <img src="https://via.placeholder.com/300x200" class="w-full h-56 object-cover">
-                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
-                    <span class="text-white font-bold">Iptek | 3 menit lalu</span>
-                    <h3 class="text-white text-lg font-bold mt-1">Mahasiswa Polije Ciptakan Produk Inovasi Sirup Kopi</h3>
-                </div>
-            </a>
+            <?php
+            $queryPopuler = "SELECT id, judul, konten_artikel, kategori, tanggal_dibuat FROM berita WHERE kategori = 'Kesehatan' ORDER BY tanggal_dibuat DESC LIMIT 3";
+            $resultPopuler = $conn->query($queryPopuler);
+
+            while ($rowPopuler = $resultPopuler->fetch_assoc()):
+                $firstImagePopuler = ''; // Default jika tidak ada gambar
+                if (preg_match('/<img.+src=[\'"](?P<src>.+?)[\'"].*>/i', $rowPopuler['konten_artikel'], $image)) {
+                    $firstImagePopuler = $image['src'];
+                }
+
+                // Waktu relatif
+                $timeAgo = timeAgo($rowPopuler['tanggal_dibuat']);
+            ?>
+                <a href="../news-detail.php?id=<?= $rowPopuler['id'] ?>" class="relative overflow-hidden rounded-lg">
+                    <img src="<?= $firstImagePopuler ?: 'https://via.placeholder.com/300x200' ?>" class="w-full h-56 object-cover">
+                    <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
+                        <span class="text-white font-bold"><?= $rowPopuler['kategori'] ?> | <?= $timeAgo ?></span>
+                        <h3 class="text-white text-lg font-bold mt-1"><?= $rowPopuler['judul'] ?></h3>
+                    </div>
+                </a>
+            <?php endwhile; ?>
         </div>
     </div>
 
@@ -63,19 +96,34 @@
                     <span class="inline-block bg-[#45C630] text-white px-6 py-1 rounded-t-md">Berita Lainnya</span>
                     <div class="border-b-4 border-[#45C630] mt-0"></div>
                 </div>
-                <?php for ($i = 1; $i <= 4; $i++): ?>
+                <?php
+                $queryLainnya = "SELECT id, judul, konten_artikel, kategori, tanggal_dibuat FROM berita WHERE kategori != 'Kesehatan' ORDER BY RAND() LIMIT 4";
+                $resultLainnya = $conn->query($queryLainnya);
+
+                while ($rowLainnya = $resultLainnya->fetch_assoc()):
+                    $firstImageLainnya = ''; // Default jika tidak ada gambar
+                    if (preg_match('/<img.+src=[\'"](?P<src>.+?)[\'"].*>/i', $rowLainnya['konten_artikel'], $image)) {
+                        $firstImageLainnya = $image['src'];
+                    }
+
+                    $descriptionLainnya = strip_tags($rowLainnya['konten_artikel']);
+                    $descriptionLainnya = substr($descriptionLainnya, 0, 150) . '...'; // Potong deskripsi
+
+                    // Waktu relatif
+                    $timeAgoLainnya = timeAgo($rowLainnya['tanggal_dibuat']);
+                ?>
                     <div class="flex mb-4 items-center">
                         <div class="flex-grow">
-                            <span class="text-gray-400 text-sm block mb-1">2 jam yang lalu</span>
-                            <a href="../news-detail.php">
-                                <h3 class="text-lg font-bold mt-1">Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit <?= $i ?></h3>
+                            <span class="text-gray-400 text-sm block mb-1"><?= $timeAgoLainnya ?></span>
+                            <a href="../news-detail.php?id=<?= $rowLainnya['id'] ?>">
+                                <h3 class="text-lg font-bold mt-1"><?= $rowLainnya['judul'] ?></h3>
                             </a>
-                            <p class="text-gray-500 mt-1 mb-2">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                            <p class="text-gray-500 mt-1 mb-2"><?= $descriptionLainnya ?></p>
                         </div>
-                        <img src="https://via.placeholder.com/400x300" class="w-80 h-60 object-cover rounded-lg ml-4">
+                        <img src="<?= $firstImageLainnya ?: 'https://via.placeholder.com/400x300' ?>" class="w-80 h-60 object-cover rounded-lg ml-4">
                     </div>
                     <div class="border-b border-gray-300 mt-1 mb-4"></div>
-                <?php endfor; ?>
+                <?php endwhile; ?>
             </div>
 
             <!-- Baru Baru Ini Section -->
@@ -85,19 +133,25 @@
                     <div class="border-b-4 border-[#FFC300] mt-0"></div>
                 </div>
                 <ul class="pl-4">
-                    <?php for ($i = 1; $i <= 10; $i++): ?>
+                    <?php
+                    $queryBaru = "SELECT id, judul, tanggal_dibuat FROM berita WHERE kategori = 'Kesehatan' ORDER BY tanggal_dibuat DESC LIMIT 10";
+                    $resultBaru = $conn->query($queryBaru);
+
+                    while ($rowBaru = $resultBaru->fetch_assoc()):
+                        $timeAgoBaru = timeAgo($rowBaru['tanggal_dibuat']);
+                    ?>
                         <li class="mb-4">
                             <div class="flex items-center">
                                 <div>
-                                    <span class="text-gray-400 text-sm">2 jam yang lalu</span>
-                                    <a href="../news-detail.php">
-                                        <h3 class="text-lg font-bold mt-1">Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit <?= $i ?></h3>
+                                    <span class="text-gray-400 text-sm"><?= $timeAgoBaru ?></span>
+                                    <a href="../news-detail.php?id=<?= $rowBaru['id'] ?>">
+                                        <h3 class="text-lg font-bold mt-1"><?= $rowBaru['judul'] ?></h3>
                                     </a>
                                     <div class="border-b border-gray-300 mt-2"></div>
                                 </div>
                             </div>
                         </li>
-                    <?php endfor; ?>
+                    <?php endwhile; ?>
                 </ul>
             </div>
         </div>
