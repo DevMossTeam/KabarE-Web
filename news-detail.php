@@ -99,7 +99,7 @@ $userName = mysqli_fetch_assoc($result)['nama_lengkap'];
 
             <!-- Komentar -->
             <div class="mt-4 w-full pr-4">
-                <span id="commentCount" class="block text-gray-700 font-bold mb-2">Komentar (4)</span>
+                <span id="commentCount" class="block text-gray-700 font-bold mb-2">Komentar (5)</span>
                 <div class="flex items-center mb-4">
                     <input id="commentInput" type="text" placeholder="Tulis komentarmu disini" class="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <button id="sendCommentButton" class="ml-2 bg-blue-500 text-white rounded-full flex items-center justify-center" style="width: 40px; height: 40px;">
@@ -109,18 +109,17 @@ $userName = mysqli_fetch_assoc($result)['nama_lengkap'];
                 <div id="commentsContainer" class="border border-gray-300 rounded-lg p-4 max-h-96 overflow-y-auto text-left">
                     <?php for ($j = 0; $j < 4; $j++): ?>
                         <div class="mb-4 user-comment" data-timestamp="<?= time() - ($j * 60) ?>">
-                            <div class="flex items-center">
-                                <i class="fas fa-user-circle text-2xl text-gray-500 mr-2"></i>
-                                <div>
-                                    <span class="font-semibold">Chiquita</span> · <span class="text-gray-500 text-sm time-ago"><?= timeAgo(new DateTime('@' . (time() - ($j * 60)))) ?></span>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <i class="fas fa-user-circle text-2xl text-gray-500 mr-2"></i>
+                                    <div>
+                                        <span class="font-semibold">Chiquita</span> · <span class="text-gray-500 text-sm time-ago"><?= timeAgo(new DateTime('@' . (time() - ($j * 60)))) ?></span>
+                                        <p class="mt-2">Informasi yang sangat menarik</p>
+                                    </div>
                                 </div>
-                            </div>
-                            <p class="mt-2">Informasi yang sangat menarik</p>
-                            <div class="flex items-center text-gray-500 text-sm mt-1">
-                                <button class="options-button ml-auto">...</button>
-                                <div class="hidden options-menu bg-white shadow-md rounded p-2">
-                                    <button class="text-red-500">Hapus</button>
-                                </div>
+                                <button class="options-button">
+                                    <i class="fas fa-ellipsis-v text-lg"></i>
+                                </button>
                             </div>
                         </div>
                     <?php endfor; ?>
@@ -284,15 +283,17 @@ $userName = mysqli_fetch_assoc($result)['nama_lengkap'];
 
                 const commentHtml = `
                     <div class="mb-4 user-comment">
-                        <div class="flex items-center">
-                            <i class="fas fa-user-circle text-2xl text-gray-500 mr-2"></i>
-                            <div>
-                                <span class="font-semibold">${userName}</span> · <span class="text-gray-500 text-sm">${timeAgo(commentDate)}</span>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <i class="fas fa-user-circle text-2xl text-gray-500 mr-2"></i>
+                                <div>
+                                    <span class="font-semibold">${userName}</span> · <span class="text-gray-500 text-sm">${timeAgo(commentDate)}</span>
+                                    <p class="mt-2">${commentText}</p>
+                                </div>
                             </div>
-                        </div>
-                        <p class="mt-2">${commentText}</p>
-                        <div class="flex items-center text-gray-500 text-sm mt-1">
-                            <button class="options-button ml-auto">...</button>
+                            <button class="options-button">
+                                <i class="fas fa-ellipsis-v text-lg"></i>
+                            </button>
                         </div>
                     </div>
                 `;
