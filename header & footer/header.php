@@ -67,7 +67,7 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
     <nav id="mainNavbar" class="z-10 relative">
         <!-- Bagian Atas Navbar -->
         <div class="bg-white p-4">
-            <div class="container mx-auto flex justify-between items-center">
+            <div class="container mx-auto flex justify-between items-center px-4 lg:px-20">
                 <a href="/index.php" class="text-black text-2xl font-bold">
                     <img src="../assets/web-icon/KabarE-UTDK.png" alt="Logo" class="w-10 h-10">
                     <!-- Perbesar logo -->
@@ -168,7 +168,7 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
 
         <!-- Bagian Bawah Navbar -->
         <div class="bg-blue-500 p-2">
-            <div class="container mx-auto flex flex-wrap justify-between items-center">
+            <div class="container mx-auto flex flex-wrap justify-between items-center px-4 lg:px-20">
                 <div class="flex flex-col items-center">
                     <a href="/index.php" class="text-white text-2xl font-bold">
                         <!-- Logo SVG -->
@@ -200,7 +200,7 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
     <!-- Header yang muncul saat scroll -->
     <div id="scrollHeader"
         class="fixed top-0 left-0 right-0 bg-blue-500 p-2 transform -translate-y-full transition-transform duration-500 ease-out z-20">
-        <div class="container mx-auto flex justify-between items-center">
+        <div class="container mx-auto flex justify-between items-center px-4 lg:px-20">
             <a href="/index.php" class="text-white text-2xl font-bold">
                 <img src="../assets/web-icon/KabarE-UTDF.png" alt="Logo" class="w-10 h-10">
             </a>

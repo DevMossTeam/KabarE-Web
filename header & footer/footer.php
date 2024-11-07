@@ -1,6 +1,6 @@
            <!-- Footer -->
             <footer class="bg-blue-500 text-white py-4 mt-auto">
-                <div class="container mx-auto">
+                <div class="container mx-auto px-4 lg:px-8">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
                         <div class="mb-4 md:mb-0 flex flex-col md:flex-row md:justify-between w-full">
                             <div class="flex-shrink-0">
@@ -31,8 +31,8 @@
                         </div>
                     </div>
                 </div>
-            <hr class="my-4 border-t border-gray-300 w-11/12 mx-auto">
-            <div class="w-11/12 mx-auto flex justify-between items-center mt-4 md:mt-0">
+            <hr class="my-4 border-t border-gray-300 w-full">
+            <div class="w-full flex justify-between items-center mt-4 md:mt-0 px-4 lg:px-8">
                 <p class="text-sm">Unit Kegiatan Mahasiswa Penyiaran Berita Mahasiswa Politeknik Negeri Jember. © 2024, Copyright KabarU.co.id</p>
                 <div class="flex">
                     <a href="https://www.facebook.com/ukmexplant" target="_blank" class="text-white mx-2">
