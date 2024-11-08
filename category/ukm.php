@@ -20,7 +20,7 @@ function timeAgo($datetime) {
 <?php renderCategoryHeader('UKM'); ?>
 
 <!-- Main Content -->
-<div class="container mx-auto mt-8 mb-16">
+<div class="container mx-auto mt-8 mb-16 px-4 lg:px-8">
     <!-- 4 Berita -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         <?php
@@ -112,7 +112,7 @@ function timeAgo($datetime) {
                     // Waktu relatif
                     $timeAgoLainnya = timeAgo($rowLainnya['tanggal_dibuat']);
                 ?>
-                    <div class="flex mb-4 items-center">
+                    <div class="flex mb-4 items-start">
                         <div class="flex-grow">
                             <span class="text-gray-400 text-sm block mb-1"><?= $timeAgoLainnya ?></span>
                             <a href="../news-detail.php?id=<?= $rowLainnya['id'] ?>">
@@ -134,7 +134,7 @@ function timeAgo($datetime) {
                 </div>
                 <ul class="pl-4">
                     <?php
-                    $queryBaru = "SELECT id, judul, tanggal_dibuat FROM berita WHERE kategori = 'UKM' ORDER BY tanggal_dibuat DESC LIMIT 10";
+                    $queryBaru = "SELECT id, judul, tanggal_dibuat FROM berita WHERE kategori = 'UKM' ORDER BY tanggal_dibuat DESC LIMIT 8";
                     $resultBaru = $conn->query($queryBaru);
 
                     while ($rowBaru = $resultBaru->fetch_assoc()):
@@ -142,12 +142,12 @@ function timeAgo($datetime) {
                     ?>
                         <li class="mb-4">
                             <div class="flex items-center">
-                                <div>
+                                <div class="flex-grow">
                                     <span class="text-gray-400 text-sm"><?= $timeAgoBaru ?></span>
                                     <a href="../news-detail.php?id=<?= $rowBaru['id'] ?>">
                                         <h3 class="text-lg font-bold mt-1"><?= $rowBaru['judul'] ?></h3>
                                     </a>
-                                    <div class="border-b border-gray-300 mt-2"></div>
+                                    <div class="border-b border-gray-300 mt-2 w-full"></div>
                                 </div>
                             </div>
                         </li>
