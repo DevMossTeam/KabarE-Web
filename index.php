@@ -48,6 +48,28 @@ if ($result && $result->num_rows > 0) {
         $beritaTerkini[] = $row;
     }
 }
+
+// Query untuk berita populer
+$queryPopuler = "SELECT id, judul, konten_artikel, kategori, tanggal_dibuat FROM berita ORDER BY RAND() LIMIT 3";
+$resultPopuler = $conn->query($queryPopuler);
+$beritaPopuler = [];
+
+if ($resultPopuler && $resultPopuler->num_rows > 0) {
+    while ($row = $resultPopuler->fetch_assoc()) {
+        $beritaPopuler[] = $row;
+    }
+}
+
+// Query untuk berita baru
+$queryBaru = "SELECT id, judul, tanggal_dibuat FROM berita ORDER BY tanggal_dibuat DESC LIMIT 6";
+$resultBaru = $conn->query($queryBaru);
+$beritaBaru = [];
+
+if ($resultBaru && $resultBaru->num_rows > 0) {
+    while ($row = $resultBaru->fetch_assoc()) {
+        $beritaBaru[] = $row;
+    }
+}
 ?>
 
 <!-- Main Content -->
@@ -168,6 +190,59 @@ if ($result && $result->num_rows > 0) {
                     <p class="text-white">Tidak ada berita terkini yang tersedia.</p>
                 <?php endif; ?>
             <?php endfor; ?>
+        </div>
+    </div>
+
+    <!-- Populer dan Baru Baru Ini Section -->
+    <div class="flex flex-col lg:flex-row mt-8">
+        <!-- Populer Section -->
+        <div class="w-full lg:w-2/3 pr-4">
+            <div class="mb-4">
+                <span class="inline-block bg-[#FF3232] text-white px-6 py-1 rounded-t-md">Populer</span>
+                <div class="border-b-4 border-[#FF3232] mt-0"></div>
+            </div>
+            <?php foreach ($beritaPopuler as $populer): ?>
+                <?php
+                $firstImage = '';
+                if (preg_match('/<img.+src=[\'"](?P<src>.+?)[\'"].*>/i', $populer['konten_artikel'], $image)) {
+                    $firstImage = $image['src'];
+                }
+                $title = substr($populer['judul'], 0, 100) . (strlen($populer['judul']) > 100 ? '...' : '');
+                $description = strip_tags($populer['konten_artikel']);
+                $description = substr($description, 0, 300) . (strlen($description) > 300 ? '...' : '');
+                ?>
+                <div class="flex mb-6 items-start">
+                    <div class="flex-grow">
+                        <a href="news-detail.php?id=<?= $populer['id'] ?>">
+                            <h3 class="text-lg font-bold mt-1"><?= $title ?></h3>
+                        </a>
+                        <p class="text-gray-500 mt-1"><?= $description ?></p>
+                    </div>
+                    <img src="<?= $firstImage ?: 'https://via.placeholder.com/400x300' ?>" class="w-64 h-48 object-cover rounded-lg ml-4">
+                </div>
+            <?php endforeach; ?>
+        </div>
+
+        <!-- Baru Baru Ini Section -->
+        <div class="w-full lg:w-1/3 pl-4 mt-8 md:mt-12 lg:mt-0">
+            <div class="mb-4">
+                <span class="inline-block bg-[#FFC300] text-white px-6 py-1 rounded-t-md">Baru Baru Ini</span>
+                <div class="border-b-4 border-[#FFC300] mt-0"></div>
+            </div>
+            <ul class="pl-4">
+                <?php foreach ($beritaBaru as $index => $baru): ?>
+                    <li class="mb-4 flex items-center">
+                        <span class="text-[#CAD2FF] text-5xl font-semibold italic mr-4 flex-shrink-0"><?= $index + 1 ?></span>
+                        <div class="flex-grow">
+                            <span class="text-gray-400 text-base"><?= timeAgo($baru['tanggal_dibuat']) ?></span>
+                            <a href="news-detail.php?id=<?= $baru['id'] ?>">
+                                <h3 class="text-lg font-bold mt-1"><?= $baru['judul'] ?></h3>
+                            </a>
+                            <div class="border-b border-gray-300 mt-2 w-full"></div>
+                        </div>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
         </div>
     </div>
 </div>
