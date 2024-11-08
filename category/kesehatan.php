@@ -20,7 +20,7 @@ function timeAgo($datetime) {
 <?php renderCategoryHeader('Kesehatan'); ?>
 
 <!-- Main Content -->
-<div class="container mx-auto mt-8 mb-16 px-4 lg:px-8">
+<div class="container mx-auto mt-8 mb-16 px-6 lg:px-12">
     <!-- 4 Berita -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         <?php
@@ -87,8 +87,8 @@ function timeAgo($datetime) {
         </div>
     </div>
 
-    <!-- Berita Lainnya dan Baru Baru Ini -->
-    <div class="py-4 mt-16">
+    <!-- Berita Lainnya dan Baru Baru Ini Section -->
+    <div class="container mx-auto mt-8 mb-16 px-4 lg:px-20">
         <div class="flex flex-col lg:flex-row">
             <!-- Berita Lainnya Section -->
             <div class="w-full lg:w-2/3 pr-4">
@@ -101,24 +101,23 @@ function timeAgo($datetime) {
                 $resultLainnya = $conn->query($queryLainnya);
 
                 while ($rowLainnya = $resultLainnya->fetch_assoc()):
-                    $firstImageLainnya = ''; // Default jika tidak ada gambar
+                    $firstImageLainnya = '';
                     if (preg_match('/<img.+src=[\'"](?P<src>.+?)[\'"].*>/i', $rowLainnya['konten_artikel'], $image)) {
                         $firstImageLainnya = $image['src'];
                     }
 
                     $descriptionLainnya = strip_tags($rowLainnya['konten_artikel']);
-                    $descriptionLainnya = substr($descriptionLainnya, 0, 150) . '...'; // Potong deskripsi
+                    $descriptionLainnya = substr($descriptionLainnya, 0, 150) . '...';
 
-                    // Waktu relatif
                     $timeAgoLainnya = timeAgo($rowLainnya['tanggal_dibuat']);
                 ?>
                     <div class="flex mb-4 items-start">
-                        <div class="flex-grow">
-                            <span class="text-gray-400 text-sm block mb-1"><?= $timeAgoLainnya ?></span>
+                        <span class="text-gray-400 text-sm flex-shrink-0 w-24"><?= $timeAgoLainnya ?></span>
+                        <div class="flex-grow ml-4">
                             <a href="../news-detail.php?id=<?= $rowLainnya['id'] ?>">
-                                <h3 class="text-lg font-bold mt-1"><?= $rowLainnya['judul'] ?></h3>
+                                <h3 class="text-lg font-bold"><?= $rowLainnya['judul'] ?></h3>
                             </a>
-                            <p class="text-gray-500 mt-1 mb-2"><?= $descriptionLainnya ?></p>
+                            <p class="text-gray-500 mt-1"><?= $descriptionLainnya ?></p>
                         </div>
                         <img src="<?= $firstImageLainnya ?: 'https://via.placeholder.com/400x300' ?>" class="w-80 h-60 object-cover rounded-lg ml-4">
                     </div>
