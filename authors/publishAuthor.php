@@ -79,45 +79,47 @@ $totalResult = $totalStmt->get_result();
 $totalRow = $totalResult->fetch_assoc();
 $totalPages = ceil($totalRow['total'] / $limit);
 
-echo "<div class='flex justify-center mt-4'>";
-echo "<nav class='inline-flex shadow-sm -space-x-px' aria-label='Pagination'>";
+if ($totalPages > 1) {
+    echo "<div class='flex justify-center mt-4'>";
+    echo "<nav class='inline-flex shadow-sm -space-x-px' aria-label='Pagination'>";
 
-// Tombol "prev"
-if ($page > 1) {
-    echo "<a href='?page=" . ($page - 1) . "' class='relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50'>
-            <span>Prev</span>
-          </a>";
-} else {
-    echo "<span class='relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-gray-200 text-sm font-medium text-gray-500'>
-            <span>Prev</span>
-          </span>";
-}
-
-// Nomor halaman
-$startPage = max(1, $page - 5);
-$endPage = min($totalPages, $startPage + 9);
-
-for ($i = $startPage; $i <= $endPage; $i++) {
-    if ($i == $page) {
-        echo "<span class='z-10 bg-blue-500 border-blue-600 text-white relative inline-flex items-center px-4 py-2 border text-sm font-medium'>{$i}</span>";
+    // Tombol "prev"
+    if ($page > 1) {
+        echo "<a href='?page=" . ($page - 1) . "' class='relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50'>
+                <span>Prev</span>
+              </a>";
     } else {
-        echo "<a href='?page={$i}' class='bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium'>{$i}</a>";
+        echo "<span class='relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-gray-200 text-sm font-medium text-gray-500'>
+                <span>Prev</span>
+              </span>";
     }
-}
 
-// Tombol "next"
-if ($page < $totalPages) {
-    echo "<a href='?page=" . ($page + 1) . "' class='relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50'>
-            <span>Next</span>
-          </a>";
-} else {
-    echo "<span class='relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-gray-200 text-sm font-medium text-gray-500'>
-            <span>Next</span>
-          </span>";
-}
+    // Nomor halaman
+    $startPage = max(1, $page - 5);
+    $endPage = min($totalPages, $startPage + 9);
 
-echo "</nav>";
-echo "</div>";
+    for ($i = $startPage; $i <= $endPage; $i++) {
+        if ($i == $page) {
+            echo "<span class='z-10 bg-blue-500 border-blue-600 text-white relative inline-flex items-center px-4 py-2 border text-sm font-medium'>{$i}</span>";
+        } else {
+            echo "<a href='?page={$i}' class='bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium'>{$i}</a>";
+        }
+    }
+
+    // Tombol "next"
+    if ($page < $totalPages) {
+        echo "<a href='?page=" . ($page + 1) . "' class='relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50'>
+                <span>Next</span>
+              </a>";
+    } else {
+        echo "<span class='relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-gray-200 text-sm font-medium text-gray-500'>
+                <span>Next</span>
+              </span>";
+    }
+
+    echo "</nav>";
+    echo "</div>";
+}
 
 $conn->close();
 ?>

@@ -1,75 +1,125 @@
 <?php
+session_start();
 include '../header & footer/header_AuthRev.php';
 include '../header & footer/category_header.php';
+include '../connection/config.php';
+
+function timeAgo($datetime) {
+    $now = new DateTime();
+    $posted = new DateTime($datetime);
+    $interval = $now->diff($posted);
+
+    if ($interval->y > 0) return $interval->y . " tahun yang lalu";
+    if ($interval->m > 0) return $interval->m . " bulan yang lalu";
+    if ($interval->d > 0) return $interval->d . " hari yang lalu";
+    if ($interval->h > 0) return $interval->h . " jam yang lalu";
+    if ($interval->i > 0) return $interval->i . " menit yang lalu";
+    return "baru saja";
+}
 
 renderCategoryHeader('Draft');
+
+// Ambil user_id dari sesi
+$user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
+
+if ($user_id === null) {
+    echo "<div class='flex flex-col items-center justify-center mt-8'>
+            <i class='fas fa-sticky-note text-gray-400 text-8xl mb-4'></i>
+            <p class='text-gray-500'>Tidak ada konten draft saat ini.</p>
+          </div>";
+    exit;
+}
+
+// Pagination
+$limit = 30; // Maksimal 30 berita per halaman
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$offset = ($page - 1) * $limit;
+
+// Query untuk mendapatkan data
+$query = "SELECT id, judul, konten_artikel, tanggal_dibuat 
+          FROM berita 
+          WHERE user_id = ? AND visibilitas = 'public' AND status_publikasi = 'draft' 
+          ORDER BY tanggal_dibuat DESC 
+          LIMIT ? OFFSET ?";
+$stmt = $conn->prepare($query);
+$stmt->bind_param('iii', $user_id, $limit, $offset);
+$stmt->execute();
+$result = $stmt->get_result();
+
+echo "<div class='container mx-auto mt-4' id='draftContainer'>";
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $firstImage = '';
+        if (preg_match('/<img.+src=[\'"](?P<src>.+?)[\'"].*>/i', $row['konten_artikel'], $image)) {
+            $firstImage = $image['src'];
+        }
+        $timeAgo = timeAgo($row['tanggal_dibuat']);
+        echo "<div class='flex items-center mb-8'> <!-- Jarak atas bawah -->
+                <img src='{$firstImage}' class='w-40 h-20 object-cover rounded-lg mr-4'>
+                <div class='flex-grow'>
+                    <span class='text-gray-400 text-sm'>Disimpan {$timeAgo}</span>
+                    <h3 class='text-lg font-bold mt-1'>{$row['judul']}</h3>
+                </div>
+              </div>";
+    }
+} else {
+    echo "<div class='flex flex-col items-center justify-center mt-8'>
+            <i class='fas fa-sticky-note text-gray-400 text-8xl mb-4'></i>
+            <p class='text-gray-500'>Tidak ada konten draft saat ini.</p>
+          </div>";
+}
+echo "</div>";
+
+// Pagination controls
+$totalQuery = "SELECT COUNT(*) as total FROM berita WHERE user_id = ? AND visibilitas = 'public' AND status_publikasi = 'draft'";
+$totalStmt = $conn->prepare($totalQuery);
+$totalStmt->bind_param('i', $user_id);
+$totalStmt->execute();
+$totalResult = $totalStmt->get_result();
+$totalRow = $totalResult->fetch_assoc();
+$totalPages = ceil($totalRow['total'] / $limit);
+
+if ($totalPages > 1) {
+    echo "<div class='flex justify-center mt-4'>";
+    echo "<nav class='inline-flex shadow-sm -space-x-px' aria-label='Pagination'>";
+
+    // Tombol "prev"
+    if ($page > 1) {
+        echo "<a href='?page=" . ($page - 1) . "' class='relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50'>
+                <span>Prev</span>
+              </a>";
+    } else {
+        echo "<span class='relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-gray-200 text-sm font-medium text-gray-500'>
+                <span>Prev</span>
+              </span>";
+    }
+
+    // Nomor halaman
+    $startPage = max(1, $page - 5);
+    $endPage = min($totalPages, $startPage + 9);
+
+    for ($i = $startPage; $i <= $endPage; $i++) {
+        if ($i == $page) {
+            echo "<span class='z-10 bg-blue-500 border-blue-600 text-white relative inline-flex items-center px-4 py-2 border text-sm font-medium'>{$i}</span>";
+        } else {
+            echo "<a href='?page={$i}' class='bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium'>{$i}</a>";
+        }
+    }
+
+    // Tombol "next"
+    if ($page < $totalPages) {
+        echo "<a href='?page=" . ($page + 1) . "' class='relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50'>
+                <span>Next</span>
+              </a>";
+    } else {
+        echo "<span class='relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-gray-200 text-sm font-medium text-gray-500'>
+                <span>Next</span>
+              </span>";
+    }
+
+    echo "</nav>";
+    echo "</div>";
+}
+
+$conn->close();
 ?>
-
-<div class="container mx-auto mt-4 hidden" id="draftContainer">
-    <!-- Konten berita dihapus -->
-</div>
-
-<div id="emptyMessage" class="flex flex-col items-center justify-center mt-8">
-    <i class="fas fa-sticky-note text-gray-400 text-8xl mb-4"></i>
-    <p class="text-gray-500 mt-4">Tidak ada konten draft saat ini.</p>
-</div>
-
-<!-- Popup Konfirmasi Hapus -->
-<div id="popup" class="fixed inset-0 bg-gray-800 bg-opacity-50 hidden flex items-center justify-center">
-    <div class="bg-white p-6 rounded-lg shadow-lg transform transition-transform scale-0">
-        <div class="flex items-center mb-4">
-            <i class="fas fa-exclamation-circle text-red-500 text-2xl mr-2"></i>
-            <h2 class="text-xl font-bold" id="popupTitle">Konfirmasi</h2>
-        </div>
-        <p class="mb-4" id="popupMessage">Apakah Anda yakin ingin menghapus item ini?</p>
-        <div class="flex justify-end">
-            <button id="confirmDelete" class="bg-red-500 text-white px-4 py-2 rounded mr-2">Hapus</button>
-            <button id="cancelDelete" class="bg-gray-300 text-black px-4 py-2 rounded">Batal</button>
-        </div>
-    </div>
-</div>
-
-<script>
-    let cardToDelete = null;
-
-    document.querySelectorAll('.delete-card').forEach(option => {
-        option.addEventListener('click', (e) => {
-            e.preventDefault();
-            cardToDelete = option.closest('.card');
-            showPopup();
-        });
-    });
-
-    function showPopup() {
-        const popup = document.getElementById('popup');
-        popup.classList.remove('hidden');
-        document.querySelector('#popup div').classList.add('scale-100');
-    }
-
-    document.getElementById('confirmDelete').addEventListener('click', function () {
-        if (cardToDelete) {
-            cardToDelete.remove();
-            checkIfEmpty();
-            closePopup();
-        }
-    });
-
-    document.getElementById('cancelDelete').addEventListener('click', closePopup);
-
-    function closePopup() {
-        const popup = document.getElementById('popup');
-        popup.classList.add('hidden');
-        document.querySelector('#popup div').classList.remove('scale-100');
-    }
-
-    function checkIfEmpty() {
-        const draftContainer = document.getElementById('draftContainer');
-        const emptyMessage = document.getElementById('emptyMessage');
-        if (draftContainer.children.length === 0) {
-            draftContainer.classList.add('hidden');
-            emptyMessage.classList.remove('hidden');
-        }
-    }
-</script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
