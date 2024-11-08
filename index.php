@@ -186,9 +186,11 @@ if ($result && $result->num_rows > 0) {
 
     function updateSlider() {
         slider.style.transform = `translateX(-${currentSlide * 100}%)`;
-        dots.forEach(dot => dot.classList.remove('bg-gray-800', 'w-6', 'h-2'));
-        dots.forEach(dot => dot.classList.add('w-3', 'h-3', 'rounded-full'));
-        dots[currentSlide].classList.add('bg-gray-800', 'w-6', 'h-2', 'rounded-full');
+        dots.forEach(dot => {
+            dot.classList.remove('bg-white', 'w-6', 'h-2');
+            dot.classList.add('bg-gray-400', 'w-3', 'h-3', 'rounded-full');
+        });
+        dots[currentSlide].classList.add('bg-white', 'w-6', 'h-2');
     }
 
     nextButton.addEventListener('click', () => {
