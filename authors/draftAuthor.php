@@ -19,7 +19,6 @@ function timeAgo($datetime) {
 
 renderCategoryHeader('Draft');
 
-// Ambil user_id dari sesi
 $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
 
 if ($user_id === null) {
@@ -30,15 +29,13 @@ if ($user_id === null) {
     exit;
 }
 
-// Pagination
-$limit = 30; // Maksimal 30 berita per halaman
+$limit = 30;
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
-// Query untuk mendapatkan data
 $query = "SELECT id, judul, konten_artikel, tanggal_dibuat 
           FROM berita 
-          WHERE user_id = ? AND visibilitas = 'public' AND status_publikasi = 'draft' 
+          WHERE user_id = ? AND status_publikasi = 'draft' 
           ORDER BY tanggal_dibuat DESC 
           LIMIT ? OFFSET ?";
 $stmt = $conn->prepare($query);
@@ -54,7 +51,7 @@ if ($result->num_rows > 0) {
             $firstImage = $image['src'];
         }
         $timeAgo = timeAgo($row['tanggal_dibuat']);
-        echo "<div class='flex items-center mb-8'> <!-- Jarak atas bawah -->
+        echo "<div class='flex items-center mb-8'>
                 <img src='{$firstImage}' class='w-40 h-20 object-cover rounded-lg mr-4'>
                 <div class='flex-grow'>
                     <span class='text-gray-400 text-sm'>Disimpan {$timeAgo}</span>
@@ -70,8 +67,7 @@ if ($result->num_rows > 0) {
 }
 echo "</div>";
 
-// Pagination controls
-$totalQuery = "SELECT COUNT(*) as total FROM berita WHERE user_id = ? AND visibilitas = 'public' AND status_publikasi = 'draft'";
+$totalQuery = "SELECT COUNT(*) as total FROM berita WHERE user_id = ? AND status_publikasi = 'draft'";
 $totalStmt = $conn->prepare($totalQuery);
 $totalStmt->bind_param('i', $user_id);
 $totalStmt->execute();
@@ -83,7 +79,6 @@ if ($totalPages > 1) {
     echo "<div class='flex justify-center mt-4'>";
     echo "<nav class='inline-flex shadow-sm -space-x-px' aria-label='Pagination'>";
 
-    // Tombol "prev"
     if ($page > 1) {
         echo "<a href='?page=" . ($page - 1) . "' class='relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50'>
                 <span>Prev</span>
@@ -94,7 +89,6 @@ if ($totalPages > 1) {
               </span>";
     }
 
-    // Nomor halaman
     $startPage = max(1, $page - 5);
     $endPage = min($totalPages, $startPage + 9);
 
@@ -106,7 +100,6 @@ if ($totalPages > 1) {
         }
     }
 
-    // Tombol "next"
     if ($page < $totalPages) {
         echo "<a href='?page=" . ($page + 1) . "' class='relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50'>
                 <span>Next</span>

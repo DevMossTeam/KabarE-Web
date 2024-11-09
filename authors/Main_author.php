@@ -27,8 +27,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
     $title = $_POST['title'];
     $content = $_POST['content'];
     $category = $_POST['category'];
-    $visibility = isset($_POST['visibility']) ? $_POST['visibility'] : 'public'; // Set default ke 'public'
-    $status = 'publikasi';
+    $visibility = $_POST['visibility']; // Ambil visibilitas dari input
+    $status = 'draft'; // Ubah status menjadi 'draft'
     $created_at = date('Y-m-d H:i:s');
 
     // Ambil user_id dari sesi atau sumber lain
@@ -44,10 +44,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
         exit;
     }
 
-    $query = "INSERT INTO berita (id, judul, konten_artikel, kategori, status_publikasi, tanggal_dibuat, user_id, visibilitas) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    // Query untuk menyimpan artikel beserta visibilitas
+    $query = "INSERT INTO berita (id, judul, konten_artikel, tanggal_dibuat, user_id, kategori, visibilitas, status_publikasi) 
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($query);
-    $stmt->bind_param('ssssssss', $id, $title, $content, $category, $status, $created_at, $user_id, $visibility);
-
+    $stmt->bind_param('ssssssss', $id, $title, $content, $created_at, $user_id, $category, $visibility, $status);
+    $stmt->execute();
+    
     if ($stmt->execute()) {
         // Ambil tag dari input dan simpan ke database
         if (!empty($_POST['tags'])) {
@@ -61,9 +64,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
                 $tagStmt->close();
             }
         }
-        echo "Artikel berhasil dipublikasikan!";
+        echo "Artikel berhasil disimpan sebagai draft!";
     } else {
-        echo "Gagal mempublikasikan artikel.";
+        echo "Gagal menyimpan artikel sebagai draft.";
     }
     $stmt->close();
     $conn->close();
