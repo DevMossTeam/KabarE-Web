@@ -1,5 +1,5 @@
 <?php
-include 'connection/config.php'; // Pastikan path ini sesuai dengan struktur folder Anda
+include '../connection/config.php'; // Pastikan path ini sesuai dengan struktur folder Anda
 
 // Fungsi untuk menghitung waktu yang lalu
 function timeAgo($datetimeString) {
@@ -46,7 +46,7 @@ if ($id) {
 }
 ?>
 
-<?php include 'header & footer/header.php'; ?>
+<?php include '../header & footer/header.php'; ?>
 
 <!-- Tambahkan link Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -106,7 +106,7 @@ if ($id) {
                                     <i class="fas fa-user-circle text-2xl text-gray-500 mr-2"></i>
                                     <div>
                                         <span class="font-semibold">Chiquita</span> · <span class="text-gray-500 text-sm time-ago"><?= timeAgo(date('Y-m-d H:i:s', time() - ($j * 60))) ?></span>
-                                    <p class="mt-2">Informasi yang sangat menarik</p>
+                                        <p class="mt-2">Informasi yang sangat menarik</p>
                                     </div>
                                 </div>
                                 <button class="options-button">
@@ -141,7 +141,7 @@ if ($id) {
                     </li>
                 <?php endfor; ?>
             </ul>
-
+            
             <!-- Baru Baru Ini -->
             <div class="mt-8 lg:ml-4">
                 <span class="inline-block bg-[#FFC300] text-white px-6 py-1 rounded-t-md">Baru Baru Ini</span>
@@ -217,166 +217,151 @@ if ($id) {
             <?php endfor; ?>
         </div>
     </div>
-
-    <!-- Popup Konfirmasi Hapus Komentar -->
-    <div id="popup" class="fixed inset-0 bg-gray-800 bg-opacity-50 hidden flex items-center justify-center">
-        <div class="bg-white p-6 rounded-lg shadow-lg transform transition-transform scale-0">
-            <div class="flex items-center mb-4">
-                <i class="fas fa-exclamation-circle text-red-500 text-2xl mr-2"></i>
-                <h2 class="text-xl font-bold" id="popupTitle">Konfirmasi</h2>
-            </div>
-            <p class="mb-4" id="popupMessage">Apakah Anda yakin ingin menghapus komentar ini?</p>
-            <div class="flex justify-end">
-                <button id="confirmDelete" class="bg-red-500 text-white px-4 py-2 rounded mr-2">Hapus</button>
-                <button id="cancelDelete" class="bg-gray-300 text-black px-4 py-2 rounded">Batal</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        function timeAgo(date) {
-            const seconds = Math.floor((new Date() - date) / 1000);
-            let interval = Math.floor(seconds / 31536000);
-
-            if (interval > 1) return interval + " tahun yang lalu";
-            interval = Math.floor(seconds / 2592000);
-            if (interval > 1) return interval + " bulan yang lalu";
-            interval = Math.floor(seconds / 86400);
-            if (interval > 1) return interval + " hari yang lalu";
-            interval = Math.floor(seconds / 3600);
-            if (interval > 1) return interval + " jam yang lalu";
-            interval = Math.floor(seconds / 60);
-            if (interval > 1) return interval + " menit yang lalu";
-            return "baru saja";
-        }
-
-        function updateCommentCount() {
-            const commentCount = document.getElementById('commentsContainer').children.length;
-            document.getElementById('commentCount').textContent = `Komentar (${commentCount})`;
-        }
-
-        function addComment() {
-            const commentInput = document.getElementById('commentInput');
-            const commentText = commentInput.value.trim();
-            if (commentText) {
-                const userName = '<?= $userName ?>'; // Gunakan nama pengguna dari database
-                const commentDate = new Date();
-
-                const commentHtml = `
-                    <div class="mb-4 user-comment">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <i class="fas fa-user-circle text-2xl text-gray-500 mr-2"></i>
-                                <div>
-                                    <span class="font-semibold">${userName}</span> · <span class="text-gray-500 text-sm">${timeAgo(commentDate)}</span>
-                                    <p class="mt-2">${commentText}</p>
-                                </div>
-                            </div>
-                            <button class="options-button">
-                                <i class="fas fa-ellipsis-v text-lg"></i>
-                            </button>
-                        </div>
-                    </div>
-                `;
-
-                const commentsContainer = document.getElementById('commentsContainer');
-                commentsContainer.insertAdjacentHTML('afterbegin', commentHtml);
-                commentInput.value = '';
-                updateCommentCount();
-            }
-        }
-
-        document.getElementById('sendCommentButton').addEventListener('click', addComment);
-
-        document.getElementById('commentInput').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                addComment();
-            }
-        });
-
-        document.getElementById('commentsContainer').addEventListener('click', function (e) {
-            const optionsButton = e.target.closest('.options-button');
-
-            if (optionsButton) {
-                const commentDiv = optionsButton.closest('.mb-4');
-                if (commentDiv.classList.contains('user-comment')) {
-                    commentToDelete = commentDiv;
-                    showPopup();
-                }
-            }
-        });
-
-        document.getElementById('mainLikeButton').addEventListener('click', function () {
-            const likeCount = this.querySelector('.like-count');
-            const dislikeButton = document.getElementById('mainDislikeButton');
-            const disliked = dislikeButton.dataset.disliked === 'true';
-
-            if (!disliked) {
-                const liked = this.dataset.liked === 'true';
-                this.dataset.liked = !liked;
-                likeCount.textContent = parseInt(likeCount.textContent) + (liked ? -1 : 1);
-                this.classList.toggle('text-blue-500', !liked);
-                this.classList.toggle('text-gray-500', liked);
-            }
-        });
-
-        document.getElementById('mainDislikeButton').addEventListener('click', function () {
-            const dislikeCount = this.querySelector('.dislike-count');
-            const likeButton = document.getElementById('mainLikeButton');
-            const liked = likeButton.dataset.liked === 'true';
-
-            if (liked) {
-                const likeCount = likeButton.querySelector('.like-count');
-                likeButton.dataset.liked = false;
-                likeCount.textContent = parseInt(likeCount.textContent) - 1;
-                likeButton.classList.remove('text-blue-500');
-                likeButton.classList.add('text-gray-500');
-            }
-
-            const disliked = this.dataset.disliked === 'true';
-            this.dataset.disliked = !disliked;
-            dislikeCount.textContent = parseInt(dislikeCount.textContent) + (disliked ? -1 : 1);
-            this.classList.toggle('text-blue-500', !disliked);
-            this.classList.toggle('text-gray-500', disliked);
-        });
-
-        document.getElementById('shareButton').addEventListener('click', function () {
-            const url = window.location.href; // Mendapatkan URL lengkap halaman
-            navigator.clipboard.writeText(url).then(() => {
-                alert('URL berhasil disalin ke clipboard!');
-            }).catch(err => {
-                console.error('Gagal menyalin URL: ', err);
-            });
-        });
-
-        // Initial update of comment count
-        updateCommentCount();
-
-        let commentToDelete = null;
-
-        function showPopup() {
-            const popup = document.getElementById('popup');
-            popup.classList.remove('hidden');
-            document.querySelector('#popup div').classList.add('scale-100');
-        }
-
-        document.getElementById('confirmDelete').addEventListener('click', function () {
-            if (commentToDelete) {
-                commentToDelete.remove();
-                updateCommentCount();
-                closePopup();
-            }
-        });
-
-        document.getElementById('cancelDelete').addEventListener('click', closePopup);
-
-        function closePopup() {
-            const popup = document.getElementById('popup');
-            popup.classList.add('hidden');
-            document.querySelector('#popup div').classList.remove('scale-100');
-        }
-    </script>
 </div>
 
-<?php include 'header & footer/footer.php'; ?>
+<script>
+    function timeAgo(date) {
+        const seconds = Math.floor((new Date() - date) / 1000);
+        let interval = Math.floor(seconds / 31536000);
+
+        if (interval > 1) return interval + " tahun yang lalu";
+        interval = Math.floor(seconds / 2592000);
+        if (interval > 1) return interval + " bulan yang lalu";
+        interval = Math.floor(seconds / 86400);
+        if (interval > 1) return interval + " hari yang lalu";
+        interval = Math.floor(seconds / 3600);
+        if (interval > 1) return interval + " jam yang lalu";
+        interval = Math.floor(seconds / 60);
+        if (interval > 1) return interval + " menit yang lalu";
+        return "baru saja";
+    }
+
+    function updateCommentCount() {
+        const commentCount = document.getElementById('commentsContainer').children.length;
+        document.getElementById('commentCount').textContent = `Komentar (${commentCount})`;
+    }
+
+    function addComment() {
+        const commentInput = document.getElementById('commentInput');
+        const commentText = commentInput.value.trim();
+        if (commentText) {
+            const userName = 'Nama Pengguna'; // Ganti dengan nama pengguna yang sesuai
+            const commentDate = new Date();
+
+            const commentHtml = `
+                <div class="mb-4 user-comment">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <i class="fas fa-user-circle text-2xl text-gray-500 mr-2"></i>
+                            <div>
+                                <span class="font-semibold">${userName}</span> · <span class="text-gray-500 text-sm">${timeAgo(commentDate)}</span>
+                                <p class="mt-2">${commentText}</p>
+                            </div>
+                        </div>
+                        <button class="options-button">
+                            <i class="fas fa-ellipsis-v text-lg"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            const commentsContainer = document.getElementById('commentsContainer');
+            commentsContainer.insertAdjacentHTML('afterbegin', commentHtml);
+            commentInput.value = '';
+            updateCommentCount();
+        }
+    }
+
+    document.getElementById('sendCommentButton').addEventListener('click', addComment);
+
+    document.getElementById('commentInput').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            addComment();
+        }
+    });
+
+    document.getElementById('commentsContainer').addEventListener('click', function (e) {
+        const optionsButton = e.target.closest('.options-button');
+
+        if (optionsButton) {
+            const commentDiv = optionsButton.closest('.mb-4');
+            if (commentDiv.classList.contains('user-comment')) {
+                commentToDelete = commentDiv;
+                showPopup();
+            }
+        }
+    });
+
+    document.getElementById('mainLikeButton').addEventListener('click', function () {
+        const likeCount = this.querySelector('.like-count');
+        const dislikeButton = document.getElementById('mainDislikeButton');
+        const disliked = dislikeButton.dataset.disliked === 'true';
+
+        if (!disliked) {
+            const liked = this.dataset.liked === 'true';
+            this.dataset.liked = !liked;
+            likeCount.textContent = parseInt(likeCount.textContent) + (liked ? -1 : 1);
+            this.classList.toggle('text-blue-500', !liked);
+            this.classList.toggle('text-gray-500', liked);
+        }
+    });
+
+    document.getElementById('mainDislikeButton').addEventListener('click', function () {
+        const dislikeCount = this.querySelector('.dislike-count');
+        const likeButton = document.getElementById('mainLikeButton');
+        const liked = likeButton.dataset.liked === 'true';
+
+        if (liked) {
+            const likeCount = likeButton.querySelector('.like-count');
+            likeButton.dataset.liked = false;
+            likeCount.textContent = parseInt(likeCount.textContent) - 1;
+            likeButton.classList.remove('text-blue-500');
+            likeButton.classList.add('text-gray-500');
+        }
+
+        const disliked = this.dataset.disliked === 'true';
+        this.dataset.disliked = !disliked;
+        dislikeCount.textContent = parseInt(dislikeCount.textContent) + (disliked ? -1 : 1);
+        this.classList.toggle('text-blue-500', !disliked);
+        this.classList.toggle('text-gray-500', disliked);
+    });
+
+    document.getElementById('shareButton').addEventListener('click', function () {
+        const url = window.location.href; // Mendapatkan URL lengkap halaman
+        navigator.clipboard.writeText(url).then(() => {
+            alert('URL berhasil disalin ke clipboard!');
+        }).catch(err => {
+            console.error('Gagal menyalin URL: ', err);
+        });
+    });
+
+    // Initial update of comment count
+    updateCommentCount();
+
+    let commentToDelete = null;
+
+    function showPopup() {
+        const popup = document.getElementById('popup');
+        popup.classList.remove('hidden');
+        document.querySelector('#popup div').classList.add('scale-100');
+    }
+
+    document.getElementById('confirmDelete').addEventListener('click', function () {
+        if (commentToDelete) {
+            commentToDelete.remove();
+            updateCommentCount();
+            closePopup();
+        }
+    });
+
+    document.getElementById('cancelDelete').addEventListener('click', closePopup);
+
+    function closePopup() {
+        const popup = document.getElementById('popup');
+        popup.classList.add('hidden');
+        document.querySelector('#popup div').classList.remove('scale-100');
+    }
+</script>
+
+<?php include '../header & footer/footer.php'; ?>
