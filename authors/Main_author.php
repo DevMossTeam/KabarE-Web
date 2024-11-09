@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
     $title = $_POST['title'];
     $content = $_POST['content'];
     $category = $_POST['category'];
-    $visibility = $_POST['visibility']; // Ambil visibilitas dari input
+    $visibility = isset($_POST['visibility']) ? $_POST['visibility'] : 'public'; // Set default ke 'public' jika tidak ada
     $status = 'draft'; // Ubah status menjadi 'draft'
     $created_at = date('Y-m-d H:i:s');
 
