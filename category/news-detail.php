@@ -20,7 +20,7 @@ $id = isset($_GET['id']) ? $_GET['id'] : null;
 
 if ($id) {
     // Query untuk mendapatkan detail berita dan nama penulis
-    $query = "SELECT b.judul, b.konten_artikel, b.tanggal_dibuat, b.kategori, u.nama_lengkap 
+    $query = "SELECT b.judul, b.konten_artikel, b.tanggal_dibuat, b.kategori, u.nama_lengkap, u.nama_pengguna, u.profile_pic 
               FROM berita b 
               JOIN user u ON b.user_id = u.uid 
               WHERE b.id = ?";
@@ -36,6 +36,8 @@ if ($id) {
         $tanggalDibuat = $berita['tanggal_dibuat'];
         $kategori = $berita['kategori'];
         $penulis = $berita['nama_lengkap'];
+        $namaPengguna = $berita['nama_pengguna'];
+        $profilePic = $berita['profile_pic'];
 
         // Ekstrak URL gambar pertama dari konten artikel dan hapus tag gambar dari konten
         preg_match('/<img.*?src=["\'](.*?)["\'].*?>/i', $konten, $matches);
@@ -48,14 +50,6 @@ if ($id) {
 } else {
     echo "ID berita tidak valid.";
     exit;
-}
-
-// Query untuk mendapatkan berita acak
-$randomNewsQuery = "SELECT id, judul, konten_artikel, tanggal_dibuat, kategori FROM berita ORDER BY RAND() LIMIT 4";
-$randomNewsResult = $conn->query($randomNewsQuery);
-
-if (!$randomNewsResult) {
-    die("Query gagal: " . $conn->error);
 }
 
 // Query untuk mendapatkan berita teratas secara acak
@@ -99,6 +93,14 @@ $stmt->execute();
 $sameTopicNewsResult = $stmt->get_result();
 
 if (!$sameTopicNewsResult) {
+    die("Query gagal: " . $conn->error);
+}
+
+// Query untuk mendapatkan berita acak
+$randomNewsQuery = "SELECT id, judul, konten_artikel, tanggal_dibuat, kategori FROM berita ORDER BY RAND() LIMIT 4";
+$randomNewsResult = $conn->query($randomNewsQuery);
+
+if (!$randomNewsResult) {
     die("Query gagal: " . $conn->error);
 }
 ?>
@@ -315,14 +317,15 @@ if (!$sameTopicNewsResult) {
         const commentInput = document.getElementById('commentInput');
         const commentText = commentInput.value.trim();
         if (commentText) {
-            const userName = 'Nama Pengguna'; // Ganti dengan nama pengguna yang sesuai
+            const userName = '<?= htmlspecialchars($namaPengguna) ?>'; // Menggunakan nama_pengguna dari database
+            const profilePic = 'data:image/jpeg;base64,<?= base64_encode($profilePic) ?>'; // Menggunakan profile_pic dari database
             const commentDate = new Date();
 
             const commentHtml = `
                 <div class="mb-4 user-comment opacity-0 transition-opacity duration-500">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center">
-                            <i class="fas fa-user-circle text-2xl text-gray-500 mr-2"></i>
+                            <img src="${profilePic}" alt="Profile Picture" class="w-10 h-10 rounded-full mr-2">
                             <div>
                                 <span class="font-semibold">${userName}</span> · <span class="text-gray-500 text-sm">${timeAgo(commentDate)}</span>
                                 <p class="mt-2">${commentText}</p>

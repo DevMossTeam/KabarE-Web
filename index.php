@@ -126,7 +126,7 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
                 $description = strip_tags($row['konten_artikel']);
                 $description = substr($description, 0, 100) . (strlen($description) > 100 ? '...' : '');
             ?>
-                <a href="news-detail.php?id=<?= $row['id'] ?>" class="flex flex-col lg:flex-row items-center lg:items-start transform lg:scale-105">
+                <a href="../category/news-detail.php?id=<?= $row['id'] ?>" class="flex flex-col lg:flex-row items-center lg:items-start transform lg:scale-105">
                     <img src="<?= $firstImage ?: 'https://via.placeholder.com/200x150' ?>" class="w-48 h-32 object-cover rounded-lg mb-0.5 lg:mb-0 transition-transform duration-300 hover:scale-105 cursor-pointer">
                     <div class="flex flex-col justify-center text-center md:text-center lg:text-left lg:ml-6 lg:w-full lg:pr-8 lg:-mt-2">
                         <h3 class="text-md font-bold mt-1 line-clamp-3"><?= $title ?></h3>
@@ -150,11 +150,13 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
                                  class="w-full h-full object-cover transition duration-300 ease-in-out brightness-75 hover:brightness-50">
                             <div class="absolute top-4 left-4 text-white">
                                 <span class="font-bold"><?= $data['kategori'] ?></span>
-                                <h3 class="text-lg font-bold mt-1"><?= $data['judul'] ?></h3>
+                                <a href="../category/news-detail.php?id=<?= $data['id'] ?>">
+                                    <h3 class="text-lg font-bold mt-1"><?= $data['judul'] ?></h3>
+                                </a>
                             </div>
                         </div>
                     <?php endforeach; ?>
-                </div>
+                </div
 
                 <!-- Left and Right Toggle inside the slider -->
                 <button id="prev" class="absolute top-1/2 left-4 transform -translate-y-1/2 p-3 bg-black bg-opacity-50 hover:bg-opacity-75 text-white rounded-md z-10">
@@ -192,7 +194,7 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
                         $firstImage = $image['src'];
                     }
                     ?>
-                    <a href="news-detail.php?id=<?= $beritaTerkini[$i]['id'] ?>" class="relative overflow-hidden rounded-lg">
+                    <a href="../category/news-detail.php?id=<?= $beritaTerkini[$i]['id'] ?>" class="relative overflow-hidden rounded-lg">
                         <img src="<?= $firstImage ?: 'https://via.placeholder.com/300x200' ?>" class="w-full h-56 object-cover">
                         <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
                             <span class="text-white font-bold"><?= $beritaTerkini[$i]['kategori'] ?> | <?= timeAgo($beritaTerkini[$i]['tanggal_dibuat']) ?></span>
@@ -214,7 +216,7 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
                         $firstImage = $image['src'];
                     }
                     ?>
-                    <a href="news-detail.php?id=<?= $beritaTerkini[$i]['id'] ?>" class="flex items-center">
+                    <a href="../category/news-detail.php?id=<?= $beritaTerkini[$i]['id'] ?>" class="flex items-center">
                         <img src="<?= $firstImage ?: 'https://via.placeholder.com/200x150' ?>" class="w-full md:w-1/2 lg:w-1/2 h-32 md:h-40 lg:h-48 object-cover rounded-lg">
                         <div class="ml-4">
                             <h3 class="text-md font-bold text-white"><?= $beritaTerkini[$i]['judul'] ?></h3>
@@ -248,7 +250,7 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
                 ?>
                 <div class="flex mb-6 items-start">
                     <div class="flex-grow">
-                        <a href="news-detail.php?id=<?= $populer['id'] ?>">
+                        <a href="../category/news-detail.php?id=<?= $populer['id'] ?>">
                             <h3 class="text-lg font-bold mt-1"><?= $title ?></h3>
                         </a>
                         <p class="text-gray-500 mt-1"><?= $description ?></p>
@@ -270,7 +272,7 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
                         <span class="text-[#CAD2FF] text-5xl font-semibold italic mr-4 flex-shrink-0"><?= $index + 1 ?></span>
                         <div class="flex-grow">
                             <span class="text-gray-400 text-base"><?= timeAgo($baru['tanggal_dibuat']) ?></span>
-                            <a href="news-detail.php?id=<?= $baru['id'] ?>">
+                            <a href="../category/news-detail.php?id=<?= $baru['id'] ?>">
                                 <h3 class="text-lg font-bold mt-1"><?= $baru['judul'] ?></h3>
                             </a>
                             <div class="border-b border-gray-300 mt-2 w-full"></div>
@@ -291,7 +293,7 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <!-- Gambar Besar -->
         <div>
-            <a href="news-detail.php?id=<?= $rowRandomCategory['id'] ?>">
+            <a href="../category/news-detail.php?id=<?= $rowRandomCategory['id'] ?>">
                 <img src="<?= $firstImageRandomCategory ?: 'https://via.placeholder.com/600x350' ?>" class="w-full h-96 object-cover rounded-lg">
                 <div class="p-4" style="padding-left: 0; padding-right: 0;">
                     <span class="text-red-500 font-bold"><?= $rowRandomCategory['kategori'] ?></span> <span class="text-gray-500">| <?= date('d F Y', strtotime($rowRandomCategory['tanggal_dibuat'])) ?></span>
@@ -312,7 +314,7 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
                         $firstImageRandomCategorySmall = $image['src'];
                     }
                 ?>
-                    <a href="news-detail.php?id=<?= $rowRandomCategorySmall['id'] ?>" class="block mb-4 relative">
+                    <a href="../category/news-detail.php?id=<?= $rowRandomCategorySmall['id'] ?>" class="block mb-4 relative">
                         <img src="<?= $firstImageRandomCategorySmall ?: 'https://via.placeholder.com/300x200' ?>" class="w-full h-48 object-cover rounded-lg rounded-b-lg">
                         <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4 rounded-b-lg">
                             <h3 class="text-white text-sm font-bold"><?= $rowRandomCategorySmall['judul'] ?></h3>
@@ -330,7 +332,7 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
                     ?>
                         <li class="mb-2 border-b border-gray-300 pb-2">
                             <span class="text-gray-400 text-sm block"><?= timeAgo($rowRandomCategoryList['tanggal_dibuat']) ?></span>
-                            <a href="news-detail.php?id=<?= $rowRandomCategoryList['id'] ?>" class="text-black hover:underline"><?= $rowRandomCategoryList['judul'] ?></a>
+                            <a href="../category/news-detail.php?id=<?= $rowRandomCategoryList['id'] ?>" class="text-black hover:underline"><?= $rowRandomCategoryList['judul'] ?></a>
                         </li>
                     <?php endwhile; ?>
                 </ul>
@@ -392,7 +394,7 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
                 <div class="flex mb-4 items-start">
                     <span class="text-gray-400 text-sm flex-shrink-0 w-24"><?= $timeAgoLainnya ?></span>
                     <div class="flex-grow ml-4">
-                        <a href="news-detail.php?id=<?= $rowLainnya['id'] ?>">
+                        <a href="../category/news-detail.php?id=<?= $rowLainnya['id'] ?>">
                             <h3 class="text-lg font-bold"><?= $rowLainnya['judul'] ?></h3>
                         </a>
                         <p class="text-gray-500 mt-1"><?= $descriptionLainnya ?></p>
@@ -421,7 +423,7 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
                         <div class="flex items-center">
                             <div class="flex-grow">
                                 <span class="text-gray-400 text-sm"><?= $timeAgoBaru ?></span>
-                                <a href="news-detail.php?id=<?= $rowBaru['id'] ?>">
+                                <a href="../category/news-detail.php?id=<?= $rowBaru['id'] ?>">
                                     <h3 class="text-lg font-bold mt-1"><?= $rowBaru['judul'] ?></h3>
                                 </a>
                                 <div class="border-b border-gray-300 mt-2 w-full"></div>
@@ -442,9 +444,7 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
     const nextButton = document.getElementById('next');
     const dots = document.querySelectorAll('[data-slide]');
     let currentSlide = 0;
-
-    const headlines = <?= json_encode(array_column($sliderData, 'judul')) ?>;
-    const categories = <?= json_encode(array_column($sliderData, 'kategori')) ?>;
+    const slideCount = <?= count($sliderData) ?>;
 
     function updateSlider() {
         slider.style.transform = `translateX(-${currentSlide * 100}%)`;
@@ -455,15 +455,18 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
         dots[currentSlide].classList.add('bg-white', 'w-6', 'h-2');
     }
 
-    nextButton.addEventListener('click', () => {
-        currentSlide = (currentSlide + 1) % headlines.length;
+    function nextSlide() {
+        currentSlide = (currentSlide + 1) % slideCount;
         updateSlider();
-    });
+    }
 
-    prevButton.addEventListener('click', () => {
-        currentSlide = (currentSlide - 1 + headlines.length) % headlines.length;
+    function prevSlide() {
+        currentSlide = (currentSlide - 1 + slideCount) % slideCount;
         updateSlider();
-    });
+    }
+
+    nextButton.addEventListener('click', nextSlide);
+    prevButton.addEventListener('click', prevSlide);
 
     dots.forEach(dot => {
         dot.addEventListener('click', () => {
@@ -471,6 +474,9 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
             updateSlider();
         });
     });
+
+    // Set interval for automatic slide
+    setInterval(nextSlide, 5000); // Change slide every 5 seconds
 
     updateSlider();
 </script>
