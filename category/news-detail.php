@@ -19,8 +19,11 @@ function timeAgo($datetimeString) {
 $id = isset($_GET['id']) ? $_GET['id'] : null;
 
 if ($id) {
-    // Query untuk mendapatkan detail berita
-    $query = "SELECT judul, konten_artikel, tanggal_dibuat FROM berita WHERE id = ?";
+    // Query untuk mendapatkan detail berita dan nama penulis
+    $query = "SELECT b.judul, b.konten_artikel, b.tanggal_dibuat, b.kategori, u.nama_lengkap 
+              FROM berita b 
+              JOIN user u ON b.user_id = u.uid 
+              WHERE b.id = ?";
     $stmt = $conn->prepare($query);
     $stmt->bind_param('s', $id);
     $stmt->execute();
@@ -31,6 +34,8 @@ if ($id) {
         $judul = $berita['judul'];
         $konten = $berita['konten_artikel'];
         $tanggalDibuat = $berita['tanggal_dibuat'];
+        $kategori = $berita['kategori'];
+        $penulis = $berita['nama_lengkap'];
 
         // Ekstrak URL gambar pertama dari konten artikel dan hapus tag gambar dari konten
         preg_match('/<img.*?src=["\'](.*?)["\'].*?>/i', $konten, $matches);
@@ -44,6 +49,58 @@ if ($id) {
     echo "ID berita tidak valid.";
     exit;
 }
+
+// Query untuk mendapatkan berita acak
+$randomNewsQuery = "SELECT id, judul, konten_artikel, tanggal_dibuat, kategori FROM berita ORDER BY RAND() LIMIT 4";
+$randomNewsResult = $conn->query($randomNewsQuery);
+
+if (!$randomNewsResult) {
+    die("Query gagal: " . $conn->error);
+}
+
+// Query untuk mendapatkan berita teratas secara acak
+$topNewsQuery = "SELECT id, judul, tanggal_dibuat FROM berita ORDER BY RAND() LIMIT 6";
+$topNewsResult = $conn->query($topNewsQuery);
+
+if (!$topNewsResult) {
+    die("Query gagal: " . $conn->error);
+}
+
+// Ambil ID dan kategori dari berita saat ini
+$kategori = '';
+
+// Dapatkan kategori berita saat ini
+if ($id) {
+    $query = "SELECT kategori FROM berita WHERE id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param('s', $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $currentNews = $result->fetch_assoc();
+    $kategori = $currentNews['kategori'];
+}
+
+// Query untuk mendapatkan berita terbaru dari kategori yang sama
+$recentNewsQuery = "SELECT id, judul, tanggal_dibuat FROM berita WHERE kategori = ? AND id != ? ORDER BY tanggal_dibuat DESC LIMIT 4";
+$stmt = $conn->prepare($recentNewsQuery);
+$stmt->bind_param('ss', $kategori, $id);
+$stmt->execute();
+$recentNewsResult = $stmt->get_result();
+
+if (!$recentNewsResult) {
+    die("Query gagal: " . $conn->error);
+}
+
+// Query untuk mendapatkan berita acak dari kategori yang sama
+$sameTopicNewsQuery = "SELECT id, judul, konten_artikel FROM berita WHERE kategori = ? AND id != ? ORDER BY RAND() LIMIT 3";
+$stmt = $conn->prepare($sameTopicNewsQuery);
+$stmt->bind_param('ss', $kategori, $id);
+$stmt->execute();
+$sameTopicNewsResult = $stmt->get_result();
+
+if (!$sameTopicNewsResult) {
+    die("Query gagal: " . $conn->error);
+}
 ?>
 
 <?php include '../header & footer/header.php'; ?>
@@ -54,8 +111,12 @@ if ($id) {
     <div class="flex flex-col lg:flex-row">
         <!-- Gambar Utama dan Paragraf -->
         <div class="w-full lg:w-2/3 pr-4">
+            <span class="inline-block bg-red-500 text-white px-3 py-1 rounded-md my-2"><?= htmlspecialchars($kategori) ?></span>
             <h1 class="text-3xl font-bold mt-2"><?= htmlspecialchars($judul) ?></h1>
-            <span class="text-gray-500 text-sm"><?= date('d F Y, H:i', strtotime($tanggalDibuat)) ?> WIB</span>
+            <div class="text-gray-500 text-sm mt-2">
+                <span>Penulis: <?= htmlspecialchars($penulis) ?></span> | 
+                <span><?= date('d F Y, H:i', strtotime($tanggalDibuat)) ?> WIB</span>
+            </div>
             <div class="mt-4">
                 <!-- Tampilkan gambar utama dengan ukuran penuh jika ada -->
                 <?php if ($gambar): ?>
@@ -68,11 +129,11 @@ if ($id) {
             <div class="flex space-x-4 mt-4">
                 <button id="mainLikeButton" class="flex items-center border border-blue-500 text-gray-500 px-4 py-2 rounded" data-liked="false">
                     <i class="fas fa-thumbs-up"></i>
-                    <span class="ml-1 like-count">12</span>
+                    <span class="ml-1 like-count">0</span>
                 </button>
                 <button id="mainDislikeButton" class="flex items-center border border-blue-500 text-gray-500 px-4 py-2 rounded" data-disliked="false">
                     <i class="fas fa-thumbs-down"></i>
-                    <span class="ml-1 dislike-count">22</span>
+                    <span class="ml-1 dislike-count">0</span>
                 </button>
                 <button id="shareButton" class="flex items-center border border-blue-500 text-gray-500 px-4 py-2 rounded">
                     <i class="fa-solid fa-share-nodes"></i>
@@ -91,30 +152,18 @@ if ($id) {
 
             <!-- Komentar -->
             <div class="mt-4 w-full pr-4">
-                <span id="commentCount" class="block text-gray-700 font-bold mb-2">Komentar (4)</span>
+                <span id="commentCount" class="block text-gray-700 font-bold mb-2">Komentar (0)</span>
                 <div class="flex items-center mb-4">
                     <input id="commentInput" type="text" placeholder="Tulis komentarmu disini" class="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <button id="sendCommentButton" class="ml-2 bg-blue-500 text-white rounded-full flex items-center justify-center" style="width: 40px; height: 40px;">
                         <i class="fas fa-paper-plane text-xl"></i>
                     </button>
                 </div>
-                <div id="commentsContainer" class="border border-gray-300 rounded-lg p-4 max-h-96 overflow-y-auto text-left">
-                    <?php for ($j = 0; $j < 4; $j++): ?>
-                        <div class="mb-4 user-comment" data-timestamp="<?= time() - ($j * 60) ?>">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center">
-                                    <i class="fas fa-user-circle text-2xl text-gray-500 mr-2"></i>
-                                    <div>
-                                        <span class="font-semibold">Chiquita</span> · <span class="text-gray-500 text-sm time-ago"><?= timeAgo(date('Y-m-d H:i:s', time() - ($j * 60))) ?></span>
-                                        <p class="mt-2">Informasi yang sangat menarik</p>
-                                    </div>
-                                </div>
-                                <button class="options-button">
-                                    <i class="fas fa-ellipsis-v text-lg"></i>
-                                </button>
-                            </div>
-                        </div>
-                    <?php endfor; ?>
+                <div id="commentsContainer" class="border border-gray-300 rounded-lg p-4 overflow-y-auto text-left" style="height: 24rem;">
+                    <div id="noComments" class="flex flex-col items-center justify-center h-full">
+                        <i class="fas fa-comments text-4xl text-gray-300 mb-2"></i>
+                        <p class="text-gray-500">Belum ada komentar. Jadilah yang pertama untuk memberikan komentar!</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -126,20 +175,22 @@ if ($id) {
                 <div class="border-b-4 border-[#FFC300] mt-0"></div>
             </div>
             <ul class="pl-4">
-                <?php for ($i = 1; $i <= 6; $i++): ?>
+                <?php $i = 1; ?>
+                <?php while ($topNews = $topNewsResult->fetch_assoc()): ?>
                     <li class="mb-4">
                         <div class="flex items-center">
                             <span class="text-[#CAD2FF] font-semibold italic text-5xl mr-4"><?= $i ?></span>
                             <div>
-                                <span class="text-gray-400 text-sm">2 jam yang lalu</span>
-                                <a href="news-detail.php">
-                                    <h3 class="text-lg font-bold mt-1">Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit <?= $i ?></h3>
+                                <span class="text-gray-400 text-sm"><?= date('d F Y', strtotime($topNews['tanggal_dibuat'])) ?></span>
+                                <a href="news-detail.php?id=<?= $topNews['id'] ?>">
+                                    <h3 class="text-lg font-bold mt-1"><?= htmlspecialchars($topNews['judul']) ?></h3>
                                 </a>
                                 <div class="border-b border-gray-300 mt-2"></div>
                             </div>
                         </div>
                     </li>
-                <?php endfor; ?>
+                    <?php $i++; ?>
+                <?php endwhile; ?>
             </ul>
             
             <!-- Baru Baru Ini -->
@@ -147,17 +198,17 @@ if ($id) {
                 <span class="inline-block bg-[#FFC300] text-white px-6 py-1 rounded-t-md">Baru Baru Ini</span>
                 <div class="border-b-4 border-[#FFC300] mt-0 mb-4"></div>
                 <ul class="pl-4">
-                    <?php for ($i = 1; $i <= 4; $i++): ?>
+                    <?php while ($recentNews = $recentNewsResult->fetch_assoc()): ?>
                         <li class="mb-4">
                             <div>
-                                <span class="text-gray-400 text-sm">2 jam yang lalu</span>
-                                <a href="news-detail.php">
-                                    <h3 class="text-lg font-bold mt-1">Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit <?= $i ?></h3>
+                                <span class="text-gray-400 text-sm"><?= date('d F Y', strtotime($recentNews['tanggal_dibuat'])) ?></span>
+                                <a href="news-detail.php?id=<?= $recentNews['id'] ?>">
+                                    <h3 class="text-lg font-bold mt-1"><?= htmlspecialchars($recentNews['judul']) ?></h3>
                                 </a>
                                 <div class="border-b border-gray-300 mt-2"></div>
                             </div>
                         </li>
-                    <?php endfor; ?>
+                    <?php endwhile; ?>
                 </ul>
             </div>
 
@@ -166,30 +217,21 @@ if ($id) {
                 <span class="inline-block bg-[#FF3232] text-white px-6 py-1 rounded-t-md">Berita dengan Topik yang Sama</span>
                 <div class="border-b-4 border-[#FF3232] mt-0 mb-4"></div>
                 <div class="flex flex-col gap-4">
-                    <div class="relative overflow-hidden rounded-lg">
-                        <a href="news-detail.php">
-                            <img src="https://via.placeholder.com/600x330" class="w-full h-auto object-cover rounded-lg">
-                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
-                                <h3 class="text-white text-lg font-bold">Mahasiswa Polije Juara 1 Journalism Photography</h3>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="relative overflow-hidden rounded-lg">
-                        <a href="news-detail.php">
-                            <img src="https://via.placeholder.com/600x330" class="w-full h-auto object-cover rounded-lg">
-                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
-                                <h3 class="text-white text-lg font-bold">Polije Selenggarakan Kick Off Program WMK</h3>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="relative overflow-hidden rounded-lg">
-                        <a href="news-detail.php">
-                            <img src="https://via.placeholder.com/600x330" class="w-full h-auto object-cover rounded-lg">
-                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
-                                <h3 class="text-white text-lg font-bold">Sinergi Polije Latih dan Uji Kompetensi Barista untuk Pemula</h3>
-                            </div>
-                        </a>
-                    </div>
+                    <?php while ($sameTopicNews = $sameTopicNewsResult->fetch_assoc()): ?>
+                        <?php
+                        // Ekstrak URL gambar pertama dari konten artikel
+                        preg_match('/<img.*?src=["\'](.*?)["\'].*?>/i', $sameTopicNews['konten_artikel'], $matches);
+                        $gambar = $matches[1] ?? 'https://via.placeholder.com/600x330'; // Gunakan placeholder jika tidak ada gambar
+                        ?>
+                        <div class="relative overflow-hidden rounded-lg">
+                            <a href="news-detail.php?id=<?= $sameTopicNews['id'] ?>">
+                                <img src="<?= htmlspecialchars($gambar) ?>" class="w-full h-auto object-cover rounded-lg">
+                                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
+                                    <h3 class="text-white text-lg font-bold"><?= htmlspecialchars($sameTopicNews['judul']) ?></h3>
+                                </div>
+                            </a>
+                        </div>
+                    <?php endwhile; ?>
                 </div>
             </div>
         </div>
@@ -200,21 +242,41 @@ if ($id) {
         <span class="inline-block bg-[#45C630] text-white px-6 py-1 rounded-t-md">Berita Lainnya</span>
         <div class="border-b-4 border-[#45C630] mt-0 mb-4"></div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <?php for ($i = 1; $i <= 4; $i++): ?>
-                <div class="flex flex-col">
-                    <a href="news-detail.php">
-                        <img src="https://via.placeholder.com/600x330" class="w-full h-auto object-cover rounded-lg">
+            <?php while ($news = $randomNewsResult->fetch_assoc()): ?>
+                <?php
+                // Ekstrak URL gambar pertama dari konten artikel
+                preg_match('/<img.*?src=["\'](.*?)["\'].*?>/i', $news['konten_artikel'], $matches);
+                $gambar = $matches[1] ?? 'https://via.placeholder.com/600x330'; // Gunakan placeholder jika tidak ada gambar
+
+                // Ambil deskripsi singkat dari konten_artikel dan hapus &nbsp;
+                $description = strip_tags($news['konten_artikel']);
+                $description = str_replace('&nbsp;', ' ', $description);
+                $description = substr($description, 0, 150) . '...'; // Potong deskripsi
+                ?>
+                <div class="relative">
+                    <a href="news-detail.php?id=<?= $news['id'] ?>">
+                        <img src="<?= htmlspecialchars($gambar) ?>" class="w-full h-96 object-cover rounded-lg">
                     </a>
-                    <div class="mt-4">
-                        <span class="text-red-500 font-bold">Kategori</span>
-                        <span class="text-gray-500 text-sm ml-2">25 Januari 2025</span>
-                        <a href="news-detail.php">
-                            <h3 class="text-lg font-bold mt-2">Lorem Ipsum Dolor Sit Amet</h3>
+                    <div class="p-4">
+                        <span class="text-red-500 font-bold"><?= htmlspecialchars($news['kategori']) ?></span> 
+                        <span class="text-gray-500">| <?= date('d F Y', strtotime($news['tanggal_dibuat'])) ?></span>
+                        <a href="news-detail.php?id=<?= $news['id'] ?>">
+                            <h3 class="text-lg font-bold mt-1"><?= htmlspecialchars($news['judul']) ?></h3>
                         </a>
-                        <p class="text-gray-500 mt-1">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                        <p class="text-gray-700 mt-2"><?= htmlspecialchars($description) ?></p>
                     </div>
                 </div>
-            <?php endfor; ?>
+            <?php endwhile; ?>
+        </div>
+    </div>
+</div>
+
+<div id="popup" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+    <div class="bg-white p-6 rounded-lg shadow-lg transform scale-95 transition-transform duration-300">
+        <p class="mb-4">Apakah Anda yakin ingin menghapus komentar ini?</p>
+        <div class="flex justify-end">
+            <button id="cancelDelete" class="bg-gray-300 text-gray-700 px-4 py-2 rounded mr-2">Batal</button>
+            <button id="confirmDelete" class="bg-red-500 text-white px-4 py-2 rounded">Hapus</button>
         </div>
     </div>
 </div>
@@ -237,8 +299,16 @@ if ($id) {
     }
 
     function updateCommentCount() {
-        const commentCount = document.getElementById('commentsContainer').children.length;
+        const commentsContainer = document.getElementById('commentsContainer');
+        const commentCount = commentsContainer.children.length - 1; // Kurangi placeholder
         document.getElementById('commentCount').textContent = `Komentar (${commentCount})`;
+
+        const noComments = document.getElementById('noComments');
+        if (commentCount > 0) {
+            noComments.classList.add('hidden');
+        } else {
+            noComments.classList.remove('hidden');
+        }
     }
 
     function addComment() {
@@ -249,7 +319,7 @@ if ($id) {
             const commentDate = new Date();
 
             const commentHtml = `
-                <div class="mb-4 user-comment">
+                <div class="mb-4 user-comment opacity-0 transition-opacity duration-500">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center">
                             <i class="fas fa-user-circle text-2xl text-gray-500 mr-2"></i>
@@ -265,8 +335,9 @@ if ($id) {
                 </div>
             `;
 
-            const commentsContainer = document.getElementById('commentsContainer');
             commentsContainer.insertAdjacentHTML('afterbegin', commentHtml);
+            const newComment = commentsContainer.firstElementChild;
+            setTimeout(() => newComment.classList.remove('opacity-0'), 10); // Animasi masuk
             commentInput.value = '';
             updateCommentCount();
         }
@@ -298,13 +369,19 @@ if ($id) {
         const dislikeButton = document.getElementById('mainDislikeButton');
         const disliked = dislikeButton.dataset.disliked === 'true';
 
-        if (!disliked) {
-            const liked = this.dataset.liked === 'true';
-            this.dataset.liked = !liked;
-            likeCount.textContent = parseInt(likeCount.textContent) + (liked ? -1 : 1);
-            this.classList.toggle('text-blue-500', !liked);
-            this.classList.toggle('text-gray-500', liked);
+        if (disliked) {
+            const dislikeCount = dislikeButton.querySelector('.dislike-count');
+            dislikeButton.dataset.disliked = false;
+            dislikeCount.textContent = parseInt(dislikeCount.textContent) - 1;
+            dislikeButton.classList.remove('text-blue-500');
+            dislikeButton.classList.add('text-gray-500');
         }
+
+        const liked = this.dataset.liked === 'true';
+        this.dataset.liked = !liked;
+        likeCount.textContent = parseInt(likeCount.textContent) + (liked ? -1 : 1);
+        this.classList.toggle('text-blue-500', !liked);
+        this.classList.toggle('text-gray-500', liked);
     });
 
     document.getElementById('mainDislikeButton').addEventListener('click', function () {
@@ -349,9 +426,12 @@ if ($id) {
 
     document.getElementById('confirmDelete').addEventListener('click', function () {
         if (commentToDelete) {
-            commentToDelete.remove();
-            updateCommentCount();
-            closePopup();
+            commentToDelete.classList.add('opacity-0'); // Animasi keluar
+            setTimeout(() => {
+                commentToDelete.remove();
+                updateCommentCount();
+                closePopup();
+            }, 500); // Waktu yang sama dengan durasi animasi
         }
     });
 
