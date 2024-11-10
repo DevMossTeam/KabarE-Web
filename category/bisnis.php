@@ -76,13 +76,13 @@ function timeAgo($datetime) {
                 // Waktu relatif
                 $timeAgo = timeAgo($rowPopuler['tanggal_dibuat']);
             ?>
-                <div class="relative overflow-hidden rounded-lg">
+                <a href="news-detail.php?id=<?= $rowPopuler['id'] ?>" class="relative overflow-hidden rounded-lg">
                     <img src="<?= $firstImagePopuler ?: 'https://via.placeholder.com/300x200' ?>" class="w-full h-56 object-cover">
                     <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
                         <span class="text-white font-bold"><?= $rowPopuler['kategori'] ?> | <?= $timeAgo ?></span>
                         <h3 class="text-white text-lg font-bold mt-1"><?= $rowPopuler['judul'] ?></h3>
                     </div>
-                </div>
+                </a>
             <?php endwhile; ?>
         </div>
     </div>
@@ -114,7 +114,9 @@ function timeAgo($datetime) {
                     <div class="flex mb-4 items-start">
                         <span class="text-gray-400 text-sm flex-shrink-0 w-24"><?= $timeAgoLainnya ?></span>
                         <div class="flex-grow ml-4">
-                            <h3 class="text-lg font-bold"><?= $rowLainnya['judul'] ?></h3>
+                            <a href="news-detail.php?id=<?= $rowLainnya['id'] ?>">
+                                <h3 class="text-lg font-bold"><?= $rowLainnya['judul'] ?></h3>
+                            </a>
                             <p class="text-gray-500 mt-1"><?= $descriptionLainnya ?></p>
                         </div>
                         <img src="<?= $firstImageLainnya ?: 'https://via.placeholder.com/400x300' ?>" class="w-80 h-60 object-cover rounded-lg ml-4">
@@ -141,7 +143,9 @@ function timeAgo($datetime) {
                             <div class="flex items-center">
                                 <div class="flex-grow">
                                     <span class="text-gray-400 text-sm"><?= $timeAgoBaru ?></span>
-                                    <h3 class="text-lg font-bold mt-1"><?= $rowBaru['judul'] ?></h3>
+                                    <a href="news-detail.php?id=<?= $rowBaru['id'] ?>">
+                                        <h3 class="text-lg font-bold mt-1"><?= $rowBaru['judul'] ?></h3>
+                                    </a>
                                     <div class="border-b border-gray-300 mt-2 w-full"></div>
                                 </div>
                             </div>
