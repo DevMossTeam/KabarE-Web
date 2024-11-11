@@ -4,11 +4,24 @@ include '../connection/config.php'; // Pastikan path ini sesuai dengan struktur 
 
 function generateId($conn) {
     $prefix = "BRT";
-    $query = "SELECT MAX(CAST(SUBSTRING(id, 4) AS UNSIGNED)) AS max_id FROM berita WHERE id LIKE '$prefix%'";
-    $result = $conn->query($query);
-    $row = $result->fetch_assoc();
-    $maxId = $row['max_id'] ? $row['max_id'] : 0;
-    $newId = $prefix . ($maxId + 1);
+    $newId = null;
+    $isUnique = false;
+
+    while (!$isUnique) {
+        $query = "SELECT MAX(CAST(SUBSTRING(id, 4) AS UNSIGNED)) AS max_id FROM berita WHERE id LIKE '$prefix%'";
+        $result = $conn->query($query);
+        $row = $result->fetch_assoc();
+        $maxId = $row['max_id'] ? $row['max_id'] : 0;
+        $newId = $prefix . ($maxId + 1);
+
+        // Cek apakah ID sudah ada
+        $checkQuery = "SELECT id FROM berita WHERE id = '$newId'";
+        $checkResult = $conn->query($checkQuery);
+        if ($checkResult->num_rows == 0) {
+            $isUnique = true;
+        }
+    }
+
     return $newId;
 }
 
@@ -23,36 +36,35 @@ function generateTagId($conn) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
-    $id = generateId($conn);
-    $title = $_POST['title'];
-    $content = $_POST['content'];
-    $category = $_POST['category'];
-    $visibility = isset($_POST['visibility']) ? $_POST['visibility'] : 'public'; // Set default ke 'public' jika tidak ada
-    $status = 'draft'; // Ubah status menjadi 'draft'
-    $created_at = date('Y-m-d H:i:s');
+    $conn->begin_transaction(); // Mulai transaksi
 
-    // Ambil user_id dari sesi atau sumber lain
-    $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
+    try {
+        $id = generateId($conn);
+        $title = $_POST['title'];
+        $content = $_POST['content'];
+        $category = $_POST['category'];
+        $visibility = isset($_POST['visibility']) ? $_POST['visibility'] : 'public';
+        $status = 'draft';
+        $created_at = date('Y-m-d H:i:s');
+        $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
 
-    if ($user_id === null) {
-        echo "User ID tidak ditemukan.";
-        exit;
-    }
+        if ($user_id === null) {
+            throw new Exception("User ID tidak ditemukan.");
+        }
 
-    if ($visibility === null) {
-        echo "Visibilitas tidak boleh kosong.";
-        exit;
-    }
+        if ($visibility === null) {
+            throw new Exception("Visibilitas tidak boleh kosong.");
+        }
 
-    // Query untuk menyimpan artikel beserta visibilitas
-    $query = "INSERT INTO berita (id, judul, konten_artikel, tanggal_dibuat, user_id, kategori, visibilitas, status_publikasi) 
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param('ssssssss', $id, $title, $content, $created_at, $user_id, $category, $visibility, $status);
-    $stmt->execute();
-    
-    if ($stmt->execute()) {
-        // Ambil tag dari input dan simpan ke database
+        $query = "INSERT INTO berita (id, judul, konten_artikel, tanggal_dibuat, user_id, kategori, visibilitas, status_publikasi) 
+                  VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param('ssssssss', $id, $title, $content, $created_at, $user_id, $category, $visibility, $status);
+
+        if (!$stmt->execute()) {
+            throw new Exception("Gagal menyimpan artikel sebagai draft.");
+        }
+
         if (!empty($_POST['tags'])) {
             $tags = explode(',', $_POST['tags']);
             foreach ($tags as $tag) {
@@ -60,14 +72,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
                 $tagQuery = "INSERT INTO tag (id, nama_tag, berita_id) VALUES (?, ?, ?)";
                 $tagStmt = $conn->prepare($tagQuery);
                 $tagStmt->bind_param('sss', $tagId, trim($tag), $id);
-                $tagStmt->execute();
+                if (!$tagStmt->execute()) {
+                    throw new Exception("Gagal menyimpan tag.");
+                }
                 $tagStmt->close();
             }
         }
+
+        $conn->commit(); // Commit transaksi jika semua berhasil
         echo "Artikel berhasil disimpan sebagai draft!";
-    } else {
-        echo "Gagal menyimpan artikel sebagai draft.";
+    } catch (Exception $e) {
+        $conn->rollback(); // Rollback jika ada kesalahan
+        echo $e->getMessage();
     }
+
     $stmt->close();
     $conn->close();
     exit;
