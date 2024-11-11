@@ -126,11 +126,11 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
                 $description = strip_tags($row['konten_artikel']);
                 $description = substr($description, 0, 100) . (strlen($description) > 100 ? '...' : '');
             ?>
-                <a href="../category/news-detail.php?id=<?= $row['id'] ?>" class="flex flex-col lg:flex-row items-center lg:items-start transform lg:scale-105">
-                    <div class="w-64 h-40 bg-gray-200 flex items-center justify-center overflow-hidden rounded-lg mb-0.5 lg:mb-0">
+                <a href="../category/news-detail.php?id=<?= $row['id'] ?>" class="flex flex-col lg:flex-row items-center lg:items-start transform lg:scale-105 mb-6">
+                    <div class="w-64 h-32 bg-gray-200 flex items-center justify-center overflow-hidden rounded-lg mb-2 lg:mb-0">
                         <img src="<?= $firstImage ?: 'https://via.placeholder.com/200x150' ?>" class="w-full h-full object-cover">
                     </div>
-                    <div class="flex flex-col justify-center text-center md:text-center lg:text-left lg:ml-6 lg:w-full lg:pr-8 lg:-mt-2">
+                    <div class="flex flex-col justify-center text-center md:text-center lg:text-left lg:ml-6 lg:w-full lg:pr-8">
                         <h3 class="text-md font-bold mt-1 line-clamp-3"><?= $title ?></h3>
                         <p class="text-gray-500 mt-1 line-clamp-3 text-xs"><?= $description ?></p>
                         <span class="text-sm mt-1 inline-block">
