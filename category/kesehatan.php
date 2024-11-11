@@ -119,7 +119,9 @@ function timeAgo($datetime) {
                             </a>
                             <p class="text-gray-500 mt-1"><?= $descriptionLainnya ?></p>
                         </div>
-                        <img src="<?= $firstImageLainnya ?: 'https://via.placeholder.com/400x300' ?>" class="w-80 h-60 object-cover rounded-lg ml-4">
+                        <div class="w-full max-w-2xl h-48 bg-gray-200 flex items-center justify-center overflow-hidden rounded-lg ml-4">
+                            <img src="<?= $firstImageLainnya ?: 'https://via.placeholder.com/400x300' ?>" class="w-full h-full object-cover">
+                        </div>
                     </div>
                     <div class="border-b border-gray-300 mt-1 mb-4"></div>
                 <?php endwhile; ?>

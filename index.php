@@ -127,7 +127,9 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
                 $description = substr($description, 0, 100) . (strlen($description) > 100 ? '...' : '');
             ?>
                 <a href="../category/news-detail.php?id=<?= $row['id'] ?>" class="flex flex-col lg:flex-row items-center lg:items-start transform lg:scale-105">
-                    <img src="<?= $firstImage ?: 'https://via.placeholder.com/200x150' ?>" class="w-48 h-32 object-cover rounded-lg mb-0.5 lg:mb-0 transition-transform duration-300 hover:scale-105 cursor-pointer">
+                    <div class="w-64 h-40 bg-gray-200 flex items-center justify-center overflow-hidden rounded-lg mb-0.5 lg:mb-0">
+                        <img src="<?= $firstImage ?: 'https://via.placeholder.com/200x150' ?>" class="w-full h-full object-cover">
+                    </div>
                     <div class="flex flex-col justify-center text-center md:text-center lg:text-left lg:ml-6 lg:w-full lg:pr-8 lg:-mt-2">
                         <h3 class="text-md font-bold mt-1 line-clamp-3"><?= $title ?></h3>
                         <p class="text-gray-500 mt-1 line-clamp-3 text-xs"><?= $description ?></p>
@@ -147,7 +149,7 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
                     <?php foreach ($sliderData as $data): ?>
                         <div class="relative w-full h-full flex-shrink-0">
                             <img src="<?= $data['firstImage'] ?: 'https://via.placeholder.com/800x600' ?>" 
-                                 class="w-full h-full object-cover transition duration-300 ease-in-out brightness-75 hover:brightness-50">
+                                 class="w-full h-96 object-cover rounded-lg transition duration-300 ease-in-out brightness-75 hover:brightness-50">
                             <div class="absolute top-4 left-4 text-white">
                                 <span class="font-bold"><?= $data['kategori'] ?></span>
                                 <a href="../category/news-detail.php?id=<?= $data['id'] ?>">
@@ -156,7 +158,7 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
                             </div>
                         </div>
                     <?php endforeach; ?>
-                </div
+                </div>
 
                 <!-- Left and Right Toggle inside the slider -->
                 <button id="prev" class="absolute top-1/2 left-4 transform -translate-y-1/2 p-3 bg-black bg-opacity-50 hover:bg-opacity-75 text-white rounded-md z-10">
@@ -399,7 +401,9 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
                         </a>
                         <p class="text-gray-500 mt-1"><?= $descriptionLainnya ?></p>
                     </div>
-                    <img src="<?= $firstImageLainnya ?: 'https://via.placeholder.com/400x300' ?>" class="w-80 h-60 object-cover rounded-lg ml-4">
+                    <div class="w-full max-w-2xl h-48 bg-gray-200 flex items-center justify-center overflow-hidden rounded-lg ml-4">
+                        <img src="<?= $firstImageLainnya ?: 'https://via.placeholder.com/400x300' ?>" class="w-full h-full object-cover">
+                    </div>
                 </div>
                 <div class="border-b border-gray-300 mt-1 mb-4"></div>
             <?php endwhile; ?>
