@@ -25,7 +25,7 @@ $isLoggedIn = false; // Inisialisasi status login
 if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
     $user_id = $_SESSION['user_id'] ?? $_COOKIE['user_id'];
 
-    $stmt = $conn->prepare("SELECT email, profile_pic FROM user WHERE uid = ?");
+    $stmt = $conn->prepare("SELECT email, profile_pic, role FROM user WHERE uid = ?");
     if ($stmt) {
         $stmt->bind_param("s", $user_id);
         $stmt->execute();
@@ -35,6 +35,7 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
             $user = $result->fetch_assoc();
             $email = $user['email'];
             $profile_pic = $user['profile_pic'] ?: $profile_pic; // Use default if empty
+            $role = $user['role']; // Ambil role dari database
             $isLoggedIn = true;
 
             // Set sesi jika hanya cookie yang ada
@@ -133,7 +134,7 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
                                     <div class="flex justify-center items-center mb-4 mt-4">
                                         <img src="data:image/jpeg;base64,<?= base64_encode($profile_pic) ?>" alt="Profile Picture" class="w-20 h-20 rounded-full">
                                     </div>
-                                    <div class="text-gray-500">Penulis</div>
+                                    <div class="text-gray-500"><?= htmlspecialchars($role) ?></div>
                                 </div>
                                 <button id="editProfileButton" class="mt-2 bg-blue-500 text-white px-4 py-2 rounded-md mx-auto block" style="width: 80%;">Edit Profile</button>
                                 <hr class="my-2 border-gray-200">

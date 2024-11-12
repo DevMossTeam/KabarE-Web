@@ -1,4 +1,6 @@
 <?php
+session_start(); // Pastikan sesi dimulai
+
 include '../connection/config.php'; // Pastikan path ini sesuai dengan struktur folder Anda
 
 // Fungsi untuk menghitung waktu yang lalu
@@ -102,6 +104,24 @@ $randomNewsResult = $conn->query($randomNewsQuery);
 
 if (!$randomNewsResult) {
     die("Query gagal: " . $conn->error);
+}
+
+// Ambil data pengguna dari database
+$user_id = $_SESSION['user_id'] ?? null;
+$namaPengguna = '';
+$profilePic = '';
+
+if ($user_id) {
+    $stmt = $conn->prepare("SELECT nama_pengguna, profile_pic FROM user WHERE uid = ?");
+    if ($stmt) {
+        $stmt->bind_param("s", $user_id);
+        $stmt->execute();
+        $stmt->bind_result($namaPengguna, $profilePic);
+        $stmt->fetch();
+        $stmt->close();
+    } else {
+        die("Query gagal: " . $conn->error);
+    }
 }
 ?>
 
@@ -317,30 +337,31 @@ if (!$randomNewsResult) {
         const commentInput = document.getElementById('commentInput');
         const commentText = commentInput.value.trim();
         if (commentText) {
-            const userName = '<?= htmlspecialchars($namaPengguna) ?>'; // Menggunakan nama_pengguna dari database
-            const profilePic = 'data:image/jpeg;base64,<?= base64_encode($profilePic) ?>'; // Menggunakan profile_pic dari database
+            const userName = '<?= htmlspecialchars($namaPengguna) ?>';
+            const profilePic = 'data:image/jpeg;base64,<?= base64_encode($profilePic) ?>';
             const commentDate = new Date();
 
             const commentHtml = `
-                <div class="mb-4 user-comment opacity-0 transition-opacity duration-500">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center">
-                            <img src="${profilePic}" alt="Profile Picture" class="w-10 h-10 rounded-full mr-2">
-                            <div>
-                                <span class="font-semibold">${userName}</span> · <span class="text-gray-500 text-sm">${timeAgo(commentDate)}</span>
-                                <p class="mt-2">${commentText}</p>
+                <div class="mb-4 user-comment opacity-0 transition-opacity duration-500 group">
+                    <div class="flex items-start">
+                        <img src="${profilePic}" alt="Profile Picture" class="w-10 h-10 rounded-full mr-2 flex-shrink-0">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-2">
+                                <span class="font-semibold">${userName}</span>
+                                <span class="text-gray-500 text-sm">${timeAgo(commentDate)}</span>
+                                <button class="options-button hidden group-hover:inline-flex text-gray-500 hover:text-gray-700">
+                                    <i class="fas fa-ellipsis-h text-xs"></i>
+                                </button>
                             </div>
+                            <p class="mt-1 break-words max-w-full">${commentText}</p>
                         </div>
-                        <button class="options-button">
-                            <i class="fas fa-ellipsis-v text-lg"></i>
-                        </button>
                     </div>
                 </div>
             `;
 
             commentsContainer.insertAdjacentHTML('afterbegin', commentHtml);
             const newComment = commentsContainer.firstElementChild;
-            setTimeout(() => newComment.classList.remove('opacity-0'), 10); // Animasi masuk
+            setTimeout(() => newComment.classList.remove('opacity-0'), 10);
             commentInput.value = '';
             updateCommentCount();
         }
