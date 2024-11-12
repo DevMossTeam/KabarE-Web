@@ -41,10 +41,10 @@ if ($id) {
         $namaPengguna = $berita['nama_pengguna'];
         $profilePic = $berita['profile_pic'];
 
-        // Ekstrak URL gambar pertama dari konten artikel dan hapus tag gambar dari konten
+        // Ekstrak URL gambar pertama dari konten artikel
         preg_match('/<img.*?src=["\'](.*?)["\'].*?>/i', $konten, $matches);
-        $gambar = $matches[1] ?? ''; // Ambil URL gambar pertama jika ada
-        $konten = preg_replace('/<img.*?>/i', '', $konten); // Hapus semua tag gambar dari konten
+        $gambarPertama = $matches[1] ?? ''; // Ambil URL gambar pertama jika ada
+        $konten = preg_replace('/<img.*?>/i', '', $konten, 1); // Hapus hanya gambar pertama
     } else {
         echo "Berita tidak ditemukan.";
         exit;
@@ -140,51 +140,57 @@ if ($user_id) {
                 <span><?= date('d F Y, H:i', strtotime($tanggalDibuat)) ?> WIB</span>
             </div>
             <div class="mt-4">
-                <!-- Tampilkan gambar utama dengan ukuran penuh jika ada -->
-                <?php if ($gambar): ?>
-                    <img src="<?= htmlspecialchars($gambar) ?>" class="w-full h-auto object-cover rounded-lg my-4" style="max-width: 100%; height: auto;">
+                <!-- Tampilkan gambar pertama dengan ukuran besar -->
+                <?php if ($gambarPertama): ?>
+                    <img src="<?= htmlspecialchars($gambarPertama) ?>" class="w-full h-auto object-cover rounded-lg my-4" style="max-width: 100%; height: auto;">
                 <?php endif; ?>
-                <?= $konten ?>
-            </div>
-
-            <!-- Box Like, Dislike, Share -->
-            <div class="flex space-x-4 mt-4">
-                <button id="mainLikeButton" class="flex items-center border border-blue-500 text-gray-500 px-4 py-2 rounded" data-liked="false">
-                    <i class="fas fa-thumbs-up"></i>
-                    <span class="ml-1 like-count">0</span>
-                </button>
-                <button id="mainDislikeButton" class="flex items-center border border-blue-500 text-gray-500 px-4 py-2 rounded" data-disliked="false">
-                    <i class="fas fa-thumbs-down"></i>
-                    <span class="ml-1 dislike-count">0</span>
-                </button>
-                <button id="shareButton" class="flex items-center border border-blue-500 text-gray-500 px-4 py-2 rounded">
-                    <i class="fa-solid fa-share-nodes"></i>
-                </button>
-            </div>
-
-            <!-- Label Section -->
-            <div class="mt-4">
-                <span class="block text-gray-700 font-bold">Label:</span>
-                <div class="flex flex-wrap gap-2 mt-2">
-                    <span class="inline-block bg-white text-blue-500 border border-blue-500 px-3 py-1 rounded-full">ruangkelas</span>
-                    <span class="inline-block bg-white text-blue-500 border border-blue-500 px-3 py-1 rounded-full">ruangkelas</span>
-                    <span class="inline-block bg-white text-blue-500 border border-blue-500 px-3 py-1 rounded-full">ruangkelas</span>
+                <!-- Tampilkan konten artikel tanpa gambar pertama -->
+                <div class="mt-4">
+                    <?= $konten ?>
                 </div>
-            </div>
 
-            <!-- Komentar -->
-            <div class="mt-4 w-full pr-4">
-                <span id="commentCount" class="block text-gray-700 font-bold mb-2">Komentar (0)</span>
-                <div class="flex items-center mb-4">
-                    <input id="commentInput" type="text" placeholder="Tulis komentarmu disini" class="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <button id="sendCommentButton" class="ml-2 bg-blue-500 text-white rounded-full flex items-center justify-center" style="width: 40px; height: 40px;">
-                        <i class="fas fa-paper-plane text-xl"></i>
+                <!-- Box Like, Dislike, Share, Bookmark -->
+                <div class="flex space-x-4 mt-4">
+                    <button id="mainLikeButton" class="flex items-center border border-blue-500 text-gray-500 px-4 py-2 rounded" data-liked="false">
+                        <i class="fas fa-thumbs-up"></i>
+                        <span class="ml-1 like-count">0</span>
+                    </button>
+                    <button id="mainDislikeButton" class="flex items-center border border-blue-500 text-gray-500 px-4 py-2 rounded" data-disliked="false">
+                        <i class="fas fa-thumbs-down"></i>
+                        <span class="ml-1 dislike-count">0</span>
+                    </button>
+                    <button id="shareButton" class="flex items-center border border-blue-500 text-gray-500 px-4 py-2 rounded">
+                        <i class="fa-solid fa-share-nodes"></i>
+                    </button>
+                    <button id="bookmarkButton" class="flex items-center border border-blue-500 text-gray-500 px-4 py-2 rounded" data-bookmarked="false">
+                        <i class="fas fa-bookmark"></i>
                     </button>
                 </div>
-                <div id="commentsContainer" class="border border-gray-300 rounded-lg p-4 overflow-y-auto text-left" style="height: 24rem;">
-                    <div id="noComments" class="flex flex-col items-center justify-center h-full">
-                        <i class="fas fa-comments text-4xl text-gray-300 mb-2"></i>
-                        <p class="text-gray-500">Belum ada komentar. Jadilah yang pertama untuk memberikan komentar!</p>
+
+                <!-- Label Section -->
+                <div class="mt-4">
+                    <span class="block text-gray-700 font-bold">Label:</span>
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        <span class="inline-block bg-white text-blue-500 border border-blue-500 px-3 py-1 rounded-full">ruangkelas</span>
+                        <span class="inline-block bg-white text-blue-500 border border-blue-500 px-3 py-1 rounded-full">ruangkelas</span>
+                        <span class="inline-block bg-white text-blue-500 border border-blue-500 px-3 py-1 rounded-full">ruangkelas</span>
+                    </div>
+                </div>
+
+                <!-- Komentar -->
+                <div class="mt-4 w-full pr-4">
+                    <span id="commentCount" class="block text-gray-700 font-bold mb-2">Komentar (0)</span>
+                    <div class="flex items-center mb-4">
+                        <input id="commentInput" type="text" placeholder="Tulis komentarmu disini" class="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <button id="sendCommentButton" class="ml-2 bg-blue-500 text-white rounded-full flex items-center justify-center" style="width: 40px; height: 40px;">
+                            <i class="fas fa-paper-plane text-xl"></i>
+                        </button>
+                    </div>
+                    <div id="commentsContainer" class="border border-gray-300 rounded-lg p-4 overflow-y-auto text-left" style="height: 24rem;">
+                        <div id="noComments" class="flex flex-col items-center justify-center h-full">
+                            <i class="fas fa-comments text-4xl text-gray-300 mb-2"></i>
+                            <p class="text-gray-500">Belum ada komentar. Jadilah yang pertama untuk memberikan komentar!</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -435,6 +441,14 @@ if ($user_id) {
         }).catch(err => {
             console.error('Gagal menyalin URL: ', err);
         });
+    });
+
+    document.getElementById('bookmarkButton').addEventListener('click', function () {
+        const bookmarked = this.dataset.bookmarked === 'true';
+        this.dataset.bookmarked = !bookmarked;
+        this.classList.toggle('text-blue-500', !bookmarked);
+        this.classList.toggle('text-gray-500', bookmarked);
+        alert(bookmarked ? 'Bookmark dihapus' : 'Ditambahkan ke bookmark');
     });
 
     // Initial update of comment count
