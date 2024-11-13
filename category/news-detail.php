@@ -359,7 +359,8 @@ if ($user_id) {
                                     <i class="fas fa-ellipsis-h text-xs"></i>
                                 </button>
                             </div>
-                            <p class="mt-1 break-words max-w-full">${commentText}</p>
+                            <p class="mt-1 break-words max-w-full comment-text">${commentText}</p>
+                            <button class="read-more text-blue-500 hover:underline text-sm hidden">Baca Selengkapnya</button>
                         </div>
                     </div>
                 </div>
@@ -370,6 +371,27 @@ if ($user_id) {
             setTimeout(() => newComment.classList.remove('opacity-0'), 10);
             commentInput.value = '';
             updateCommentCount();
+            handleReadMore(newComment.querySelector('.comment-text'), newComment.querySelector('.read-more'));
+        }
+    }
+
+    function handleReadMore(commentTextElement, readMoreButton) {
+        const maxLength = 100; // Set the maximum length for the comment preview
+        const fullText = commentTextElement.textContent;
+        if (fullText.length > maxLength) {
+            const previewText = fullText.substring(0, maxLength) + '...';
+            commentTextElement.textContent = previewText;
+            readMoreButton.classList.remove('hidden');
+
+            readMoreButton.addEventListener('click', function () {
+                if (commentTextElement.textContent === previewText) {
+                    commentTextElement.textContent = fullText;
+                    readMoreButton.textContent = 'Sembunyikan';
+                } else {
+                    commentTextElement.textContent = previewText;
+                    readMoreButton.textContent = 'Baca Selengkapnya';
+                }
+            });
         }
     }
 
