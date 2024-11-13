@@ -78,7 +78,7 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
                     <form id="searchForm" action="/search.php" method="GET" class="flex items-center">
                         <div class="relative">
                             <input type="text" name="query" placeholder="Search..."
-                                class="px-2 py-1 border border-gray-300 rounded-full focus:outline-none text-sm">
+                                class="px-2 py-1 pr-8 border border-gray-300 rounded-full focus:outline-none text-sm w-full">
                             <button type="submit"
                                 class="absolute inset-y-0 right-0 flex items-center pr-2 text-gray-500">
                                 <i class="fas fa-search text-xs"></i>
