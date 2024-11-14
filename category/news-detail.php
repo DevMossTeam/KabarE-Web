@@ -310,6 +310,7 @@ $stmt = $conn->prepare($commentQuery);
 $stmt->bind_param('s', $id);
 $stmt->execute();
 $commentResult = $stmt->get_result();
+$commentCount = $commentResult->num_rows;
 ?>
 
 <?php include '../header & footer/header.php'; ?>
@@ -373,7 +374,7 @@ $commentResult = $stmt->get_result();
 
                 <!-- Komentar -->
                 <div class="mt-4 w-full pr-4">
-                    <span id="commentCount" class="block text-gray-700 font-bold mb-2">Komentar (0)</span>
+                    <span id="commentCount" class="block text-gray-700 font-bold mb-2">Komentar (<?= $commentCount ?>)</span>
                     <div class="flex items-center mb-4">
                         <input id="commentInput" type="text" placeholder="Tulis komentarmu disini" class="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <button id="sendCommentButton" class="ml-2 bg-blue-500 text-white rounded-full flex items-center justify-center" style="width: 40px; height: 40px;">
@@ -381,6 +382,23 @@ $commentResult = $stmt->get_result();
                         </button>
                     </div>
                     <div id="commentsContainer" class="border border-gray-300 rounded-lg p-4 overflow-y-auto text-left" style="height: 24rem;">
+                        <?php if ($commentCount > 1): ?>
+                            <div class="relative mb-4">
+                                <button id="filterButton" class="flex items-center text-gray-700 font-bold">
+                                    Terbaru <i class="fas fa-chevron-down ml-2"></i>
+                                </button>
+                                <div id="filterMenu" class="absolute left-0 mt-2 w-64 bg-white border border-gray-300 rounded-lg shadow-lg hidden">
+                                    <div class="p-4">
+                                        <button id="filterNewest" class="block w-full text-left font-bold">Terbaru</button>
+                                        <p class="text-sm text-gray-500">Tampilkan semua komentar, yang terbaru lebih dahulu</p>
+                                    </div>
+                                    <div class="p-4">
+                                        <button id="filterOldest" class="block w-full text-left font-bold">Terlama</button>
+                                        <p class="text-sm text-gray-500">Tampilkan semua komentar, yang terlama lebih dahulu</p>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endif; ?>
                         <?php if ($commentResult->num_rows === 0): ?>
                             <div id="noComments" class="flex flex-col items-center justify-center h-full">
                                 <i class="fas fa-comments text-4xl text-gray-300 mb-2"></i>
@@ -388,7 +406,7 @@ $commentResult = $stmt->get_result();
                             </div>
                         <?php endif; ?>
                         <?php while ($comment = $commentResult->fetch_assoc()): ?>
-                            <div class="mb-4 user-comment" data-comment-id="<?= $comment['id'] ?>">
+                            <div class="mb-4 user-comment group" data-comment-id="<?= $comment['id'] ?>">
                                 <div class="flex items-start">
                                     <img src="data:image/jpeg;base64,<?= base64_encode($comment['profile_pic']) ?>" alt="Profile Picture" class="w-10 h-10 rounded-full mr-2 flex-shrink-0">
                                     <div class="flex-1">
@@ -396,7 +414,7 @@ $commentResult = $stmt->get_result();
                                             <span class="font-semibold"><?= htmlspecialchars($comment['nama_pengguna']) ?></span>
                                             <span class="text-gray-500 text-sm"><?= timeAgo($comment['tanggal_komentar']) ?></span>
                                             <?php if ($comment['user_id'] === $user_id): ?>
-                                                <button class="options-button text-gray-500 hover:text-gray-700">
+                                                <button class="options-button text-gray-500 hover:text-gray-700 hidden group-hover:inline-flex">
                                                     <i class="fas fa-ellipsis-h text-xs"></i>
                                                 </button>
                                             <?php endif; ?>
@@ -551,6 +569,13 @@ $commentResult = $stmt->get_result();
             noComments.classList.add('hidden');
         } else {
             noComments.classList.remove('hidden');
+        }
+
+        const filterButton = document.getElementById('filterButton');
+        if (commentCount > 1) {
+            filterButton.classList.remove('hidden');
+        } else {
+            filterButton.classList.add('hidden');
         }
     }
 
@@ -708,6 +733,39 @@ $commentResult = $stmt->get_result();
     document.addEventListener('DOMContentLoaded', function() {
         updateCommentCount();
     });
+
+    // Filter functionality
+    const filterButton = document.getElementById('filterButton');
+    const filterMenu = document.getElementById('filterMenu');
+    const filterNewest = document.getElementById('filterNewest');
+    const filterOldest = document.getElementById('filterOldest');
+
+    filterButton.addEventListener('click', function() {
+        filterMenu.classList.toggle('hidden');
+    });
+
+    filterNewest.addEventListener('click', function() {
+        sortComments('newest');
+        filterButton.textContent = 'Terbaru';
+        filterMenu.classList.add('hidden');
+    });
+
+    filterOldest.addEventListener('click', function() {
+        sortComments('oldest');
+        filterButton.textContent = 'Terlama';
+        filterMenu.classList.add('hidden');
+    });
+
+    function sortComments(order) {
+        const commentsContainer = document.getElementById('commentsContainer');
+        const comments = Array.from(commentsContainer.querySelectorAll('.user-comment'));
+        comments.sort((a, b) => {
+            const dateA = new Date(a.querySelector('.text-gray-500').textContent);
+            const dateB = new Date(b.querySelector('.text-gray-500').textContent);
+            return order === 'newest' ? dateB - dateA : dateA - dateB;
+        });
+        comments.forEach(comment => commentsContainer.appendChild(comment));
+    }
 </script>
 
 <?php include '../header & footer/footer.php'; ?>
