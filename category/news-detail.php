@@ -110,6 +110,7 @@ if (!$randomNewsResult) {
 $user_id = $_SESSION['user_id'] ?? null;
 $namaPengguna = '';
 $profilePic = '';
+$userReaction = null;
 
 if ($user_id) {
     $stmt = $conn->prepare("SELECT nama_pengguna, profile_pic FROM user WHERE uid = ?");
@@ -122,6 +123,129 @@ if ($user_id) {
     } else {
         die("Query gagal: " . $conn->error);
     }
+
+    // Cek reaksi pengguna saat ini
+    $stmt = $conn->prepare("SELECT jenis_reaksi FROM reaksi WHERE user_id = ? AND berita_id = ?");
+    $stmt->bind_param('ss', $user_id, $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($result->num_rows > 0) {
+        $userReaction = $result->fetch_assoc()['jenis_reaksi'];
+    }
+}
+
+// Fungsi untuk menghasilkan ID acak
+function generateRandomId($length = 12) {
+    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $charactersLength = strlen($characters);
+    $randomString = '';
+    for ($i = 0; $i < $length; $i++) {
+        $randomString .= $characters[rand(0, $charactersLength - 1)];
+    }
+    return $randomString;
+}
+
+// Fungsi untuk mengelola reaksi
+function toggleReaction($conn, $user_id, $berita_id, $jenis_reaksi) {
+    // Cek apakah reaksi sudah ada
+    $query = "SELECT * FROM reaksi WHERE user_id = ? AND berita_id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param('ss', $user_id, $berita_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $existingReaction = $result->fetch_assoc();
+
+    if ($existingReaction) {
+        // Jika reaksi sudah ada, hapus atau ubah jenis reaksi
+        if ($existingReaction['jenis_reaksi'] === $jenis_reaksi) {
+            // Hapus reaksi jika jenisnya sama
+            $query = "DELETE FROM reaksi WHERE user_id = ? AND berita_id = ?";
+            $stmt = $conn->prepare($query);
+            $stmt->bind_param('ss', $user_id, $berita_id);
+            $stmt->execute();
+        } else {
+            // Ubah jenis reaksi
+            $query = "UPDATE reaksi SET jenis_reaksi = ?, tanggal_reaksi = NOW() WHERE user_id = ? AND berita_id = ?";
+            $stmt = $conn->prepare($query);
+            $stmt->bind_param('sss', $jenis_reaksi, $user_id, $berita_id);
+            $stmt->execute();
+        }
+    } else {
+        // Tambahkan reaksi baru dengan ID acak
+        $randomId = generateRandomId();
+        $query = "INSERT INTO reaksi (id, user_id, berita_id, jenis_reaksi, tanggal_reaksi) VALUES (?, ?, ?, ?, NOW())";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param('ssss', $randomId, $user_id, $berita_id, $jenis_reaksi);
+        $stmt->execute();
+    }
+}
+
+// Fungsi untuk mengelola bookmark
+function toggleBookmark($conn, $user_id, $berita_id) {
+    // Cek apakah bookmark sudah ada
+    $query = "SELECT * FROM bookmark WHERE user_id = ? AND berita_id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param('ss', $user_id, $berita_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $existingBookmark = $result->fetch_assoc();
+
+    if ($existingBookmark) {
+        // Hapus bookmark jika sudah ada
+        $query = "DELETE FROM bookmark WHERE user_id = ? AND berita_id = ?";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param('ss', $user_id, $berita_id);
+        $stmt->execute();
+    } else {
+        // Tambahkan bookmark baru dengan ID acak
+        $randomId = generateRandomId();
+        $query = "INSERT INTO bookmark (id, user_id, berita_id) VALUES (?, ?, ?)";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param('sss', $randomId, $user_id, $berita_id);
+        $stmt->execute();
+    }
+}
+
+// Tangani permintaan reaksi
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reaction'])) {
+    $jenis_reaksi = $_POST['reaction'];
+    toggleReaction($conn, $user_id, $id, $jenis_reaksi);
+    // Refresh halaman untuk memperbarui tampilan
+    header("Location: news-detail.php?id=$id");
+    exit;
+}
+
+// Tangani permintaan bookmark
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bookmark'])) {
+    toggleBookmark($conn, $user_id, $id);
+    // Refresh halaman untuk memperbarui tampilan
+    header("Location: news-detail.php?id=$id");
+    exit;
+}
+
+// Hitung jumlah like dan dislike
+$likeQuery = "SELECT COUNT(*) as like_count FROM reaksi WHERE berita_id = ? AND jenis_reaksi = 'Suka'";
+$stmt = $conn->prepare($likeQuery);
+$stmt->bind_param('s', $id);
+$stmt->execute();
+$likeResult = $stmt->get_result();
+$likeCount = $likeResult->fetch_assoc()['like_count'] ?? 0;
+
+$dislikeQuery = "SELECT COUNT(*) as dislike_count FROM reaksi WHERE berita_id = ? AND jenis_reaksi = 'Tidak Suka'";
+$stmt = $conn->prepare($dislikeQuery);
+$stmt->bind_param('s', $id);
+$stmt->execute();
+$dislikeResult = $stmt->get_result();
+$dislikeCount = $dislikeResult->fetch_assoc()['dislike_count'] ?? 0;
+
+// Cek status bookmark pengguna saat ini
+$isBookmarked = false;
+if ($user_id) {
+    $stmt = $conn->prepare("SELECT * FROM bookmark WHERE user_id = ? AND berita_id = ?");
+    $stmt->bind_param('ss', $user_id, $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $isBookmarked = $result->num_rows > 0;
 }
 ?>
 
@@ -151,20 +275,27 @@ if ($user_id) {
 
                 <!-- Box Like, Dislike, Share, Bookmark -->
                 <div class="flex space-x-4 mt-4">
-                    <button id="mainLikeButton" class="flex items-center border border-blue-500 text-gray-500 px-4 py-2 rounded" data-liked="false">
-                        <i class="fas fa-thumbs-up"></i>
-                        <span class="ml-1 like-count">0</span>
-                    </button>
-                    <button id="mainDislikeButton" class="flex items-center border border-blue-500 text-gray-500 px-4 py-2 rounded" data-disliked="false">
-                        <i class="fas fa-thumbs-down"></i>
-                        <span class="ml-1 dislike-count">0</span>
-                    </button>
+                    <form method="post" action="">
+                        <input type="hidden" name="reaction" value="Suka">
+                        <button type="submit" class="flex items-center border border-blue-500 text-gray-500 px-4 py-2 rounded <?= $userReaction === 'Suka' ? 'bg-blue-100' : '' ?>">
+                            <i class="fas fa-thumbs-up"></i> <?= $likeCount ?>
+                        </button>
+                    </form>
+                    <form method="post" action="">
+                        <input type="hidden" name="reaction" value="Tidak Suka">
+                        <button type="submit" class="flex items-center border border-blue-500 text-gray-500 px-4 py-2 rounded <?= $userReaction === 'Tidak Suka' ? 'bg-blue-100' : '' ?>">
+                            <i class="fas fa-thumbs-down"></i> <?= $dislikeCount ?>
+                        </button>
+                    </form>
                     <button id="shareButton" class="flex items-center border border-blue-500 text-gray-500 px-4 py-2 rounded">
                         <i class="fa-solid fa-share-nodes"></i>
                     </button>
-                    <button id="bookmarkButton" class="flex items-center border border-blue-500 text-gray-500 px-4 py-2 rounded" data-bookmarked="false">
-                        <i class="fas fa-bookmark"></i>
-                    </button>
+                    <form method="post" action="">
+                        <input type="hidden" name="bookmark" value="toggle">
+                        <button type="submit" class="flex items-center border border-blue-500 text-gray-500 px-4 py-3 rounded <?= $isBookmarked ? 'bg-blue-100' : '' ?>">
+                            <i class="fas fa-bookmark"></i>
+                        </button>
+                    </form>
                 </div>
 
                 <!-- Label Section -->
@@ -414,46 +545,6 @@ if ($user_id) {
                 showPopup();
             }
         }
-    });
-
-    document.getElementById('mainLikeButton').addEventListener('click', function () {
-        const likeCount = this.querySelector('.like-count');
-        const dislikeButton = document.getElementById('mainDislikeButton');
-        const disliked = dislikeButton.dataset.disliked === 'true';
-
-        if (disliked) {
-            const dislikeCount = dislikeButton.querySelector('.dislike-count');
-            dislikeButton.dataset.disliked = false;
-            dislikeCount.textContent = parseInt(dislikeCount.textContent) - 1;
-            dislikeButton.classList.remove('text-blue-500');
-            dislikeButton.classList.add('text-gray-500');
-        }
-
-        const liked = this.dataset.liked === 'true';
-        this.dataset.liked = !liked;
-        likeCount.textContent = parseInt(likeCount.textContent) + (liked ? -1 : 1);
-        this.classList.toggle('text-blue-500', !liked);
-        this.classList.toggle('text-gray-500', liked);
-    });
-
-    document.getElementById('mainDislikeButton').addEventListener('click', function () {
-        const dislikeCount = this.querySelector('.dislike-count');
-        const likeButton = document.getElementById('mainLikeButton');
-        const liked = likeButton.dataset.liked === 'true';
-
-        if (liked) {
-            const likeCount = likeButton.querySelector('.like-count');
-            likeButton.dataset.liked = false;
-            likeCount.textContent = parseInt(likeCount.textContent) - 1;
-            likeButton.classList.remove('text-blue-500');
-            likeButton.classList.add('text-gray-500');
-        }
-
-        const disliked = this.dataset.disliked === 'true';
-        this.dataset.disliked = !disliked;
-        dislikeCount.textContent = parseInt(dislikeCount.textContent) + (disliked ? -1 : 1);
-        this.classList.toggle('text-blue-500', !disliked);
-        this.classList.toggle('text-gray-500', disliked);
     });
 
     document.getElementById('shareButton').addEventListener('click', function () {
