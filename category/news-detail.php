@@ -3,6 +3,54 @@ session_start(); // Pastikan sesi dimulai
 
 include '../connection/config.php'; // Pastikan path ini sesuai dengan struktur folder Anda
 
+// Ambil ID dari URL
+$id = isset($_GET['id']) ? $_GET['id'] : null;
+
+// Tangani permintaan komentar
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
+    $teks_komentar = $_POST['comment'];
+    $randomId = generateRandomId();
+    $tanggal_komentar = date('Y-m-d H:i:s');
+    $user_id = $_SESSION['user_id'] ?? null;
+
+    if ($user_id && $id) {
+        $query = "INSERT INTO komentar (id, user_id, berita_id, teks_komentar, tanggal_komentar) VALUES (?, ?, ?, ?, ?)";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param('sssss', $randomId, $user_id, $id, $teks_komentar, $tanggal_komentar);
+        $stmt->execute();
+
+        echo json_encode(['success' => true]);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'User ID atau ID berita tidak valid.']);
+    }
+    exit;
+}
+
+// Hapus komentar jika ada permintaan
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_comment_id'])) {
+    $commentId = $_POST['delete_comment_id'];
+    $user_id = $_SESSION['user_id'] ?? null;
+
+    if ($user_id) {
+        $query = "DELETE FROM komentar WHERE id = ? AND user_id = ?";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param('ss', $commentId, $user_id);
+        $stmt->execute();
+
+        header("Location: news-detail.php?id=$id");
+        exit;
+    } else {
+        echo "Pengguna belum login.";
+        exit;
+    }
+}
+
+// Pastikan $id valid sebelum melanjutkan
+if (!$id) {
+    echo "ID berita tidak valid.";
+    exit;
+}
+
 // Fungsi untuk menghitung waktu yang lalu
 function timeAgo($datetimeString) {
     $now = new DateTime();
@@ -17,40 +65,32 @@ function timeAgo($datetimeString) {
     return "baru saja";
 }
 
-// Ambil ID dari URL
-$id = isset($_GET['id']) ? $_GET['id'] : null;
+// Query untuk mendapatkan detail berita dan nama penulis
+$query = "SELECT b.judul, b.konten_artikel, b.tanggal_dibuat, b.kategori, u.nama_lengkap, u.nama_pengguna, u.profile_pic 
+          FROM berita b 
+          JOIN user u ON b.user_id = u.uid 
+          WHERE b.id = ?";
+$stmt = $conn->prepare($query);
+$stmt->bind_param('s', $id);
+$stmt->execute();
+$result = $stmt->get_result();
+$berita = $result->fetch_assoc();
 
-if ($id) {
-    // Query untuk mendapatkan detail berita dan nama penulis
-    $query = "SELECT b.judul, b.konten_artikel, b.tanggal_dibuat, b.kategori, u.nama_lengkap, u.nama_pengguna, u.profile_pic 
-              FROM berita b 
-              JOIN user u ON b.user_id = u.uid 
-              WHERE b.id = ?";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param('s', $id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $berita = $result->fetch_assoc();
+if ($berita) {
+    $judul = $berita['judul'];
+    $konten = $berita['konten_artikel'];
+    $tanggalDibuat = $berita['tanggal_dibuat'];
+    $kategori = $berita['kategori'];
+    $penulis = $berita['nama_lengkap'];
+    $namaPengguna = $berita['nama_pengguna'];
+    $profilePic = $berita['profile_pic'];
 
-    if ($berita) {
-        $judul = $berita['judul'];
-        $konten = $berita['konten_artikel'];
-        $tanggalDibuat = $berita['tanggal_dibuat'];
-        $kategori = $berita['kategori'];
-        $penulis = $berita['nama_lengkap'];
-        $namaPengguna = $berita['nama_pengguna'];
-        $profilePic = $berita['profile_pic'];
-
-        // Ekstrak URL gambar pertama dari konten artikel
-        preg_match('/<img.*?src=["\'](.*?)["\'].*?>/i', $konten, $matches);
-        $gambarPertama = $matches[1] ?? ''; // Ambil URL gambar pertama jika ada
-        $konten = preg_replace('/<img.*?>/i', '', $konten, 1); // Hapus hanya gambar pertama
-    } else {
-        echo "Berita tidak ditemukan.";
-        exit;
-    }
+    // Ekstrak URL gambar pertama dari konten artikel
+    preg_match('/<img.*?src=["\'](.*?)["\'].*?>/i', $konten, $matches);
+    $gambarPertama = $matches[1] ?? ''; // Ambil URL gambar pertama jika ada
+    $konten = preg_replace('/<img.*?>/i', '', $konten, 1); // Hapus hanya gambar pertama
 } else {
-    echo "ID berita tidak valid.";
+    echo "Berita tidak ditemukan.";
     exit;
 }
 
@@ -247,6 +287,29 @@ if ($user_id) {
     $result = $stmt->get_result();
     $isBookmarked = $result->num_rows > 0;
 }
+
+// Query untuk mendapatkan tag berdasarkan berita_id
+$tagQuery = "SELECT nama_tag FROM tag WHERE berita_id = ?";
+$stmt = $conn->prepare($tagQuery);
+$stmt->bind_param('s', $id);
+$stmt->execute();
+$tagResult = $stmt->get_result();
+
+$tags = [];
+while ($tag = $tagResult->fetch_assoc()) {
+    $tags[] = $tag['nama_tag'];
+}
+
+// Ambil komentar dari database
+$commentQuery = "SELECT k.id, k.teks_komentar, k.tanggal_komentar, u.nama_pengguna, u.profile_pic, k.user_id 
+                 FROM komentar k 
+                 JOIN user u ON k.user_id = u.uid 
+                 WHERE k.berita_id = ? 
+                 ORDER BY k.tanggal_komentar DESC";
+$stmt = $conn->prepare($commentQuery);
+$stmt->bind_param('s', $id);
+$stmt->execute();
+$commentResult = $stmt->get_result();
 ?>
 
 <?php include '../header & footer/header.php'; ?>
@@ -302,9 +365,9 @@ if ($user_id) {
                 <div class="mt-4">
                     <span class="block text-gray-700 font-bold">Label:</span>
                     <div class="flex flex-wrap gap-2 mt-2">
-                        <span class="inline-block bg-white text-blue-500 border border-blue-500 px-3 py-1 rounded-full">ruangkelas</span>
-                        <span class="inline-block bg-white text-blue-500 border border-blue-500 px-3 py-1 rounded-full">ruangkelas</span>
-                        <span class="inline-block bg-white text-blue-500 border border-blue-500 px-3 py-1 rounded-full">ruangkelas</span>
+                        <?php foreach ($tags as $tag): ?>
+                            <span class="inline-block bg-white text-blue-500 border border-blue-500 px-3 py-1 rounded-full"><?= htmlspecialchars($tag) ?></span>
+                        <?php endforeach; ?>
                     </div>
                 </div>
 
@@ -318,10 +381,31 @@ if ($user_id) {
                         </button>
                     </div>
                     <div id="commentsContainer" class="border border-gray-300 rounded-lg p-4 overflow-y-auto text-left" style="height: 24rem;">
-                        <div id="noComments" class="flex flex-col items-center justify-center h-full">
-                            <i class="fas fa-comments text-4xl text-gray-300 mb-2"></i>
-                            <p class="text-gray-500">Belum ada komentar. Jadilah yang pertama untuk memberikan komentar!</p>
-                        </div>
+                        <?php if ($commentResult->num_rows === 0): ?>
+                            <div id="noComments" class="flex flex-col items-center justify-center h-full">
+                                <i class="fas fa-comments text-4xl text-gray-300 mb-2"></i>
+                                <p class="text-gray-500">Belum ada komentar. Jadilah yang pertama untuk memberikan komentar!</p>
+                            </div>
+                        <?php endif; ?>
+                        <?php while ($comment = $commentResult->fetch_assoc()): ?>
+                            <div class="mb-4 user-comment" data-comment-id="<?= $comment['id'] ?>">
+                                <div class="flex items-start">
+                                    <img src="data:image/jpeg;base64,<?= base64_encode($comment['profile_pic']) ?>" alt="Profile Picture" class="w-10 h-10 rounded-full mr-2 flex-shrink-0">
+                                    <div class="flex-1">
+                                        <div class="flex items-center space-x-2">
+                                            <span class="font-semibold"><?= htmlspecialchars($comment['nama_pengguna']) ?></span>
+                                            <span class="text-gray-500 text-sm"><?= timeAgo($comment['tanggal_komentar']) ?></span>
+                                            <?php if ($comment['user_id'] === $user_id): ?>
+                                                <button class="options-button text-gray-500 hover:text-gray-700">
+                                                    <i class="fas fa-ellipsis-h text-xs"></i>
+                                                </button>
+                                            <?php endif; ?>
+                                        </div>
+                                        <p class="mt-1 break-words max-w-full"><?= htmlspecialchars($comment['teks_komentar']) ?></p>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endwhile; ?>
                     </div>
                 </div>
             </div>
@@ -459,7 +543,7 @@ if ($user_id) {
 
     function updateCommentCount() {
         const commentsContainer = document.getElementById('commentsContainer');
-        const commentCount = commentsContainer.children.length - 1; // Kurangi placeholder
+        const commentCount = commentsContainer.querySelectorAll('.user-comment').length;
         document.getElementById('commentCount').textContent = `Komentar (${commentCount})`;
 
         const noComments = document.getElementById('noComments');
@@ -474,35 +558,51 @@ if ($user_id) {
         const commentInput = document.getElementById('commentInput');
         const commentText = commentInput.value.trim();
         if (commentText) {
-            const userName = '<?= htmlspecialchars($namaPengguna) ?>';
-            const profilePic = 'data:image/jpeg;base64,<?= base64_encode($profilePic) ?>';
-            const commentDate = new Date();
+            fetch('news-detail.php?id=<?= $id ?>', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    comment: commentText
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const userName = '<?= htmlspecialchars($namaPengguna) ?>';
+                    const profilePic = 'data:image/jpeg;base64,<?= base64_encode($profilePic) ?>';
+                    const commentDate = new Date();
 
-            const commentHtml = `
-                <div class="mb-4 user-comment opacity-0 transition-opacity duration-500 group">
-                    <div class="flex items-start">
-                        <img src="${profilePic}" alt="Profile Picture" class="w-10 h-10 rounded-full mr-2 flex-shrink-0">
-                        <div class="flex-1">
-                            <div class="flex items-center space-x-2">
-                                <span class="font-semibold">${userName}</span>
-                                <span class="text-gray-500 text-sm">${timeAgo(commentDate)}</span>
-                                <button class="options-button hidden group-hover:inline-flex text-gray-500 hover:text-gray-700">
-                                    <i class="fas fa-ellipsis-h text-xs"></i>
-                                </button>
+                    const commentHtml = `
+                        <div class="mb-4 user-comment opacity-0 transition-opacity duration-500 group">
+                            <div class="flex items-start">
+                                <img src="${profilePic}" alt="Profile Picture" class="w-10 h-10 rounded-full mr-2 flex-shrink-0">
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="font-semibold">${userName}</span>
+                                        <span class="text-gray-500 text-sm">${timeAgo(commentDate)}</span>
+                                        <button class="options-button hidden group-hover:inline-flex text-gray-500 hover:text-gray-700">
+                                            <i class="fas fa-ellipsis-h text-xs"></i>
+                                        </button>
+                                    </div>
+                                    <p class="mt-1 break-words max-w-full comment-text">${commentText}</p>
+                                    <button class="read-more text-blue-500 hover:underline text-sm hidden">Baca Selengkapnya</button>
+                                </div>
                             </div>
-                            <p class="mt-1 break-words max-w-full comment-text">${commentText}</p>
-                            <button class="read-more text-blue-500 hover:underline text-sm hidden">Baca Selengkapnya</button>
                         </div>
-                    </div>
-                </div>
-            `;
+                    `;
 
-            commentsContainer.insertAdjacentHTML('afterbegin', commentHtml);
-            const newComment = commentsContainer.firstElementChild;
-            setTimeout(() => newComment.classList.remove('opacity-0'), 10);
-            commentInput.value = '';
-            updateCommentCount();
-            handleReadMore(newComment.querySelector('.comment-text'), newComment.querySelector('.read-more'));
+                    commentsContainer.insertAdjacentHTML('afterbegin', commentHtml);
+                    const newComment = commentsContainer.firstElementChild;
+                    setTimeout(() => newComment.classList.remove('opacity-0'), 10);
+                    commentInput.value = '';
+                    updateCommentCount();
+                    handleReadMore(newComment.querySelector('.comment-text'), newComment.querySelector('.read-more'));
+                } else {
+                    alert(data.message || 'Gagal menambahkan komentar.');
+                }
+            });
         }
     }
 
@@ -535,17 +635,55 @@ if ($user_id) {
         }
     });
 
+    let commentToDelete = null;
+
+    function showPopup() {
+        const popup = document.getElementById('popup');
+        popup.classList.remove('hidden');
+        document.querySelector('#popup div').classList.add('scale-100');
+    }
+
+    function closePopup() {
+        const popup = document.getElementById('popup');
+        popup.classList.add('hidden');
+        document.querySelector('#popup div').classList.remove('scale-100');
+    }
+
     document.getElementById('commentsContainer').addEventListener('click', function (e) {
         const optionsButton = e.target.closest('.options-button');
 
         if (optionsButton) {
-            const commentDiv = optionsButton.closest('.mb-4');
-            if (commentDiv.classList.contains('user-comment')) {
-                commentToDelete = commentDiv;
-                showPopup();
-            }
+            const commentDiv = optionsButton.closest('.user-comment');
+            commentToDelete = commentDiv;
+            showPopup();
         }
     });
+
+    document.getElementById('confirmDelete').addEventListener('click', function () {
+        if (commentToDelete) {
+            const commentId = commentToDelete.dataset.commentId;
+
+            // Buat form untuk mengirim permintaan POST
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '';
+
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'delete_comment_id';
+            input.value = commentId;
+
+            form.appendChild(input);
+            document.body.appendChild(form);
+            form.submit();
+
+            // Setelah form submit, hapus elemen komentar dari DOM
+            commentToDelete.remove();
+            updateCommentCount();
+        }
+    });
+
+    document.getElementById('cancelDelete').addEventListener('click', closePopup);
 
     document.getElementById('shareButton').addEventListener('click', function () {
         const url = window.location.href; // Mendapatkan URL lengkap halaman
@@ -567,32 +705,9 @@ if ($user_id) {
     // Initial update of comment count
     updateCommentCount();
 
-    let commentToDelete = null;
-
-    function showPopup() {
-        const popup = document.getElementById('popup');
-        popup.classList.remove('hidden');
-        document.querySelector('#popup div').classList.add('scale-100');
-    }
-
-    document.getElementById('confirmDelete').addEventListener('click', function () {
-        if (commentToDelete) {
-            commentToDelete.classList.add('opacity-0'); // Animasi keluar
-            setTimeout(() => {
-                commentToDelete.remove();
-                updateCommentCount();
-                closePopup();
-            }, 500); // Waktu yang sama dengan durasi animasi
-        }
+    document.addEventListener('DOMContentLoaded', function() {
+        updateCommentCount();
     });
-
-    document.getElementById('cancelDelete').addEventListener('click', closePopup);
-
-    function closePopup() {
-        const popup = document.getElementById('popup');
-        popup.classList.add('hidden');
-        document.querySelector('#popup div').classList.remove('scale-100');
-    }
 </script>
 
 <?php include '../header & footer/footer.php'; ?>
