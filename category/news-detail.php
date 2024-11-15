@@ -381,24 +381,7 @@ $commentCount = $commentResult->num_rows;
                             <i class="fas fa-paper-plane text-xl"></i>
                         </button>
                     </div>
-                    <div id="commentsContainer" class="border border-gray-300 rounded-lg p-4 overflow-y-auto text-left" style="height: 24rem;">
-                        <?php if ($commentCount > 1): ?>
-                            <div class="relative mb-4">
-                                <button id="filterButton" class="flex items-center text-gray-700 font-bold">
-                                    Terbaru <i class="fas fa-chevron-down ml-2"></i>
-                                </button>
-                                <div id="filterMenu" class="absolute left-0 mt-2 w-64 bg-white border border-gray-300 rounded-lg shadow-lg hidden">
-                                    <div class="p-4">
-                                        <button id="filterNewest" class="block w-full text-left font-bold">Terbaru</button>
-                                        <p class="text-sm text-gray-500">Tampilkan semua komentar, yang terbaru lebih dahulu</p>
-                                    </div>
-                                    <div class="p-4">
-                                        <button id="filterOldest" class="block w-full text-left font-bold">Terlama</button>
-                                        <p class="text-sm text-gray-500">Tampilkan semua komentar, yang terlama lebih dahulu</p>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php endif; ?>
+                    <div id="commentsContainer" class="border border-gray-300 rounded-lg p-4 overflow-y-auto text-left relative" style="height: 24rem;">
                         <?php if ($commentResult->num_rows === 0): ?>
                             <div id="noComments" class="flex flex-col items-center justify-center h-full">
                                 <i class="fas fa-comments text-4xl text-gray-300 mb-2"></i>
@@ -570,13 +553,6 @@ $commentCount = $commentResult->num_rows;
         } else {
             noComments.classList.remove('hidden');
         }
-
-        const filterButton = document.getElementById('filterButton');
-        if (commentCount > 1) {
-            filterButton.classList.remove('hidden');
-        } else {
-            filterButton.classList.add('hidden');
-        }
     }
 
     function addComment() {
@@ -733,39 +709,6 @@ $commentCount = $commentResult->num_rows;
     document.addEventListener('DOMContentLoaded', function() {
         updateCommentCount();
     });
-
-    // Filter functionality
-    const filterButton = document.getElementById('filterButton');
-    const filterMenu = document.getElementById('filterMenu');
-    const filterNewest = document.getElementById('filterNewest');
-    const filterOldest = document.getElementById('filterOldest');
-
-    filterButton.addEventListener('click', function() {
-        filterMenu.classList.toggle('hidden');
-    });
-
-    filterNewest.addEventListener('click', function() {
-        sortComments('newest');
-        filterButton.textContent = 'Terbaru';
-        filterMenu.classList.add('hidden');
-    });
-
-    filterOldest.addEventListener('click', function() {
-        sortComments('oldest');
-        filterButton.textContent = 'Terlama';
-        filterMenu.classList.add('hidden');
-    });
-
-    function sortComments(order) {
-        const commentsContainer = document.getElementById('commentsContainer');
-        const comments = Array.from(commentsContainer.querySelectorAll('.user-comment'));
-        comments.sort((a, b) => {
-            const dateA = new Date(a.querySelector('.text-gray-500').textContent);
-            const dateB = new Date(b.querySelector('.text-gray-500').textContent);
-            return order === 'newest' ? dateB - dateA : dateA - dateB;
-        });
-        comments.forEach(comment => commentsContainer.appendChild(comment));
-    }
 </script>
 
 <?php include '../header & footer/footer.php'; ?>
