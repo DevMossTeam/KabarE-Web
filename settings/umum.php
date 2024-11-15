@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_pic'])) {
 ?>
 <?php include '../header & footer/header_setting.php'; ?>
 
-<div class="container mx-auto mt-8 flex space-x-8">
+<div class="container mx-auto mt-8 flex space-x-8 lg:px-8">
     <!-- Pembungkus Edit Profile -->
     <div class="w-1/3 lg:w-1/4">
         <div class="bg-white p-4 rounded-lg shadow-md">
