@@ -16,7 +16,7 @@ if ($user_id) {
 
 <?php include '../header & footer/header_setting.php'; ?>
 
-<div class="container mx-auto mt-8 flex space-x-8">
+<div class="container mx-auto mt-8 flex space-x-8 lg:px-8">
     <!-- Pembungkus Keamanan -->
     <div class="w-1/3 lg:w-1/4">
         <div class="bg-white p-6 rounded-lg shadow-md">
