@@ -402,7 +402,7 @@ $commentCount = $commentResult->num_rows;
                                                 </button>
                                             <?php endif; ?>
                                         </div>
-                                        <p class="mt-1 break-words max-w-full"><?= htmlspecialchars($comment['teks_komentar']) ?></p>
+                                        <p class="mt-1 break-words max-w-full comment-text"><?= htmlspecialchars($comment['teks_komentar']) ?></p>
                                     </div>
                                 </div>
                             </div>
@@ -555,6 +555,39 @@ $commentCount = $commentResult->num_rows;
         }
     }
 
+    document.addEventListener('DOMContentLoaded', function() {
+        const komentarIsiElements = document.querySelectorAll('.comment-text');
+        const maxLength = 100; // Panjang maksimum sebelum "Baca Selengkapnya"
+
+        komentarIsiElements.forEach(isiElement => {
+            const fullText = isiElement.textContent.trim();
+            if (fullText.length > maxLength) {
+                const truncatedText = fullText.substring(0, maxLength) + '... ';
+                const readMoreLink = document.createElement('span');
+                readMoreLink.textContent = 'Baca Selengkapnya';
+                readMoreLink.classList.add('read-more', 'text-blue-500', 'hover:underline', 'cursor-pointer', 'text-sm');
+                
+                let isExpanded = false;
+
+                readMoreLink.onclick = function() {
+                    if (isExpanded) {
+                        isiElement.textContent = truncatedText;
+                        isiElement.appendChild(readMoreLink);
+                        readMoreLink.textContent = 'Baca Selengkapnya';
+                    } else {
+                        isiElement.textContent = fullText;
+                        isiElement.appendChild(readMoreLink);
+                        readMoreLink.textContent = 'Sembunyikan';
+                    }
+                    isExpanded = !isExpanded;
+                };
+
+                isiElement.textContent = truncatedText;
+                isiElement.appendChild(readMoreLink);
+            }
+        });
+    });
+
     function addComment() {
         const commentInput = document.getElementById('commentInput');
         const commentText = commentInput.value.trim();
@@ -602,26 +635,6 @@ $commentCount = $commentResult->num_rows;
                     handleReadMore(newComment.querySelector('.comment-text'), newComment.querySelector('.read-more'));
                 } else {
                     alert(data.message || 'Gagal menambahkan komentar.');
-                }
-            });
-        }
-    }
-
-    function handleReadMore(commentTextElement, readMoreButton) {
-        const maxLength = 100; // Set the maximum length for the comment preview
-        const fullText = commentTextElement.textContent;
-        if (fullText.length > maxLength) {
-            const previewText = fullText.substring(0, maxLength) + '...';
-            commentTextElement.textContent = previewText;
-            readMoreButton.classList.remove('hidden');
-
-            readMoreButton.addEventListener('click', function () {
-                if (commentTextElement.textContent === previewText) {
-                    commentTextElement.textContent = fullText;
-                    readMoreButton.textContent = 'Sembunyikan';
-                } else {
-                    commentTextElement.textContent = previewText;
-                    readMoreButton.textContent = 'Baca Selengkapnya';
                 }
             });
         }
