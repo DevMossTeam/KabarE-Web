@@ -1,6 +1,6 @@
 <?php include '../header & footer/header_setting.php'; ?>
 
-<div class="container mx-auto mt-8 flex space-x-8">
+<div class="container mx-auto mt-8 flex space-x-8 lg:px-8">
     <!-- Pembungkus Notifikasi -->
     <div class="w-1/3 lg:w-1/4">
         <div class="bg-white p-4 rounded-lg shadow-md h-auto">
@@ -15,7 +15,7 @@
     </div>
 
     <!-- Pembungkus Pengaturan Notifikasi -->
-    <div class="w-2/3 lg:w-3/4">
+    <div class="w-2/3 lg:w-3/4 mb-8">
         <div class="bg-white p-6 rounded-lg shadow-md">
             <h2 class="text-2xl font-bold mb-4">Pengaturan Notifikasi</h2>
             <div class="space-y-6">
