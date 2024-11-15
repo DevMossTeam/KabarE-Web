@@ -1,4 +1,4 @@
-<div class="container mx-auto px-4"> <!-- Tambahkan pembungkus -->
+<div class="container mx-auto px-4 lg:px-8"> <!-- Tambahkan pembungkus -->
 <?php for ($i = 0; $i < 4; $i++): ?>
     <div class="flex items-start mb-6 relative">
         <div class="flex-grow max-w-4xl pr-6"> <!-- Tambahkan padding kanan lebih besar untuk menggeser ke kiri -->

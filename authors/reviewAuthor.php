@@ -5,7 +5,7 @@ include '../header & footer/category_header.php';
 renderCategoryHeader('Dalam Peninjauan');
 ?>
 
-<div class="container mx-auto mt-4">
+<div class="container mx-auto mt-4 lg:px-8">
     <?php 
     $statuses = [
         ['status' => 'Diajukan', 'color' => 'text-blue-500', 'action' => 'Batalkan Pengajuan'],

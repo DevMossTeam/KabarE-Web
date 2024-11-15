@@ -43,7 +43,7 @@ $stmt->bind_param('iii', $user_id, $limit, $offset);
 $stmt->execute();
 $result = $stmt->get_result();
 
-echo "<div class='container mx-auto mt-4' id='draftContainer'>";
+echo "<div class='container mx-auto mt-4 lg:px-8' id='draftContainer'>";
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
         $firstImage = '';
