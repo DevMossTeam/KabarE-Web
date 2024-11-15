@@ -127,96 +127,93 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
     </div>
     <?php include '../header & footer/header_AuthRev.php'; ?>
 
-    <div class="container mx-auto p-6 relative">
+    <div class="container mx-auto p-6 lg:px-8 relative">
         <div class="absolute top-4 right-4 text-gray-500 rounded-full w-10 h-10 flex items-center justify-center cursor-pointer z-50 sm:flex md:flex lg:hidden xl:hidden transition-transform duration-300 ease-in-out" id="toggleSidebar">
             <i class="fas fa-cog text-2xl transition-transform duration-300 ease-in-out" id="toggleIcon"></i>
         </div>
         <h1 class="text-2xl font-bold mb-6 md:hidden" id="pageTitle">Penulisan Artikel</h1>
 
-        <form id="articleForm" method="post">
-            <div class="flex">
-                <div class="w-full lg:w-3/4 pr-8">
-                    <div class="mb-4">
-                        <label for="title" class="block text-lg font-semibold mb-2">Judul Artikel</label>
-                        <input type="text" name="title" id="title" placeholder="Tulis judul artikelmu sendiri" class="w-full border-b-2 border-gray-300 outline-none focus:border-blue-500">
-                    </div>
-
-                    <div class="mb-2">
-                        <label for="articleContent" class="block text-lg font-semibold mb-2">Form Penulisan Artikel</label>
-                        <div id="quillEditor" class="border border-gray-300 rounded p-4 h-96"></div>
-                        <input type="hidden" name="content" id="hiddenContent">
-                    </div>
+        <form id="articleForm" method="post" class="lg:flex lg:space-x-8">
+            <div class="w-full lg:w-3/4 pr-8">
+                <div class="mb-4">
+                    <label for="title" class="block text-lg font-semibold mb-2">Judul Artikel</label>
+                    <input type="text" name="title" id="title" placeholder="Tulis judul artikelmu sendiri" class="w-full border-b-2 border-gray-300 outline-none focus:border-blue-500">
                 </div>
 
-                <!-- Sidebar -->
-                <div id="sidebar" class="fixed inset-y-0 right-0 transform translate-x-full lg:translate-x-0 lg:relative lg:w-1/4 md:w-1/2 bg-white transition-transform duration-300 ease-in-out">
-                    <div class="p-8">
-                        <div class="flex justify-end lg:hidden">
-                            <button id="closeSidebar" class="text-gray-800">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                        <div class="flex space-x-4 items-center mt-24 mb-6 lg:hidden justify-center">
-                            <i class="fas fa-cloud text-gray-800"></i>
-                            <button type="button" id="previewButton" class="text-gray-800 border border-gray-400 px-4 py-2 rounded hover:bg-gray-300 flex items-center">
-                                <i class="fas fa-eye mr-2"></i> Pratinjau
-                            </button>
-                            <button type="submit" id="publishButton" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex items-center">
-                                <i class="fas fa-paper-plane mr-2"></i> Publikasi
-                            </button>
-                        </div>
-                        <div class="hidden lg:flex space-x-2 items-center mb-4 justify-center" style="margin-top: -40px; margin-bottom: 40px;">
-                            <i class="fas fa-cloud cloud-icon" id="cloudIcon"></i>
-                            <button type="button" id="previewButtonLg" class="text-gray-800 border border-gray-400 px-4 py-2 rounded hover:bg-gray-300 flex items-center">
-                                <i class="fas fa-eye mr-2"></i> Pratinjau
-                            </button>
-                            <button type="submit" id="publishButtonLg" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex items-center">
-                                <i class="fas fa-paper-plane mr-2"></i> Publikasi
-                            </button>
-                        </div>
-                        <h2 class="text-lg font-bold my-4 text-center">Pengaturan Publikasi</h2>
-                        <div class="mb-4">
-                            <h2 class="font-semibold">Visibilitas</h2>
-                            <p class="text-sm text-gray-600">Atur visibilitas artikel agar dapat dilihat oleh kelompok yang diinginkan.</p>
-                            <div class="mt-2">
-                                <label class="inline-flex items-center">
-                                    <input type="radio" name="visibility" value="public" class="form-radio" checked>
-                                    <span class="ml-2">Public</span>
-                                </label>
-                                <label class="inline-flex items-center ml-4">
-                                    <input type="radio" name="visibility" value="private" class="form-radio">
-                                    <span class="ml-2">Private</span>
-                                </label>
-                            </div>
-                        </div>
+                <div class="mb-2">
+                    <label for="articleContent" class="block text-lg font-semibold mb-2">Form Penulisan Artikel</label>
+                    <div id="quillEditor" class="border border-gray-300 rounded p-4 h-96"></div>
+                    <input type="hidden" name="content" id="hiddenContent">
+                </div>
+            </div>
 
-                        <div class="mb-4">
-                            <h2 class="font-semibold">Tambahkan Tag</h2>
-                            <p class="text-sm text-gray-600">Tambahkan tag untuk membantu pembaca menemukan berita artikel.</p>
-                            <div id="labelContainer" class="flex flex-wrap mb-2"></div>
-                            <input type="text" id="labelInput" placeholder="Tambah tag" class="w-full border-b-2 border-gray-300 outline-none focus:border-blue-500">
+            <!-- Sidebar -->
+            <div id="sidebar" class="fixed inset-y-0 right-0 transform translate-x-full lg:translate-x-0 lg:relative lg:w-1/4 md:w-1/2 bg-white transition-transform duration-300 ease-in-out lg:px-4 lg:mt-8">
+                <div class="p-8">
+                    <div class="flex justify-end lg:hidden">
+                        <button id="closeSidebar" class="text-gray-800">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="flex space-x-4 items-center mt-24 mb-6 lg:hidden justify-center">
+                        <i class="fas fa-cloud text-gray-800"></i>
+                        <button type="button" id="previewButton" class="text-gray-800 border border-gray-400 px-4 py-2 rounded hover:bg-gray-300 flex items-center">
+                            <i class="fas fa-eye mr-2"></i> Pratinjau
+                        </button>
+                        <button type="submit" id="publishButton" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex items-center">
+                            <i class="fas fa-paper-plane mr-2"></i> Publikasi
+                        </button>
+                    </div>
+                    <div class="hidden lg:flex space-x-2 items-center mb-4 justify-center" style="margin-top: -40px; margin-bottom: 40px;">
+                        <i class="fas fa-cloud cloud-icon" id="cloudIcon"></i>
+                        <button type="button" id="previewButtonLg" class="text-gray-800 border border-gray-400 px-4 py-2 rounded hover:bg-gray-300 flex items-center">
+                            <i class="fas fa-eye mr-2"></i> Pratinjau
+                        </button>
+                        <button type="submit" id="publishButtonLg" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex items-center">
+                            <i class="fas fa-paper-plane mr-2"></i> Publikasi
+                        </button>
+                    </div>
+                    <h2 class="text-lg font-bold my-4 text-center">Pengaturan Publikasi</h2>
+                    <div class="mb-4">
+                        <h2 class="font-semibold">Visibilitas</h2>
+                        <p class="text-sm text-gray-600">Atur visibilitas artikel agar dapat dilihat oleh kelompok yang diinginkan.</p>
+                        <div class="mt-2">
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="visibility" value="public" class="form-radio" checked>
+                                <span class="ml-2">Public</span>
+                            </label>
+                            <label class="inline-flex items-center ml-4">
+                                <input type="radio" name="visibility" value="private" class="form-radio">
+                                <span class="ml-2">Private</span>
+                            </label>
                         </div>
+                    </div>
 
-                        <div>
-                            <h2 class="font-semibold">Kategori</h2>
-                            <p class="text-sm text-gray-600">Menambah kategori untuk mempermudah pencarian artikel.</p>
-                            <select id="categorySelect" class="w-full border-b-2 border-gray-300 focus:outline-none mt-2" size="1" onclick="this.size=5" onblur="this.size=1" onchange="this.size=1; this.blur();">
-                                <option disabled selected>Pilih Kategori</option>
-                                <option>Kampus</option>
-                                <option>Prestasi</option>
-                                <option>Politik</option>
-                                <option>Kesehatan</option>
-                                <option>Olahraga</option>
-                                <option>Ekonomi</option>
-                                <option>Bisnis</option>
-                                <option>UKM</option>
-                                <option>Berita Lainnya</option>
-                            </select>
-                        </div>
+                    <div class="mb-4">
+                        <h2 class="font-semibold">Tambahkan Tag</h2>
+                        <p class="text-sm text-gray-600">Tambahkan tag untuk membantu pembaca menemukan berita artikel.</p>
+                        <div id="labelContainer" class="flex flex-wrap mb-2"></div>
+                        <input type="text" id="labelInput" placeholder="Tambah tag" class="w-full border-b-2 border-gray-300 outline-none focus:border-blue-500">
+                    </div>
+
+                    <div>
+                        <h2 class="font-semibold">Kategori</h2>
+                        <p class="text-sm text-gray-600">Menambah kategori untuk mempermudah pencarian artikel.</p>
+                        <select id="categorySelect" class="w-full border-b-2 border-gray-300 focus:outline-none mt-2" size="1" onclick="this.size=5" onblur="this.size=1" onchange="this.size=1; this.blur();">
+                            <option disabled selected>Pilih Kategori</option>
+                            <option>Kampus</option>
+                            <option>Prestasi</option>
+                            <option>Politik</option>
+                            <option>Kesehatan</option>
+                            <option>Olahraga</option>
+                            <option>Ekonomi</option>
+                            <option>Bisnis</option>
+                            <option>UKM</option>
+                            <option>Berita Lainnya</option>
+                        </select>
                     </div>
                 </div>
             </div>
-            <input type="hidden" name="tags" id="hiddenTags">
         </form>
 
         <!-- Tambahkan div untuk pratinjau -->
