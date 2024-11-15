@@ -317,10 +317,10 @@ $commentCount = $commentResult->num_rows;
 
 <!-- Tambahkan link Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-<div class="container mx-auto mt-8 mb-16">
-    <div class="flex flex-col lg:flex-row">
+<div class="container mx-auto mt-8 mb-16 lg:px-8">
+    <div class="flex flex-col lg:flex-row lg:space-x-8">
         <!-- Gambar Utama dan Paragraf -->
-        <div class="w-full lg:w-2/3 pr-4">
+        <div class="w-full lg:w-2/3 pr-4 lg:pr-0">
             <span class="inline-block bg-red-500 text-white px-3 py-1 rounded-md my-2"><?= htmlspecialchars($kategori) ?></span>
             <h1 class="text-3xl font-bold mt-2"><?= htmlspecialchars($judul) ?></h1>
             <div class="text-gray-500 text-sm mt-2">
@@ -413,7 +413,7 @@ $commentCount = $commentResult->num_rows;
         </div>
 
         <!-- Berita Teratas Hari Ini dan Label -->
-        <div class="w-full lg:w-1/3 pl-4 mt-28 lg:mt-32">
+        <div class="w-full lg:w-1/3 pl-4 mt-28 lg:mt-32 lg:pl-0">
             <div class="mb-4">
                 <span class="inline-block bg-[#FFC300] text-white px-6 py-1 rounded-t-md">Berita Teratas Hari Ini</span>
                 <div class="border-b-4 border-[#FFC300] mt-0"></div>
