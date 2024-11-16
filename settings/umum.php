@@ -3,7 +3,8 @@ session_start();
 include '../connection/config.php'; // Pastikan path ini benar
 
 // Inisialisasi variabel
-$profile_pic = $nama_lengkap = $nama_pengguna = $role = $kredensial = '';
+$profile_pic = $nama_lengkap = $nama_pengguna = $kredensial = '';
+$role = 'pembaca'; // Inisialisasi role dengan nilai default
 
 // Ambil data pengguna dari database
 $user_id = $_SESSION['user_id'] ?? null;
@@ -118,7 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_pic'])) {
                     <div class="flex-1 ml-10">
                         <div>
                             <p class="text-gray-600">Posisi</p>
-                            <p class="font-semibold" id="posisiText"><?php echo htmlspecialchars($role); ?></p>
+                            <p class="font-semibold" id="posisiText"><?php echo htmlspecialchars($role ?? 'pembaca'); ?></p>
                             <p class="text-gray-500 border-b border-gray-300 focus:border-b-2 focus:border-blue-500 outline-none" id="posisiInfo" contenteditable="false" data-default-text="Informasi ini tidak dapat diubah oleh anda">Informasi ini tidak dapat diubah oleh anda</p>
                         </div>
                     </div>

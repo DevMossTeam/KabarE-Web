@@ -1,9 +1,5 @@
 <?php
 session_start();
-require __DIR__ . '/vendor/autoload.php'; // Menggunakan autoloader Composer
-
-use Kreait\Firebase\Factory;
-use Kreait\Firebase\Auth;
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $nama_pengguna = $_POST['nama_pengguna'];
@@ -14,30 +10,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $_SESSION['nama_pengguna'] = $nama_pengguna;
     $_SESSION['email'] = $email;
     $_SESSION['nama_lengkap'] = $namaLengkap;
-
-    // Kirim email verifikasi menggunakan Firebase
-    $factory = (new Factory)->withServiceAccount(__DIR__ . '/firebase/kabare-cf940-firebase-adminsdk-8qu0w-017b632945.json');
-    $auth = $factory->createAuth();
-
-    try {
-        // Buat link verifikasi email
-        $actionCodeSettings = [
-            'continueUrl' => 'http://kabare-web.test:81/user-auth/create-password.php',
-            'handleCodeInApp' => true,
-        ];
-        $link = $auth->getEmailVerificationLink($email, $actionCodeSettings);
-
-        // Kirim email menggunakan fungsi mail() atau library lain
-        mail($email, "Verifikasi Email Anda", "Klik link berikut untuk verifikasi: $link");
-
-        echo "Email verifikasi telah dikirim.";
-    } catch (\Kreait\Firebase\Exception\Auth\UserNotFound $e) {
-        // Handle the case where the user is not found
-        echo 'User not found: ' . $e->getMessage();
-    } catch (\Exception $e) {
-        // Handle other exceptions
-        echo 'Error: ' . $e->getMessage();
-    }
 
     // Arahkan ke halaman verifikasi email
     header('Location: verif_email.php');
