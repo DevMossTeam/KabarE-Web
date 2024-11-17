@@ -1,6 +1,38 @@
 <?php
 session_start();
-require '../send_email.php';
+require '../connection/config.php';
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require '../vendor/autoload.php';
+
+function sendOTP($email, $otp) {
+    $mail = new PHPMailer(true);
+    try {
+        // Konfigurasi server email
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com'; // Host SMTP
+        $mail->SMTPAuth = true;
+        $mail->Username = 'devmossteam@gmail.com'; // Email Anda
+        $mail->Password = 'auarutsuzgpwtriy'; // Password email Anda
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
+
+        // Penerima
+        $mail->setFrom('devmossteam@gmail.com', 'KabarE'); // Pastikan email pengirim sesuai
+        $mail->addAddress($email);
+
+        // Konten email
+        $mail->isHTML(true);
+        $mail->Subject = 'Kode OTP Anda';
+        $mail->Body    = "Kode OTP Anda adalah: <b>$otp</b>";
+
+        $mail->send();
+        return true;
+    } catch (Exception $e) {
+        return false;
+    }
+}
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $nama_pengguna = $_POST['username'];
@@ -15,15 +47,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $_SESSION['email'] = $email;
     $_SESSION['nama_lengkap'] = $namaLengkap;
     $_SESSION['otp'] = $otp;
+    $_SESSION['from_register'] = true;
 
     // Kirim email OTP
     if (sendOTP($email, $otp)) {
         // Arahkan ke halaman verifikasi email
         header('Location: verif_email.php');
+        exit;
     } else {
         $error = "Gagal mengirim email. Silakan coba lagi.";
     }
-    exit;
 }
 ?>
 
@@ -36,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="flex h-screen m-0">
-    <div class="flex-1 bg-blue-500 flex items-center justify-center relative">
+    <div class="hidden lg:flex-1 lg:flex lg:items-center lg:justify-center lg:bg-blue-500 lg:relative">
         <img src="../assets/web-icon/KabarE-UTDF.png" alt="Logo" class="h-12 absolute top-0 left-0 m-4">
         <img src="../assets/web-icon/your-icon.png" alt="Icon" class="h-64">
     </div>

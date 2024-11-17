@@ -47,8 +47,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body class="flex h-screen">
-    <div class="flex-1 bg-blue-500 flex items-center justify-center relative">
-        <img src="../assets/web-icon/KabarE-UTDK.png" alt="Logo" class="h-12 absolute top-0 left-0 m-4">
+    <div class="hidden lg:flex-1 lg:flex lg:items-center lg:justify-center lg:bg-blue-500 lg:relative">
+        <img src="../assets/web-icon/KabarE-UTDF.png" alt="Logo" class="h-12 absolute top-0 left-0 m-4">
         <img src="../assets/web-icon/your-icon.png" alt="Icon" class="h-64">
     </div>
     <div class="flex-1 flex items-center justify-center bg-white">

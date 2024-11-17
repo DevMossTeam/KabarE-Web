@@ -9,28 +9,38 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $password = $_POST['password'] ?? null;
 
     if ($input && $password) {
-        $stmt = $conn->prepare("SELECT uid, email, password, profile_pic FROM user WHERE (nama_pengguna = ? OR email = ?)");
+        // Cek apakah input adalah email atau nama pengguna
+        if (filter_var($input, FILTER_VALIDATE_EMAIL)) {
+            $stmt = $conn->prepare("SELECT uid, email, nama_pengguna, password, profile_pic FROM user WHERE email = ?");
+        } else {
+            $stmt = $conn->prepare("SELECT uid, email, nama_pengguna, password, profile_pic FROM user WHERE nama_pengguna = ?");
+        }
+
         if ($stmt) {
-            $stmt->bind_param("ss", $input, $input);
+            $stmt->bind_param("s", $input);
             $stmt->execute();
             $result = $stmt->get_result();
 
-            if ($result->num_rows > 0) {
-                $user = $result->fetch_assoc();
+            $loginSuccess = false;
+            while ($user = $result->fetch_assoc()) {
                 if (password_verify($password, $user['password'])) {
                     $_SESSION['user_id'] = $user['uid'];
                     $_SESSION['email'] = $user['email'];
                     $_SESSION['profile_pic'] = $user['profile_pic'] ?: 'default-profile.png'; // Default jika kosong
                     setcookie('user_id', $user['uid'], time() + (86400 * 30), "/");
                     setcookie('email', $user['email'], time() + (86400 * 30), "/");
-                    header("Location: /index.php");
-                    exit();
-                } else {
-                    $errorMessage = "Password salah.";
+                    $loginSuccess = true;
+                    break;
                 }
-            } else {
-                $errorMessage = "Email atau username tidak ditemukan.";
             }
+
+            if ($loginSuccess) {
+                header("Location: /index.php");
+                exit();
+            } else {
+                $errorMessage = "Password salah atau email/username tidak ditemukan.";
+            }
+
             $stmt->close();
         } else {
             $errorMessage = "Terjadi kesalahan pada query.";
@@ -70,24 +80,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         // Function to handle Google Sign-In
         window.signInWithGoogle = function() {
-            console.log("Attempting to sign in with Google...");
             const provider = new GoogleAuthProvider();
 
             signInWithPopup(auth, provider)
                 .then((result) => {
-                    return result.user.getIdToken(); // Get the ID token
-                })
-                .then((token) => {
-                    console.log("ID Token:", token); // Log the token to check its value
-
-                    // Display the ID token on the page
-                    document.getElementById("id-token-display").innerText = token;
-
-                    // Optionally, send token to the server
-                    return fetch('verify_token.php', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ token }) // Make sure token is sent here
+                    const user = result.user;
+                    return user.getIdToken().then((token) => {
+                        // Send token and email to the server
+                        return fetch('verify_token.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ token, email: user.email })
+                        });
                     });
                 })
                 .then((response) => {
@@ -120,16 +124,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </script>
 </head>
 <body class="flex h-screen m-0">
-    <div class="flex-1 bg-blue-500 flex items-center justify-center relative">
+    <div class="hidden lg:flex-1 lg:flex lg:items-center lg:justify-center lg:bg-blue-500 lg:relative">
         <img src="../assets/web-icon/KabarE-UTDF.png" alt="Logo" class="h-12 absolute top-0 left-0 m-4">
         <img src="../assets/web-icon/your-icon.png" alt="Icon" class="h-64">
     </div>
-    <div class="flex-1 flex items-center justify-center bg-white">
+    <div class="flex-1 flex items-center justify-center bg-white w-full">
         <form action="login.php" method="POST" class="w-full max-w-md px-8 pt-6 pb-8 mb-4">
             <h2 class="text-3xl font-bold mb-2 text-center text-blue-500">Selamat Datang Kembali!</h2>
             <p class="text-center text-gray-600 mb-6">Ayo masuk dan jangan lewatkan berita penting di kampusmu!</p>
             <div class="mb-4">
-                <label for="usernameOrEmail" class="block text-sm font-bold mb-2 text-gray-700">USERNAME</label>
+                <label for="usernameOrEmail" class="block text-sm font-bold mb-2 text-gray-700">USERNAME ATAU EMAIL</label>
                 <input type="text" id="usernameOrEmail" name="usernameOrEmail" placeholder="Masukkan email atau username" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
             </div>
             <div class="mb-6 relative">
@@ -148,7 +152,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <span class="mx-2 text-sm text-gray-500">ATAU MASUK DENGAN</span>
                 <hr class="flex-grow border-t border-gray-300">
             </div>
-            <button class="flex items-center justify-center w-full bg-white border border-gray-300 text-gray-700 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline hover:bg-gray-100" onclick="signInWithGoogle()">
+            <button type="button" class="flex items-center justify-center w-full bg-white border border-gray-300 text-gray-700 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline hover:bg-gray-100" onclick="signInWithGoogle()">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo" class="w-5 h-5 mr-2">
                 Sign in with Google
             </button>
