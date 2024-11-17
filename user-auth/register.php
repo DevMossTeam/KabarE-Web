@@ -1,18 +1,28 @@
 <?php
 session_start();
+require '../send_email.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $nama_pengguna = $_POST['nama_pengguna'];
+    $nama_pengguna = $_POST['username'];
     $email = $_POST['email'];
     $namaLengkap = $_POST['fullname'];
+
+    // Buat OTP 6 digit
+    $otp = rand(100000, 999999);
 
     // Simpan data di sesi
     $_SESSION['nama_pengguna'] = $nama_pengguna;
     $_SESSION['email'] = $email;
     $_SESSION['nama_lengkap'] = $namaLengkap;
+    $_SESSION['otp'] = $otp;
 
-    // Arahkan ke halaman verifikasi email
-    header('Location: verif_email.php');
+    // Kirim email OTP
+    if (sendOTP($email, $otp)) {
+        // Arahkan ke halaman verifikasi email
+        header('Location: verif_email.php');
+    } else {
+        $error = "Gagal mengirim email. Silakan coba lagi.";
+    }
     exit;
 }
 ?>

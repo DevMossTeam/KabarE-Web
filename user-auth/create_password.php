@@ -1,20 +1,32 @@
 <?php
 session_start();
 require '../connection/config.php';
-$username = $_SESSION['username'] ?? '';
+$username = $_SESSION['nama_pengguna'] ?? '';
 $email = $_SESSION['email'] ?? '';
 $namaLengkap = $_SESSION['nama_lengkap'] ?? '';
+
+// Fungsi untuk menghasilkan ID acak
+function generateRandomId($length = 28) {
+    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $charactersLength = strlen($characters);
+    $randomString = '';
+    for ($i = 0; $i < $length; $i++) {
+        $randomString .= $characters[rand(0, $charactersLength - 1)];
+    }
+    return $randomString;
+}
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $newPassword = $_POST['newPassword'];
     $confirmPassword = $_POST['confirmPassword'];
     if ($newPassword === $confirmPassword) {
         $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+        $uid = generateRandomId(); // Generate UID baru
         // Masukkan data ke tabel user
-        $stmt = $conn->prepare("INSERT INTO user (username, password, email, nama_lengkap) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("ssss", $username, $hashedPassword, $email, $namaLengkap);
+        $stmt = $conn->prepare("INSERT INTO user (uid, nama_pengguna, password, email, nama_lengkap, role) VALUES (?, ?, ?, ?, ?, 'pembaca')");
+        $stmt->bind_param("sssss", $uid, $username, $hashedPassword, $email, $namaLengkap);
         if ($stmt->execute()) {
-            echo "Registrasi berhasil!";
-            header('Location: login.php');
+            header('Location: login.php'); // Arahkan ke halaman login
             exit;
         } else {
             echo "Terjadi kesalahan saat menyimpan data.";
