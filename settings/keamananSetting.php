@@ -6,11 +6,40 @@ include '../connection/config.php'; // Pastikan path ini benar
 $user_id = $_SESSION['user_id'] ?? null;
 if ($user_id) {
     $stmt = $conn->prepare("SELECT email FROM user WHERE uid = ?");
-    $stmt->bind_param("i", $user_id);
+    $stmt->bind_param("s", $user_id);
     $stmt->execute();
     $stmt->bind_result($email);
     $stmt->fetch();
     $stmt->close();
+}
+
+// Proses pembaruan kata sandi
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['currentPassword'], $_POST['newPassword'])) {
+    $currentPassword = $_POST['currentPassword'];
+    $newPassword = $_POST['newPassword'];
+
+    // Verifikasi kata sandi saat ini
+    $stmt = $conn->prepare("SELECT password FROM user WHERE uid = ?");
+    $stmt->bind_param("s", $user_id);
+    $stmt->execute();
+    $stmt->bind_result($hashedPassword);
+    $stmt->fetch();
+    $stmt->close();
+
+    if (password_verify($currentPassword, $hashedPassword)) {
+        // Update kata sandi baru
+        $newHashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+        $stmt = $conn->prepare("UPDATE user SET password = ? WHERE uid = ?");
+        $stmt->bind_param("ss", $newHashedPassword, $user_id);
+        if ($stmt->execute()) {
+            $updateSuccess = true;
+        } else {
+            $updateError = "Terjadi kesalahan saat memperbarui kata sandi.";
+        }
+        $stmt->close();
+    } else {
+        $updateError = "Kata sandi saat ini salah.";
+    }
 }
 ?>
 
@@ -41,7 +70,6 @@ if ($user_id) {
                         <div>
                             <p class="text-gray-600">Email</p>
                             <p class="font-semibold" id="emailText"><?php echo htmlspecialchars($email); ?></p>
-                            <p class="text-gray-500 border-b border-gray-300 focus:border-b-2 focus:border-blue-500 outline-none" id="emailInfo" contenteditable="false" data-default-text="Informasi ini harus akurat">Informasi ini harus akurat</p>
                         </div>
                     </div>
                     <i class="fas fa-pen text-blue-500 cursor-pointer ml-6" onclick="toggleEdit('email')"></i>
@@ -53,10 +81,9 @@ if ($user_id) {
                         <div>
                             <p class="text-gray-600">Kata Sandi</p>
                             <p class="font-semibold" id="passwordText">********</p>
-                            <p class="text-gray-500 border-b border-gray-300 focus:border-b-2 focus:border-blue-500 outline-none" id="passwordInfo" contenteditable="false" data-default-text="Informasi ini harus akurat">Informasi ini harus akurat</p>
                         </div>
                     </div>
-                    <i class="fas fa-pen text-blue-500 cursor-pointer ml-6" onclick="toggleEdit('password')"></i>
+                    <i class="fas fa-pen text-blue-500 cursor-pointer ml-6" onclick="showPasswordModal()"></i>
                 </div>
 
                 <!-- Bantuan -->
@@ -72,6 +99,49 @@ if ($user_id) {
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- Modal untuk Ubah Kata Sandi -->
+<div id="passwordModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex justify-center items-center">
+    <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
+        <h2 class="text-xl font-bold mb-4">Ubah Kata Sandi</h2>
+        <form id="passwordForm" method="POST">
+            <div class="mb-4">
+                <label for="currentPassword" class="block text-gray-700">Kata Sandi Terakhir</label>
+                <input type="password" name="currentPassword" id="currentPassword" class="w-full p-2 border border-gray-300 rounded" required>
+            </div>
+            <div class="mb-4">
+                <label for="newPassword" class="block text-gray-700">Kata Sandi Baru</label>
+                <input type="password" name="newPassword" id="newPassword" class="w-full p-2 border border-gray-300 rounded" required>
+            </div>
+            <div class="mb-4">
+                <label for="confirmPassword" class="block text-gray-700">Konfirmasi Kata Sandi Baru</label>
+                <input type="password" id="confirmPassword" class="w-full p-2 border border-gray-300 rounded" required>
+            </div>
+            <div class="flex justify-end space-x-2">
+                <button type="button" onclick="closePasswordModal()" class="bg-gray-500 text-white px-4 py-2 rounded">Batal</button>
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Konfirmasi</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal untuk Pesan Kesalahan -->
+<div id="errorModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex justify-center items-center">
+    <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-md text-center">
+        <h2 class="text-xl font-bold mb-4 text-red-500">Kesalahan</h2>
+        <p id="errorMessage" class="text-gray-700"></p>
+        <button onclick="closeErrorModal()" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded">Tutup</button>
+    </div>
+</div>
+
+<!-- Modal untuk Pesan Sukses -->
+<div id="successModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex justify-center items-center">
+    <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-md text-center">
+        <h2 class="text-xl font-bold mb-4 text-green-500">Sukses</h2>
+        <p class="text-gray-700">Kata sandi berhasil diperbarui.</p>
+        <button onclick="closeSuccessModal()" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded">Tutup</button>
     </div>
 </div>
 
@@ -106,21 +176,13 @@ if ($user_id) {
         }
         infoElement.contentEditable = false;
         infoElement.classList.remove('focus:border-b-2', 'focus:border-blue-500');
-        resetPlaceholder(infoElement);
         currentEdit = null;
-    }
-
-    function resetPlaceholder(infoElement) {
-        if (infoElement.textContent.trim() === '') {
-            infoElement.textContent = infoElement.getAttribute('data-default-text');
-        }
     }
 
     function cancelEdit(field) {
         const infoElement = document.getElementById(`${field}Info`);
         infoElement.contentEditable = false;
         infoElement.classList.remove('focus:border-b-2', 'focus:border-blue-500');
-        resetPlaceholder(infoElement);
         currentEdit = null;
     }
 
@@ -149,4 +211,45 @@ if ($user_id) {
             cancelEdit(currentEdit);
         }
     });
+
+    function showPasswordModal() {
+        document.getElementById('passwordModal').classList.remove('hidden');
+    }
+
+    function closePasswordModal() {
+        document.getElementById('passwordModal').classList.add('hidden');
+    }
+
+    function showErrorModal(message) {
+        document.getElementById('errorMessage').textContent = message;
+        document.getElementById('errorModal').classList.remove('hidden');
+    }
+
+    function closeErrorModal() {
+        document.getElementById('errorModal').classList.add('hidden');
+    }
+
+    function showSuccessModal() {
+        document.getElementById('successModal').classList.remove('hidden');
+    }
+
+    function closeSuccessModal() {
+        document.getElementById('successModal').classList.add('hidden');
+    }
+
+    document.getElementById('passwordForm').addEventListener('submit', function(event) {
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+
+        if (newPassword !== confirmPassword) {
+            event.preventDefault();
+            showErrorModal('Kata sandi baru dan konfirmasi tidak cocok.');
+        }
+    });
+
+    <?php if (isset($updateError)): ?>
+        showErrorModal('<?php echo $updateError; ?>');
+    <?php elseif (isset($updateSuccess)): ?>
+        showSuccessModal();
+    <?php endif; ?>
 </script>

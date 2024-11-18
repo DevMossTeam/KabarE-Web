@@ -146,7 +146,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_pic'])) {
 
 <div id="confirmationPopup" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
     <div class="bg-white p-4 rounded-lg shadow-md">
-        <p>Apakah Anda yakin ingin mengganti kredensial?</p>
+        <p>Apakah Anda yakin ingin mengganti foto profil?</p>
         <div class="flex justify-end space-x-2 mt-4">
             <button class="bg-red-500 text-white px-4 py-2 rounded" onclick="closePopup()">Batal</button>
             <button class="bg-green-500 text-white px-4 py-2 rounded" onclick="submitForm()">Ya</button>
