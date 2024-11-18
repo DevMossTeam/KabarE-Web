@@ -86,4 +86,3 @@ if (isset($_POST['verify'])) {
         });
     </script>
 </body>
-</html>

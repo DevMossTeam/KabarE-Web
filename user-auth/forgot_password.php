@@ -38,7 +38,70 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             $mail->isHTML(true);
             $mail->Subject = 'Kode OTP Anda';
-            $mail->Body    = "Kode OTP Anda adalah: <b>$otp</b>";
+
+            // Konten HTML email
+            $htmlBody = "
+                <html>
+                <head>
+                    <style>
+                        body {
+                            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                            background-color: #f4f4f4;
+                            padding: 20px;
+                            margin: 0;
+                        }
+                        .email-container {
+                            background-color: #ffffff;
+                            padding: 40px;
+                            border-radius: 10px;
+                            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                            width: 100%;
+                            max-width: 600px;
+                            margin: 0 auto;
+                        }
+                        h2 {
+                            color: #333;
+                            font-size: 28px;
+                            text-align: center;
+                            margin-bottom: 20px;
+                        }
+                        .otp-code {
+                            font-size: 40px;
+                            font-weight: bold;
+                            color: #007BFF;
+                            text-align: center;
+                            padding: 15px 0;
+                            background-color: #f0f8ff;
+                            border-radius: 5px;
+                            margin: 20px 0;
+                        }
+                        .footer {
+                            text-align: center;
+                            font-size: 14px;
+                            color: #888;
+                            margin-top: 30px;
+                        }
+                        .footer a {
+                            color: #007BFF;
+                            text-decoration: none;
+                        }
+                        .footer a:hover {
+                            text-decoration: underline;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class='email-container'>
+                        <h2>Kode OTP Anda</h2>
+                        <p>Terima kasih telah menggunakan layanan kami. Berikut adalah Kode One-Time Password (OTP) Anda untuk memulihkan kata sandi:</p>
+                        <div class='otp-code'>$otp</div>
+                        <p>Jika Anda tidak meminta pemulihan kata sandi ini, silakan abaikan email ini.</p>
+                    </div>
+                </body>
+                </html>
+            ";
+
+            $mail->Body = $htmlBody;
 
             $mail->send();
             header('Location: verif_email.php');
@@ -60,6 +123,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lupa Password</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script>
+        // Reset the OTP timer when accessing this page
+        localStorage.removeItem('otp_timer');
+    </script>
 </head>
 <body class="flex h-screen">
     <div class="hidden lg:flex-1 lg:flex lg:items-center lg:justify-center lg:bg-blue-500 lg:relative">
