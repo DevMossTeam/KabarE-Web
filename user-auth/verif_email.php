@@ -81,6 +81,7 @@ if (isset($_POST['verify'])) {
                         inputs[i].value = char;
                     }
                 });
+                inputs[Math.min(pasteData.length, inputs.length) - 1].focus();
             });
         });
     </script>

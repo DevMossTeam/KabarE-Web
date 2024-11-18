@@ -237,11 +237,12 @@ function toggleBookmark($conn, $user_id, $berita_id) {
         $stmt->bind_param('ss', $user_id, $berita_id);
         $stmt->execute();
     } else {
-        // Tambahkan bookmark baru dengan ID acak
+        // Tambahkan bookmark baru dengan ID acak dan tanggal bookmark
         $randomId = generateRandomId();
-        $query = "INSERT INTO bookmark (id, user_id, berita_id) VALUES (?, ?, ?)";
+        $tanggal_bookmark = date('Y-m-d H:i:s');
+        $query = "INSERT INTO bookmark (id, user_id, berita_id, tanggal_bookmark) VALUES (?, ?, ?, ?)";
         $stmt = $conn->prepare($query);
-        $stmt->bind_param('sss', $randomId, $user_id, $berita_id);
+        $stmt->bind_param('ssss', $randomId, $user_id, $berita_id, $tanggal_bookmark);
         $stmt->execute();
     }
 }

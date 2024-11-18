@@ -9,7 +9,7 @@ $userData = [];
 
 if ($isLoggedIn) {
     $user_id = $_SESSION['user_id'];
-    $stmt = $conn->prepare("SELECT profile_pic, nama_lengkap, role, nama_pengguna FROM user WHERE uid = ?");
+    $stmt = $conn->prepare("SELECT profile_pic, nama_lengkap, role, nama_pengguna, kredensial FROM user WHERE uid = ?");
     if ($stmt) {
         $stmt->bind_param("s", $user_id);
         $stmt->execute();
@@ -34,7 +34,9 @@ if ($isLoggedIn) {
         </div>
         <h2 class="text-center text-2xl font-semibold mt-4"><?= htmlspecialchars($userData['nama_lengkap'] ?? 'Nama Pengguna') ?></h2> <!-- Ukuran font 24 untuk nama di bawah profil, semi-bold -->
         <p class="text-center text-sm text-[#9F9F9F]">@<?= htmlspecialchars($userData['nama_pengguna'] ?? 'username') ?></p> <!-- Tambahkan username dengan warna dan ukuran lebih kecil -->
-        <p class="text-center text-gray-600 text-lg">Mahasiswa Jurusan Teknologi Informasi</p> <!-- Ukuran font 16 -->
+        <?php if (!empty($userData['kredensial'])): ?>
+            <p class="text-center text-gray-600 text-lg"><?= htmlspecialchars($userData['kredensial']) ?></p> <!-- Ukuran font 16 -->
+        <?php endif; ?>
         <a href="../settings/umum.php" class="mt-4 w-full bg-blue-500 text-white py-2 rounded block text-center">Edit Profile</a> <!-- Ubah menjadi elemen <a> -->
     </div>
 
