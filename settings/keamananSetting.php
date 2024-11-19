@@ -135,6 +135,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['updateEmail'])) {
         echo "<script>document.addEventListener('DOMContentLoaded', function() { showNewEmailModal(); });</script>";
     }
 }
+
+// Proses pembaruan kata sandi
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['updatePassword'])) {
+    $oldPassword = $_POST['oldPassword'];
+    $newPassword = $_POST['newPassword'];
+    $confirmPassword = $_POST['confirmPassword'];
+
+    // Verifikasi kata sandi lama
+    $stmt = $conn->prepare("SELECT password FROM user WHERE uid = ?");
+    $stmt->bind_param("s", $user_id);
+    $stmt->execute();
+    $stmt->bind_result($hashedPassword);
+    $stmt->fetch();
+    $stmt->close();
+
+    if (password_verify($oldPassword, $hashedPassword)) {
+        if ($newPassword === $confirmPassword) {
+            // Hash kata sandi baru
+            $newHashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+
+            // Perbarui kata sandi di database
+            $stmt = $conn->prepare("UPDATE user SET password = ? WHERE uid = ?");
+            $stmt->bind_param("ss", $newHashedPassword, $user_id);
+            if ($stmt->execute()) {
+                $passwordUpdateSuccess = "Kata sandi berhasil diperbarui.";
+                echo "<script>document.addEventListener('DOMContentLoaded', function() { closePasswordModal(); showSuccessModal(); });</script>";
+            } else {
+                $passwordUpdateError = "Gagal memperbarui kata sandi.";
+            }
+            $stmt->close();
+        } else {
+            $passwordUpdateError = "Kata sandi baru dan konfirmasi tidak cocok.";
+        }
+    } else {
+        $passwordUpdateError = "Kata sandi lama salah.";
+    }
+}
 ?>
 
 <?php include '../header & footer/header_setting.php'; ?>
@@ -375,5 +412,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['updateEmail'])) {
         showErrorModal('<?php echo $updateError; ?>');
     <?php elseif (isset($updateSuccess)): ?>
         showSuccessModal();
+    <?php endif; ?>
+
+    <?php if (isset($passwordUpdateError)): ?>
+        document.addEventListener('DOMContentLoaded', function() {
+            showPasswordModal();
+        });
     <?php endif; ?>
 </script>
