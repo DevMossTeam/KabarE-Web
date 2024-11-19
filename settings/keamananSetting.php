@@ -236,18 +236,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['updatePassword'])) {
 <!-- Modal untuk Verifikasi Email -->
 <div id="emailModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex justify-center items-center">
     <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-md text-center">
-        <img src="https://img.icons8.com/ios-filled/50/000000/email.png" alt="Email Icon" class="mx-auto mb-4" />
+        <img src="https://img.icons8.com/ios-filled/50/000000/verified-account.png" alt="Verified Icon" class="mx-auto mb-4" />
         <h2 class="text-xl font-bold mb-4">Verifikasi Email</h2>
         <p class="text-gray-700 mb-4">Untuk melanjutkan, kami perlu memverifikasi email Anda. Klik tombol di bawah untuk mengirim kode verifikasi ke email Anda saat ini.</p>
-        <form method="POST" class="flex justify-center space-x-2">
+        <form method="POST" class="flex justify-end space-x-2">
             <button type="button" onclick="closeEmailModal()" class="bg-gray-500 text-white px-4 py-2 rounded">Tutup</button>
             <button name="sendOTP" class="bg-blue-500 text-white px-4 py-2 rounded">Kirim Kode Verifikasi</button>
         </form>
-        <?php if (isset($otpSuccess)): ?>
-            <div class="text-green-500 mt-4"><?php echo $otpSuccess; ?></div>
-        <?php elseif (isset($otpError)): ?>
-            <div class="text-red-500 mt-4"><?php echo $otpError; ?></div>
-        <?php endif; ?>
     </div>
 </div>
 
@@ -264,7 +259,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['updatePassword'])) {
                 <?php endfor; ?>
             </div>
             <div class="flex justify-end space-x-2">
-                <button type="button" onclick="closeOtpModal()" class="bg-gray-500 text-white px-4 py-2 rounded">Batal</button>
+                <?php if ($_SESSION['otpFor'] === 'currentEmail'): ?>
+                    <button type="button" onclick="closeOtpModal()" class="bg-gray-500 text-white px-4 py-2 rounded">Batal</button>
+                <?php endif; ?>
                 <button name="verifyOTP" class="bg-blue-500 text-white px-4 py-2 rounded">Verifikasi</button>
             </div>
         </form>
@@ -284,7 +281,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['updatePassword'])) {
             <input type="email" name="newEmail" placeholder="Email Baru" class="w-full p-2 border border-gray-300 rounded mb-4" required>
             <input type="password" name="currentPassword" placeholder="Kata Sandi Terakhir" class="w-full p-2 border border-gray-300 rounded mb-4" required>
             <div class="flex justify-end space-x-2">
-                <button type="button" onclick="closeNewEmailModal()" class="bg-gray-500 text-white px-4 py-2 rounded">Batal</button>
+                <button type="button" onclick="closeNewEmailModal(); showOtpModal();" class="bg-gray-500 text-white px-4 py-2 rounded">Kembali</button>
                 <button name="updateEmail" class="bg-blue-500 text-white px-4 py-2 rounded">Perbarui Email</button>
             </div>
         </form>
@@ -324,7 +321,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['updatePassword'])) {
         <img src="https://img.icons8.com/ios-filled/50/000000/checked.png" alt="Success Icon" class="mx-auto mb-4" />
         <h2 class="text-xl font-bold mb-4">Sukses</h2>
         <p class="text-gray-700 mb-4">Email Anda telah berhasil diperbarui. Terima kasih telah memperbarui informasi Anda.</p>
-        <button type="button" onclick="closeSuccessModal()" class="bg-blue-500 text-white px-4 py-2 rounded">Tutup</button>
+        <button type="button" onclick="closeSuccessModal()" class="bg-blue-500 text-white px-4 py-2 rounded">Selesai</button>
+    </div>
+</div>
+
+<!-- Modal untuk Sukses Memperbarui Kata Sandi -->
+<div id="passwordSuccessModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex justify-center items-center">
+    <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-md text-center">
+        <img src="https://img.icons8.com/ios-filled/50/000000/checked.png" alt="Success Icon" class="mx-auto mb-4" />
+        <h2 class="text-xl font-bold mb-4">Sukses</h2>
+        <p class="text-gray-700 mb-4">Kata sandi Anda telah berhasil diperbarui. Terima kasih telah memperbarui informasi keamanan Anda.</p>
+        <button type="button" onclick="closePasswordSuccessModal()" class="bg-blue-500 text-white px-4 py-2 rounded">Selesai</button>
     </div>
 </div>
 
@@ -378,6 +385,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['updatePassword'])) {
         document.getElementById('successModal').classList.add('hidden');
     }
 
+    function showPasswordSuccessModal() {
+        document.getElementById('passwordSuccessModal').classList.remove('hidden');
+    }
+
+    function closePasswordSuccessModal() {
+        document.getElementById('passwordSuccessModal').classList.add('hidden');
+    }
+
     document.querySelectorAll('.otp-input').forEach((input, index, inputs) => {
         input.addEventListener('input', () => {
             if (input.value.length === 1 && index < inputs.length - 1) {
@@ -417,6 +432,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['updatePassword'])) {
     <?php if (isset($passwordUpdateError)): ?>
         document.addEventListener('DOMContentLoaded', function() {
             showPasswordModal();
+        });
+    <?php endif; ?>
+
+    <?php if (isset($passwordUpdateSuccess)): ?>
+        document.addEventListener('DOMContentLoaded', function() {
+            closePasswordModal();
+            showPasswordSuccessModal();
         });
     <?php endif; ?>
 </script>
