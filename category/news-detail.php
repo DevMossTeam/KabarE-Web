@@ -516,7 +516,7 @@ $commentCount = $commentResult->num_rows;
     </div>
 </div>
 
-<div id="popup" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+<div id="modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
     <div class="bg-white p-6 rounded-lg shadow-lg transform scale-95 transition-transform duration-300">
         <p class="mb-4">Apakah Anda yakin ingin menghapus komentar ini?</p>
         <div class="flex justify-end">
@@ -652,25 +652,45 @@ $commentCount = $commentResult->num_rows;
 
     let commentToDelete = null;
 
-    function showPopup() {
-        const popup = document.getElementById('popup');
-        popup.classList.remove('hidden');
-        document.querySelector('#popup div').classList.add('scale-100');
+    // Fungsi untuk menampilkan modal
+    function showModal() {
+        const modal = document.getElementById('modal');
+        modal.classList.remove('hidden');
+        document.querySelector('#modal div').classList.add('scale-100');
     }
 
-    function closePopup() {
-        const popup = document.getElementById('popup');
-        popup.classList.add('hidden');
-        document.querySelector('#popup div').classList.remove('scale-100');
+    // Fungsi untuk menutup modal
+    function closeModal() {
+        const modal = document.getElementById('modal');
+        modal.classList.add('hidden');
+        document.querySelector('#modal div').classList.remove('scale-100');
     }
 
+    // Tambahkan event listener untuk menutup modal saat mengklik di luar modal
+    document.addEventListener('click', function(event) {
+        const modal = document.getElementById('modal');
+        const modalContent = modal.querySelector('div');
+        if (!modalContent.contains(event.target) && !modal.classList.contains('hidden')) {
+            closeModal();
+        }
+    });
+
+    // Tambahkan event listener untuk menutup modal saat menekan tombol Esc
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeModal();
+        }
+    });
+
+    // Event listener untuk menampilkan modal saat klik tombol opsi
     document.getElementById('commentsContainer').addEventListener('click', function (e) {
         const optionsButton = e.target.closest('.options-button');
 
         if (optionsButton) {
+            e.stopPropagation(); // Mencegah event bubbling yang dapat menutup modal
             const commentDiv = optionsButton.closest('.user-comment');
             commentToDelete = commentDiv;
-            showPopup();
+            showModal();
         }
     });
 
@@ -698,7 +718,7 @@ $commentCount = $commentResult->num_rows;
         }
     });
 
-    document.getElementById('cancelDelete').addEventListener('click', closePopup);
+    document.getElementById('cancelDelete').addEventListener('click', closeModal);
 
     document.getElementById('shareButton').addEventListener('click', function () {
         const url = window.location.href; // Mendapatkan URL lengkap halaman
