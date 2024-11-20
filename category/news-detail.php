@@ -66,7 +66,7 @@ function timeAgo($datetimeString) {
 }
 
 // Query untuk mendapatkan detail berita dan nama penulis
-$query = "SELECT b.judul, b.konten_artikel, b.tanggal_dibuat, b.kategori, u.nama_lengkap, u.nama_pengguna, u.profile_pic 
+$query = "SELECT b.judul, b.konten_artikel, b.tanggal_diterbitkan, b.kategori, u.nama_lengkap, u.nama_pengguna, u.profile_pic 
           FROM berita b 
           JOIN user u ON b.user_id = u.uid 
           WHERE b.id = ?";
@@ -79,7 +79,7 @@ $berita = $result->fetch_assoc();
 if ($berita) {
     $judul = $berita['judul'];
     $konten = $berita['konten_artikel'];
-    $tanggalDibuat = $berita['tanggal_dibuat'];
+    $tanggalDiterbitkan = $berita['tanggal_diterbitkan'];
     $kategori = $berita['kategori'];
     $penulis = $berita['nama_lengkap'];
     $namaPengguna = $berita['nama_pengguna'];
@@ -95,7 +95,7 @@ if ($berita) {
 }
 
 // Query untuk mendapatkan berita teratas secara acak
-$topNewsQuery = "SELECT id, judul, tanggal_dibuat FROM berita ORDER BY RAND() LIMIT 6";
+$topNewsQuery = "SELECT id, judul, tanggal_diterbitkan FROM berita ORDER BY RAND() LIMIT 6";
 $topNewsResult = $conn->query($topNewsQuery);
 
 if (!$topNewsResult) {
@@ -117,7 +117,7 @@ if ($id) {
 }
 
 // Query untuk mendapatkan berita terbaru dari kategori yang sama
-$recentNewsQuery = "SELECT id, judul, tanggal_dibuat FROM berita WHERE kategori = ? AND id != ? ORDER BY tanggal_dibuat DESC LIMIT 4";
+$recentNewsQuery = "SELECT id, judul, tanggal_diterbitkan FROM berita WHERE kategori = ? AND id != ? ORDER BY tanggal_diterbitkan DESC LIMIT 4";
 $stmt = $conn->prepare($recentNewsQuery);
 $stmt->bind_param('ss', $kategori, $id);
 $stmt->execute();
@@ -139,7 +139,7 @@ if (!$sameTopicNewsResult) {
 }
 
 // Query untuk mendapatkan berita acak
-$randomNewsQuery = "SELECT id, judul, konten_artikel, tanggal_dibuat, kategori FROM berita ORDER BY RAND() LIMIT 4";
+$randomNewsQuery = "SELECT id, judul, konten_artikel, tanggal_diterbitkan, kategori FROM berita ORDER BY RAND() LIMIT 4";
 $randomNewsResult = $conn->query($randomNewsQuery);
 
 if (!$randomNewsResult) {
@@ -326,7 +326,7 @@ $commentCount = $commentResult->num_rows;
             <h1 class="text-3xl font-bold mt-2"><?= htmlspecialchars($judul) ?></h1>
             <div class="text-gray-500 text-sm mt-2">
                 <span>Penulis: <?= htmlspecialchars($penulis) ?></span> | 
-                <span><?= date('d F Y, H:i', strtotime($tanggalDibuat)) ?> WIB</span>
+                <span><?= date('d F Y', strtotime($tanggalDiterbitkan)) ?> WIB</span>
             </div>
             <div class="mt-4">
                 <!-- Tampilkan gambar pertama dengan ukuran besar -->
@@ -426,7 +426,7 @@ $commentCount = $commentResult->num_rows;
                         <div class="flex items-center">
                             <span class="text-[#CAD2FF] font-semibold italic text-5xl mr-4"><?= $i ?></span>
                             <div>
-                                <span class="text-gray-400 text-sm"><?= date('d F Y', strtotime($topNews['tanggal_dibuat'])) ?></span>
+                                <span class="text-gray-400 text-sm"><?= date('d F Y', strtotime($topNews['tanggal_diterbitkan'])) ?></span>
                                 <a href="news-detail.php?id=<?= $topNews['id'] ?>">
                                     <h3 class="text-lg font-bold mt-1"><?= htmlspecialchars($topNews['judul']) ?></h3>
                                 </a>
@@ -446,7 +446,7 @@ $commentCount = $commentResult->num_rows;
                     <?php while ($recentNews = $recentNewsResult->fetch_assoc()): ?>
                         <li class="mb-4">
                             <div>
-                                <span class="text-gray-400 text-sm"><?= date('d F Y', strtotime($recentNews['tanggal_dibuat'])) ?></span>
+                                <span class="text-gray-400 text-sm"><?= date('d F Y', strtotime($recentNews['tanggal_diterbitkan'])) ?></span>
                                 <a href="news-detail.php?id=<?= $recentNews['id'] ?>">
                                     <h3 class="text-lg font-bold mt-1"><?= htmlspecialchars($recentNews['judul']) ?></h3>
                                 </a>
@@ -504,7 +504,7 @@ $commentCount = $commentResult->num_rows;
                     </a>
                     <div class="p-4">
                         <span class="text-red-500 font-bold"><?= htmlspecialchars($news['kategori']) ?></span> 
-                        <span class="text-gray-500">| <?= date('d F Y', strtotime($news['tanggal_dibuat'])) ?></span>
+                        <span class="text-gray-500">| <?= date('d F Y', strtotime($news['tanggal_diterbitkan'])) ?></span>
                         <a href="news-detail.php?id=<?= $news['id'] ?>">
                             <h3 class="text-lg font-bold mt-1"><?= htmlspecialchars($news['judul']) ?></h3>
                         </a>

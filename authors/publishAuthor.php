@@ -36,10 +36,10 @@ $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
 // Query untuk mendapatkan data
-$query = "SELECT id, judul, konten_artikel, tanggal_dibuat 
+$query = "SELECT id, judul, konten_artikel, tanggal_diterbitkan
           FROM berita 
           WHERE user_id = ? AND (visibilitas = 'public' OR visibilitas = 'private') 
-          ORDER BY tanggal_dibuat DESC 
+          ORDER BY tanggal_diterbitkan DESC 
           LIMIT ? OFFSET ?";
 $stmt = $conn->prepare($query);
 $stmt->bind_param('iii', $user_id, $limit, $offset);
@@ -53,7 +53,7 @@ if ($result->num_rows > 0) {
         if (preg_match('/<img.+src=[\'"](?P<src>.+?)[\'"].*>/i', $row['konten_artikel'], $image)) {
             $firstImage = $image['src'];
         }
-        $timeAgo = timeAgo($row['tanggal_dibuat']);
+        $timeAgo = timeAgo($row['tanggal_diterbitkan']);
         echo "<div class='flex items-center mb-8'> <!-- Jarak atas bawah -->
                 <img src='{$firstImage}' class='w-40 h-20 object-cover rounded-lg mr-4'>
                 <div class='flex-grow'>

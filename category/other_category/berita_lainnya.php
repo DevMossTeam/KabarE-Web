@@ -24,7 +24,7 @@ function timeAgo($datetime) {
     <!-- 4 Berita -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         <?php
-        $query = "SELECT id, judul, konten_artikel, kategori, tanggal_dibuat FROM berita WHERE kategori = 'Berita Lainnya' ORDER BY RAND() LIMIT 4";
+        $query = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan FROM berita WHERE kategori = 'Berita Lainnya' ORDER BY RAND() LIMIT 4";
         $result = $conn->query($query);
 
         while ($row = $result->fetch_assoc()):
@@ -38,7 +38,7 @@ function timeAgo($datetime) {
             $description = substr($description, 0, 150) . '...'; // Potong deskripsi
 
             // Format tanggal
-            $formattedDate = date('d F Y', strtotime($row['tanggal_dibuat']));
+            $formattedDate = date('d F Y', strtotime($row['tanggal_diterbitkan']));
         ?>
             <div class="relative">
                 <a href="../news-detail.php?id=<?= $row['id'] ?>">
@@ -64,7 +64,7 @@ function timeAgo($datetime) {
         <!-- 3 Kartu Gambar -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
             <?php
-            $queryPopuler = "SELECT id, judul, konten_artikel, kategori, tanggal_dibuat FROM berita WHERE kategori = 'Berita Lainnya' ORDER BY tanggal_dibuat DESC LIMIT 3";
+            $queryPopuler = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan FROM berita WHERE kategori = 'Berita Lainnya' ORDER BY tanggal_diterbitkan DESC LIMIT 3";
             $resultPopuler = $conn->query($queryPopuler);
 
             while ($rowPopuler = $resultPopuler->fetch_assoc()):
@@ -74,7 +74,7 @@ function timeAgo($datetime) {
                 }
 
                 // Waktu relatif
-                $timeAgo = timeAgo($rowPopuler['tanggal_dibuat']);
+                $timeAgo = timeAgo($rowPopuler['tanggal_diterbitkan']);
             ?>
                 <a href="../news-detail.php?id=<?= $rowPopuler['id'] ?>" class="relative overflow-hidden rounded-lg">
                     <img src="<?= $firstImagePopuler ?: 'https://via.placeholder.com/300x200' ?>" class="w-full h-56 object-cover">
@@ -97,7 +97,7 @@ function timeAgo($datetime) {
                     <div class="border-b-4 border-[#45C630] mt-0"></div>
                 </div>
                 <?php
-                $queryLainnya = "SELECT id, judul, konten_artikel, kategori, tanggal_dibuat FROM berita WHERE kategori != 'Berita Lainnya' ORDER BY RAND() LIMIT 4";
+                $queryLainnya = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan FROM berita WHERE kategori != 'Berita Lainnya' ORDER BY RAND() LIMIT 4";
                 $resultLainnya = $conn->query($queryLainnya);
 
                 while ($rowLainnya = $resultLainnya->fetch_assoc()):
@@ -109,7 +109,7 @@ function timeAgo($datetime) {
                     $descriptionLainnya = strip_tags($rowLainnya['konten_artikel']);
                     $descriptionLainnya = substr($descriptionLainnya, 0, 150) . '...';
 
-                    $timeAgoLainnya = timeAgo($rowLainnya['tanggal_dibuat']);
+                    $timeAgoLainnya = timeAgo($rowLainnya['tanggal_diterbitkan']);
                 ?>
                     <div class="flex mb-4 items-start">
                         <span class="text-gray-400 text-sm flex-shrink-0 w-24"><?= $timeAgoLainnya ?></span>
@@ -135,11 +135,11 @@ function timeAgo($datetime) {
                 </div>
                 <ul class="pl-4">
                     <?php
-                    $queryBaru = "SELECT id, judul, tanggal_dibuat FROM berita WHERE kategori = 'Berita Lainnya' ORDER BY tanggal_dibuat DESC LIMIT 8";
+                    $queryBaru = "SELECT id, judul, tanggal_diterbitkan FROM berita WHERE kategori = 'Berita Lainnya' ORDER BY tanggal_diterbitkan DESC LIMIT 8";
                     $resultBaru = $conn->query($queryBaru);
 
                     while ($rowBaru = $resultBaru->fetch_assoc()):
-                        $timeAgoBaru = timeAgo($rowBaru['tanggal_dibuat']);
+                        $timeAgoBaru = timeAgo($rowBaru['tanggal_diterbitkan']);
                     ?>
                         <li class="mb-4">
                             <div class="flex items-center">

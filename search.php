@@ -13,7 +13,7 @@ $offset = ($page - 1) * $limit;
 
 try {
     // Melakukan pencarian di database berdasarkan judul dan kategori
-    $sql = "SELECT id, judul, konten_artikel, kategori, tanggal_dibuat 
+    $sql = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan
             FROM berita 
             WHERE (judul LIKE ? OR kategori LIKE ?)
             LIMIT ? OFFSET ?";
@@ -68,7 +68,7 @@ try {
                     <a href="../category/news-detail.php?id=<?php echo $row['id']; ?>">
                         <h2 class="text-2xl font-bold mb-2"><?php echo htmlspecialchars($row['judul']); ?></h2>
                     </a>
-                    <p class="text-gray-500 mb-2"><?php echo date('d F Y', strtotime($row['tanggal_dibuat'])); ?></p>
+                    <p class="text-gray-500 mb-2"><?php echo date('d F Y', strtotime($row['tanggal_diterbitkan'])); ?></p>
                     <p class="text-gray-700 mb-4"><?php echo htmlspecialchars($description); ?></p>
                 </div>
             <?php endwhile; ?>
