@@ -38,7 +38,7 @@ $offset = ($page - 1) * $limit;
 // Query untuk mendapatkan data
 $query = "SELECT id, judul, konten_artikel, tanggal_dibuat 
           FROM berita 
-          WHERE user_id = ? AND visibilitas = 'public' AND status_publikasi = 'publikasi' 
+          WHERE user_id = ? AND (visibilitas = 'public' OR visibilitas = 'private') 
           ORDER BY tanggal_dibuat DESC 
           LIMIT ? OFFSET ?";
 $stmt = $conn->prepare($query);
@@ -71,7 +71,7 @@ if ($result->num_rows > 0) {
 echo "</div>";
 
 // Pagination controls
-$totalQuery = "SELECT COUNT(*) as total FROM berita WHERE user_id = ? AND visibilitas = 'public' AND status_publikasi = 'publikasi'";
+$totalQuery = "SELECT COUNT(*) as total FROM berita WHERE user_id = ? AND (visibilitas = 'public' OR visibilitas = 'private')";
 $totalStmt = $conn->prepare($totalQuery);
 $totalStmt->bind_param('i', $user_id);
 $totalStmt->execute();

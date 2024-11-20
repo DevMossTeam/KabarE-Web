@@ -44,7 +44,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
         $content = $_POST['content'];
         $category = $_POST['category'];
         $visibility = isset($_POST['visibility']) ? $_POST['visibility'] : 'public';
-        $status = 'draft';
         $created_at = date('Y-m-d H:i:s');
         $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
 
@@ -56,13 +55,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
             throw new Exception("Visibilitas tidak boleh kosong.");
         }
 
-        $query = "INSERT INTO berita (id, judul, konten_artikel, tanggal_dibuat, user_id, kategori, visibilitas, status_publikasi) 
-                  VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        $query = "INSERT INTO berita (id, judul, konten_artikel, tanggal_diterbitkan, user_id, kategori, visibilitas) 
+                  VALUES (?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($query);
-        $stmt->bind_param('ssssssss', $id, $title, $content, $created_at, $user_id, $category, $visibility, $status);
+        $stmt->bind_param('sssssss', $id, $title, $content, $created_at, $user_id, $category, $visibility);
 
         if (!$stmt->execute()) {
-            throw new Exception("Gagal menyimpan artikel sebagai draft.");
+            throw new Exception("Gagal menyimpan artikel.");
         }
 
         if (!empty($_POST['tags'])) {
@@ -80,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
         }
 
         $conn->commit(); // Commit transaksi jika semua berhasil
-        echo "Artikel berhasil disimpan sebagai draft!";
+        echo "Artikel berhasil dipublikasikan!";
     } catch (Exception $e) {
         $conn->rollback(); // Rollback jika ada kesalahan
         echo $e->getMessage();
@@ -531,7 +530,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
             xhr.onload = function() {
                 if (xhr.status === 200) {
                     alert(xhr.responseText);
-                    window.location.href = 'draftAuthor.php'; // Redirect setelah berhasil
+                    window.location.href = 'publishAuthor.php'; // Redirect ke publishAuthor.php setelah berhasil
                 } else {
                     alert('Terjadi kesalahan saat mempublikasikan artikel.');
                 }
