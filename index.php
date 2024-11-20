@@ -23,7 +23,7 @@ function formatDate($datetime) {
 }
 
 // Query untuk mengambil data untuk slider secara acak
-$querySlider = "SELECT id, judul, konten_artikel, kategori, tanggal_dibuat FROM berita ORDER BY RAND() LIMIT 7";
+$querySlider = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan FROM berita ORDER BY RAND() LIMIT 7";
 $resultSlider = $conn->query($querySlider);
 $sliderData = [];
 
@@ -39,7 +39,7 @@ if ($resultSlider && $resultSlider->num_rows > 0) {
 }
 
 // Query untuk mengambil 6 berita terbaru
-$query = "SELECT id, judul, konten_artikel, kategori, tanggal_dibuat FROM berita ORDER BY tanggal_dibuat DESC LIMIT 6";
+$query = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan FROM berita ORDER BY tanggal_diterbitkan DESC LIMIT 6";
 $result = $conn->query($query);
 $beritaTerkini = [];
 
@@ -50,7 +50,7 @@ if ($result && $result->num_rows > 0) {
 }
 
 // Query untuk berita populer
-$queryPopuler = "SELECT id, judul, konten_artikel, kategori, tanggal_dibuat FROM berita ORDER BY RAND() LIMIT 3";
+$queryPopuler = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan FROM berita ORDER BY RAND() LIMIT 3";
 $resultPopuler = $conn->query($queryPopuler);
 $beritaPopuler = [];
 
@@ -61,7 +61,7 @@ if ($resultPopuler && $resultPopuler->num_rows > 0) {
 }
 
 // Query untuk berita baru
-$queryBaru = "SELECT id, judul, tanggal_dibuat FROM berita ORDER BY tanggal_dibuat DESC LIMIT 6";
+$queryBaru = "SELECT id, judul, tanggal_diterbitkan FROM berita ORDER BY tanggal_diterbitkan DESC LIMIT 6";
 $resultBaru = $conn->query($queryBaru);
 $beritaBaru = [];
 
@@ -76,7 +76,7 @@ $categories = ['Kampus', 'Prestasi', 'Politik', 'Kesehatan', 'Olahraga', 'Ekonom
 $randomCategory = $categories[array_rand($categories)];
 
 // Query untuk kategori acak
-$queryRandomCategory = "SELECT id, judul, konten_artikel, kategori, tanggal_dibuat FROM berita WHERE kategori = '$randomCategory' ORDER BY RAND() LIMIT 1";
+$queryRandomCategory = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan FROM berita WHERE kategori = '$randomCategory' ORDER BY RAND() LIMIT 1";
 $resultRandomCategory = $conn->query($queryRandomCategory);
 $rowRandomCategory = $resultRandomCategory->fetch_assoc();
 $firstImageRandomCategory = '';
@@ -85,7 +85,7 @@ if (preg_match('/<img.+src=[\'"](?P<src>.+?)[\'"].*>/i', $rowRandomCategory['kon
 }
 
 // Query untuk kategori acak bagian bawah
-$queryRandomCategoryBottom = "SELECT id, judul, konten_artikel, kategori, tanggal_dibuat FROM berita WHERE kategori = '$randomCategory' ORDER BY RAND() LIMIT 2";
+$queryRandomCategoryBottom = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan FROM berita WHERE kategori = '$randomCategory' ORDER BY RAND() LIMIT 2";
 $resultRandomCategoryBottom = $conn->query($queryRandomCategoryBottom);
 $beritaRandomCategoryBottom = [];
 
@@ -96,7 +96,7 @@ if ($resultRandomCategoryBottom && $resultRandomCategoryBottom->num_rows > 0) {
 }
 
 // Query untuk berita lainnya
-$queryBeritaLainnya = "SELECT id, judul, konten_artikel, tanggal_dibuat FROM berita ORDER BY RAND() LIMIT 4";
+$queryBeritaLainnya = "SELECT id, judul, konten_artikel, tanggal_diterbitkan FROM berita ORDER BY RAND() LIMIT 4";
 $resultBeritaLainnya = $conn->query($queryBeritaLainnya);
 $beritaLainnya = [];
 
@@ -113,7 +113,7 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
         <!-- News Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-1 gap-4 order-2 lg:order-1">
             <?php
-            $query = "SELECT id, judul, konten_artikel, kategori, tanggal_dibuat FROM berita ORDER BY RAND() LIMIT 3";
+            $query = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan FROM berita ORDER BY RAND() LIMIT 3";
             $result = $conn->query($query);
 
             while ($row = $result->fetch_assoc()):
@@ -135,7 +135,7 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
                         <p class="text-gray-500 mt-1 line-clamp-3 text-xs"><?= $description ?></p>
                         <span class="text-sm mt-1 inline-block">
                             <span class="text-red-500 font-bold"><?= $row['kategori'] ?></span>
-                            <span class="text-gray-400"> | <?= timeAgo($row['tanggal_dibuat']) ?></span>
+                            <span class="text-gray-400"> | <?= timeAgo($row['tanggal_diterbitkan']) ?></span>
                         </span>
                     </div>
                 </a>
@@ -199,7 +199,7 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
                     <a href="../category/news-detail.php?id=<?= $beritaTerkini[$i]['id'] ?>" class="relative overflow-hidden rounded-lg">
                         <img src="<?= $firstImage ?: 'https://via.placeholder.com/300x200' ?>" class="w-full h-56 object-cover">
                         <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
-                            <span class="text-white font-bold"><?= $beritaTerkini[$i]['kategori'] ?> | <?= timeAgo($beritaTerkini[$i]['tanggal_dibuat']) ?></span>
+                            <span class="text-white font-bold"><?= $beritaTerkini[$i]['kategori'] ?> | <?= timeAgo($beritaTerkini[$i]['tanggal_diterbitkan']) ?></span>
                             <h3 class="text-white text-lg font-bold mt-1"><?= $beritaTerkini[$i]['judul'] ?></h3>
                         </div>
                     </a>
@@ -273,7 +273,7 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
                     <li class="mb-4 flex items-center">
                         <span class="text-[#CAD2FF] text-5xl font-semibold italic mr-4 flex-shrink-0"><?= $index + 1 ?></span>
                         <div class="flex-grow">
-                            <span class="text-gray-400 text-base"><?= timeAgo($baru['tanggal_dibuat']) ?></span>
+                            <span class="text-gray-400 text-base"><?= timeAgo($baru['tanggal_diterbitkan']) ?></span>
                             <a href="../category/news-detail.php?id=<?= $baru['id'] ?>">
                                 <h3 class="text-lg font-bold mt-1"><?= $baru['judul'] ?></h3>
                             </a>
@@ -298,7 +298,7 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
             <a href="../category/news-detail.php?id=<?= $rowRandomCategory['id'] ?>">
                 <img src="<?= $firstImageRandomCategory ?: 'https://via.placeholder.com/600x350' ?>" class="w-full h-96 object-cover rounded-lg">
                 <div class="p-4" style="padding-left: 0; padding-right: 0;">
-                    <span class="text-red-500 font-bold"><?= $rowRandomCategory['kategori'] ?></span> <span class="text-gray-500">| <?= date('d F Y', strtotime($rowRandomCategory['tanggal_dibuat'])) ?></span>
+                    <span class="text-red-500 font-bold"><?= $rowRandomCategory['kategori'] ?></span> <span class="text-gray-500">| <?= date('d F Y', strtotime($rowRandomCategory['tanggal_diterbitkan'])) ?></span>
                     <h3 class="text-lg font-bold mt-1"><?= $rowRandomCategory['judul'] ?></h3>
                     <p class="text-gray-700 mt-2"><?= substr(strip_tags($rowRandomCategory['konten_artikel']), 0, 150) . '...' ?></p>
                 </div>
@@ -328,12 +328,12 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
             <div>
                 <ul>
                     <?php
-                    $queryRandomCategoryList = "SELECT id, judul, tanggal_dibuat FROM berita WHERE kategori = '$randomCategory' ORDER BY tanggal_dibuat DESC LIMIT 6";
+                    $queryRandomCategoryList = "SELECT id, judul, tanggal_diterbitkan FROM berita WHERE kategori = '$randomCategory' ORDER BY tanggal_diterbitkan DESC LIMIT 6";
                     $resultRandomCategoryList = $conn->query($queryRandomCategoryList);
                     while ($rowRandomCategoryList = $resultRandomCategoryList->fetch_assoc()):
                     ?>
                         <li class="mb-2 border-b border-gray-300 pb-2">
-                            <span class="text-gray-400 text-sm block"><?= timeAgo($rowRandomCategoryList['tanggal_dibuat']) ?></span>
+                            <span class="text-gray-400 text-sm block"><?= timeAgo($rowRandomCategoryList['tanggal_diterbitkan']) ?></span>
                             <a href="../category/news-detail.php?id=<?= $rowRandomCategoryList['id'] ?>" class="text-black hover:underline"><?= $rowRandomCategoryList['judul'] ?></a>
                         </li>
                     <?php endwhile; ?>
@@ -360,7 +360,7 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
             <div class="flex flex-col">
                 <img src="<?= $firstImageBottom ?: 'https://via.placeholder.com/600x350' ?>" class="w-full h-96 object-cover rounded-lg mb-4">
                 <div>
-                    <span class="text-red-500 font-bold"><?= $item['kategori'] ?></span> <span class="text-gray-500">| <?= date('d F Y', strtotime($item['tanggal_dibuat'])) ?></span>
+                    <span class="text-red-500 font-bold"><?= $item['kategori'] ?></span> <span class="text-gray-500">| <?= date('d F Y', strtotime($item['tanggal_diterbitkan'])) ?></span>
                     <h3 class="text-lg font-bold mt-1"><?= $item['judul'] ?></h3>
                     <p class="text-gray-700 mt-2"><?= substr(strip_tags($item['konten_artikel']), 0, 150) . '...' ?></p>
                 </div>
@@ -379,7 +379,7 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
                 <div class="border-b-4 border-[#45C630] mt-0"></div>
             </div>
             <?php
-            $queryLainnya = "SELECT id, judul, konten_artikel, kategori, tanggal_dibuat FROM berita WHERE kategori != '$randomCategory' ORDER BY RAND() LIMIT 4";
+            $queryLainnya = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan FROM berita WHERE kategori != '$randomCategory' ORDER BY RAND() LIMIT 4";
             $resultLainnya = $conn->query($queryLainnya);
 
             while ($rowLainnya = $resultLainnya->fetch_assoc()):
@@ -391,7 +391,7 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
                 $descriptionLainnya = strip_tags($rowLainnya['konten_artikel']);
                 $descriptionLainnya = substr($descriptionLainnya, 0, 150) . '...';
 
-                $timeAgoLainnya = timeAgo($rowLainnya['tanggal_dibuat']);
+                $timeAgoLainnya = timeAgo($rowLainnya['tanggal_diterbitkan']);
             ?>
                 <div class="flex mb-4 items-start">
                     <span class="text-gray-400 text-sm flex-shrink-0 w-24"><?= $timeAgoLainnya ?></span>
@@ -417,11 +417,11 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
             </div>
             <ul class="pl-4">
                 <?php
-                $queryBaru = "SELECT id, judul, tanggal_dibuat FROM berita WHERE kategori = '$randomCategory' ORDER BY tanggal_dibuat DESC LIMIT 8";
+                $queryBaru = "SELECT id, judul, tanggal_diterbitkan FROM berita WHERE kategori = '$randomCategory' ORDER BY tanggal_diterbitkan DESC LIMIT 8";
                 $resultBaru = $conn->query($queryBaru);
 
                 while ($rowBaru = $resultBaru->fetch_assoc()):
-                    $timeAgoBaru = timeAgo($rowBaru['tanggal_dibuat']);
+                    $timeAgoBaru = timeAgo($rowBaru['tanggal_diterbitkan']);
                 ?>
                     <li class="mb-4">
                         <div class="flex items-center">
