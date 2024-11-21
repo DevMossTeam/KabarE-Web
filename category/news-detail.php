@@ -337,7 +337,7 @@ $commentCount = $commentResult->num_rows;
                     <?= $konten ?>
                 </div>
 
-                <!-- Box Like, Dislike, Share, Bookmark -->
+                <!-- Box Like, Dislike, Share, Bookmark, Report -->
                 <div class="flex space-x-4 mt-4">
                     <form method="post" action="">
                         <input type="hidden" name="reaction" value="Suka">
@@ -361,7 +361,7 @@ $commentCount = $commentResult->num_rows;
                         </button>
                     </form>
                     <button id="reportButton" class="flex items-center border border-blue-500 text-gray-500 px-4 py-2 rounded">
-                        <i class="fas fa-flag"></i>
+                        <i class="fas fa-flag"></i> 
                     </button>
                 </div>
 
@@ -522,84 +522,17 @@ $commentCount = $commentResult->num_rows;
     </div>
 </div>
 
-<div id="modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+<!-- Modal untuk Report -->
+<div id="reportModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
     <div class="bg-white p-6 rounded-lg shadow-lg transform scale-95 transition-transform duration-300">
-        <p class="mb-4">Apakah Anda yakin ingin menghapus komentar ini?</p>
-        <div class="flex justify-end">
-            <button id="cancelDelete" class="bg-gray-300 text-gray-700 px-4 py-2 rounded mr-2">Batal</button>
-            <button id="confirmDelete" class="bg-red-500 text-white px-4 py-2 rounded">Hapus</button>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Pelaporan -->
-<div id="reportModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden z-20">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-96">
-        <h2 class="text-lg font-bold mb-4">Laporkan Artikel</h2>
+        <h2 class="text-lg font-bold mb-4">Laporkan Konten</h2>
         <form id="reportForm">
-            <div class="mb-4">
-                <label class="block mb-2">Pilih alasan pelaporan:</label>
-                <div class="space-y-2">
-                    <label class="flex items-center">
-                        <input type="radio" name="reportReason" value="Konten seksual" class="form-radio">
-                        <span class="ml-2">Konten seksual</span>
-                    </label>
-                    <label class="flex items-center">
-                        <input type="radio" name="reportReason" value="Konten kekerasan atau menjijikkan" class="form-radio">
-                        <span class="ml-2">Konten kekerasan atau menjijikkan</span>
-                    </label>
-                    <label class="flex items-center">
-                        <input type="radio" name="reportReason" value="Konten kebencian atau pelecehan" class="form-radio">
-                        <span class="ml-2">Konten kebencian atau pelecehan</span>
-                    </label>
-                    <label class="flex items-center">
-                        <input type="radio" name="reportReason" value="Tindakan berbahaya" class="form-radio">
-                        <span class="ml-2">Tindakan berbahaya</span>
-                    </label>
-                    <label class="flex items-center">
-                        <input type="radio" name="reportReason" value="Spam atau misinformasi" class="form-radio">
-                        <span class="ml-2">Spam atau misinformasi</span>
-                    </label>
-                    <label class="flex items-center">
-                        <input type="radio" name="reportReason" value="Masalah hukum" class="form-radio">
-                        <span class="ml-2">Masalah hukum</span>
-                    </label>
-                    <label class="flex items-center">
-                        <input type="radio" name="reportReason" value="Teks bermasalah" class="form-radio">
-                        <span class="ml-2">Teks bermasalah</span>
-                    </label>
-                </div>
+            <textarea id="reportReason" class="w-full border border-gray-300 rounded-lg p-2 mb-4" placeholder="Jelaskan alasan laporan Anda..."></textarea>
+            <div class="flex justify-end">
+                <button type="button" id="cancelReport" class="bg-gray-300 text-gray-700 px-4 py-2 rounded mr-2">Batal</button>
+                <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded">Kirim Laporan</button>
             </div>
-            <div class="mb-4 hidden" id="additionalOptions">
-                <label class="block mb-2">Pilih satu:</label>
-                <select class="form-select w-full">
-                    <option>Penyalahgunaan obat-obatan atau narkoba</option>
-                    <option>Penyalahgunaan api atau bahan peledak</option>
-                    <option>Bunuh diri atau menyakiti diri sendiri</option>
-                    <option>Tindakan berbahaya lainnya</option>
-                </select>
-            </div>
-            <button type="button" id="nextButton" class="bg-gray-300 text-gray-700 px-4 py-2 rounded mt-4" disabled>Berikutnya</button>
         </form>
-    </div>
-</div>
-
-<!-- Modal Laporan Tambahan -->
-<div id="additionalReportModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-96">
-        <h2 class="text-lg font-bold mb-4">Laporan Tambahan Opsional</h2>
-        <textarea class="w-full border border-gray-300 rounded p-2" placeholder="Berikan detail tambahan" maxlength="500"></textarea>
-        <div class="text-right text-sm text-gray-500">0/500</div>
-        <button type="button" id="submitReportButton" class="bg-blue-500 text-white px-4 py-2 rounded mt-4">Laporkan</button>
-    </div>
-</div>
-
-<!-- Modal Terima Kasih -->
-<div id="thankYouModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-96 text-center">
-        <img src="https://img.icons8.com/ios-filled/50/000000/thank-you.png" alt="Thank You" class="mx-auto mb-4">
-        <p>Terima kasih telah melaporkan artikel ini. Laporan Anda akan kami tinjau sesegera mungkin. Jika diperlukan, tindakan lebih lanjut akan diambil sesuai dengan kebijakan kami.</p>
-        <button type="button" id="closeThankYouModal" class="bg-blue-500 text-white px-4 py-2 rounded mt-4">Tutup</button>
     </div>
 </div>
 
@@ -761,17 +694,17 @@ $commentCount = $commentResult->num_rows;
     let commentToDelete = null;
 
     // Fungsi untuk menampilkan modal
-    function showModal() {
-        const modal = document.getElementById('modal');
+    function showModal(modalId) {
+        const modal = document.getElementById(modalId);
         modal.classList.remove('hidden');
-        document.querySelector('#modal div').classList.add('scale-100');
+        modal.querySelector('div').classList.add('scale-100');
     }
 
     // Fungsi untuk menutup modal
-    function closeModal() {
-        const modal = document.getElementById('modal');
+    function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
         modal.classList.add('hidden');
-        document.querySelector('#modal div').classList.remove('scale-100');
+        modal.querySelector('div').classList.remove('scale-100');
     }
 
     // Tambahkan event listener untuk menutup modal saat mengklik di luar modal
@@ -838,36 +771,27 @@ $commentCount = $commentResult->num_rows;
         updateCommentCount();
     });
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const reportButton = document.getElementById('reportButton');
-        const reportModal = document.getElementById('reportModal');
+    // Event listener untuk menampilkan modal saat klik tombol "Report"
+    document.getElementById('reportButton').addEventListener('click', function () {
+        showModal('reportModal');
+    });
 
-        reportButton.addEventListener('click', function () {
-            reportModal.classList.remove('hidden');
-        });
+    // Event listener untuk menutup modal "Report"
+    document.getElementById('cancelReport').addEventListener('click', function () {
+        closeModal('reportModal');
+    });
 
-        document.querySelectorAll('input[name="reportReason"]').forEach(radio => {
-            radio.addEventListener('change', function () {
-                document.getElementById('additionalOptions').classList.remove('hidden');
-                document.getElementById('nextButton').classList.remove('bg-gray-300');
-                document.getElementById('nextButton').classList.add('bg-blue-500');
-                document.getElementById('nextButton').disabled = false;
-            });
-        });
-
-        document.getElementById('nextButton').addEventListener('click', function () {
-            reportModal.classList.add('hidden');
-            document.getElementById('additionalReportModal').classList.remove('hidden');
-        });
-
-        document.getElementById('submitReportButton').addEventListener('click', function () {
-            document.getElementById('additionalReportModal').classList.add('hidden');
-            document.getElementById('thankYouModal').classList.remove('hidden');
-        });
-
-        document.getElementById('closeThankYouModal').addEventListener('click', function () {
-            document.getElementById('thankYouModal').classList.add('hidden');
-        });
+    // Event listener untuk mengirim laporan
+    document.getElementById('reportForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const reason = document.getElementById('reportReason').value.trim();
+        if (reason) {
+            // Kirim laporan ke server (implementasi tergantung pada backend Anda)
+            alert('Laporan telah dikirim.');
+            closeModal('reportModal');
+        } else {
+            alert('Silakan masukkan alasan laporan.');
+        }
     });
 </script>
 

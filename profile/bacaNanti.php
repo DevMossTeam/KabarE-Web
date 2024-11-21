@@ -6,7 +6,7 @@ include '../connection/config.php'; // Pastikan jalur relatif ini benar
 
 function timeAgo($datetime) {
     $now = new DateTime();
-    $posted = new DateTime($datetime);
+    $posted = new DateTime(datetime: $datetime);
     $interval = $now->diff($posted);
 
     if ($interval->y > 0) return $interval->y . " tahun yang lalu";
