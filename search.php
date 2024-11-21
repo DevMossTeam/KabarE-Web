@@ -12,14 +12,15 @@ $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
 try {
-    // Melakukan pencarian di database berdasarkan judul dan kategori
-    $sql = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan
-            FROM berita 
-            WHERE (judul LIKE ? OR kategori LIKE ?)
+    // Melakukan pencarian di database berdasarkan judul, kategori, atau tag
+    $sql = "SELECT DISTINCT b.id, b.judul, b.konten_artikel, b.kategori, b.tanggal_diterbitkan
+            FROM berita b
+            LEFT JOIN tag t ON b.id = t.berita_id
+            WHERE (b.judul LIKE ? OR b.kategori LIKE ? OR t.nama_tag LIKE ?)
             LIMIT ? OFFSET ?";
     $stmt = $conn->prepare($sql);
     $searchTerm = "%$query%";
-    $stmt->bind_param('ssii', $searchTerm, $searchTerm, $limit, $offset);
+    $stmt->bind_param('sssii', $searchTerm, $searchTerm, $searchTerm, $limit, $offset);
     $stmt->execute();
     $result = $stmt->get_result();
 
@@ -29,11 +30,12 @@ try {
     $numResults = $result->num_rows;
 
     // Total hasil pencarian
-    $totalQuery = "SELECT COUNT(*) as total 
-                   FROM berita 
-                   WHERE (judul LIKE ? OR kategori LIKE ?)";
+    $totalQuery = "SELECT COUNT(DISTINCT b.id) as total 
+                   FROM berita b
+                   LEFT JOIN tag t ON b.id = t.berita_id
+                   WHERE (b.judul LIKE ? OR b.kategori LIKE ? OR t.nama_tag LIKE ?)";
     $totalStmt = $conn->prepare($totalQuery);
-    $totalStmt->bind_param('ss', $searchTerm, $searchTerm);
+    $totalStmt->bind_param('sss', $searchTerm, $searchTerm, $searchTerm);
     $totalStmt->execute();
     $totalResult = $totalStmt->get_result();
     $totalRow = $totalResult->fetch_assoc();

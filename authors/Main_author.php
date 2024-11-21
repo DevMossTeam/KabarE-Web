@@ -25,16 +25,6 @@ function generateId($conn) {
     return $newId;
 }
 
-function generateTagId($conn) {
-    $prefix = "TDB";
-    $query = "SELECT MAX(CAST(SUBSTRING(id, 4) AS UNSIGNED)) AS max_id FROM tag WHERE id LIKE '$prefix%'";
-    $result = $conn->query($query);
-    $row = $result->fetch_assoc();
-    $maxId = $row['max_id'] ? $row['max_id'] : 0;
-    $newId = $prefix . ($maxId + 1);
-    return $newId;
-}
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
     $conn->begin_transaction(); // Mulai transaksi
 
@@ -62,20 +52,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
 
         if (!$stmt->execute()) {
             throw new Exception("Gagal menyimpan artikel.");
-        }
-
-        if (!empty($_POST['tags'])) {
-            $tags = explode(',', $_POST['tags']);
-            foreach ($tags as $tag) {
-                $tagId = generateTagId($conn);
-                $tagQuery = "INSERT INTO tag (id, nama_tag, berita_id) VALUES (?, ?, ?)";
-                $tagStmt = $conn->prepare($tagQuery);
-                $tagStmt->bind_param('sss', $tagId, trim($tag), $id);
-                if (!$tagStmt->execute()) {
-                    throw new Exception("Gagal menyimpan tag.");
-                }
-                $tagStmt->close();
-            }
         }
 
         $conn->commit(); // Commit transaksi jika semua berhasil

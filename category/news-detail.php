@@ -37,12 +37,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_comment_id']))
         $stmt->bind_param('ss', $commentId, $user_id);
         $stmt->execute();
 
-        header("Location: news-detail.php?id=$id");
-        exit;
+        echo json_encode(['success' => true]);
     } else {
-        echo "Pengguna belum login.";
-        exit;
+        echo json_encode(['success' => false, 'message' => 'Pengguna belum login.']);
     }
+    exit;
 }
 
 // Pastikan $id valid sebelum melanjutkan
@@ -318,10 +317,10 @@ $commentCount = $commentResult->num_rows;
 
 <!-- Tambahkan link Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-<div class="container mx-auto mt-8 mb-16 lg:px-8">
-    <div class="flex flex-col lg:flex-row lg:space-x-8">
+<div class="container mx-auto max-w-screen-xl mt-8 mb-16 px-4 md:px-6 lg:px-8">
+    <div class="flex flex-col lg:flex-row lg:space-x-4">
         <!-- Gambar Utama dan Paragraf -->
-        <div class="w-full lg:w-2/3 pr-4 lg:pr-0">
+        <div class="w-full lg:w-2/3 lg:pr-4">
             <span class="inline-block bg-red-500 text-white px-3 py-1 rounded-md my-2"><?= htmlspecialchars($kategori) ?></span>
             <h1 class="text-3xl font-bold mt-2"><?= htmlspecialchars($judul) ?></h1>
             <div class="text-gray-500 text-sm mt-2">
@@ -342,13 +341,13 @@ $commentCount = $commentResult->num_rows;
                 <div class="flex space-x-4 mt-4">
                     <form method="post" action="">
                         <input type="hidden" name="reaction" value="Suka">
-                        <button type="submit" class="flex items-center border border-blue-500 text-gray-500 px-4 py-2 rounded <?= $userReaction === 'Suka' ? 'bg-blue-100' : '' ?>">
+                        <button type="submit" class="flex items-center border border-blue-500 text-gray-500 px-4 py-2 rounded <?= $userReaction === 'Suka' ? 'text-blue-500' : '' ?>">
                             <i class="fas fa-thumbs-up"></i> <?= $likeCount ?>
                         </button>
                     </form>
                     <form method="post" action="">
                         <input type="hidden" name="reaction" value="Tidak Suka">
-                        <button type="submit" class="flex items-center border border-blue-500 text-gray-500 px-4 py-2 rounded <?= $userReaction === 'Tidak Suka' ? 'bg-blue-100' : '' ?>">
+                        <button type="submit" class="flex items-center border border-blue-500 text-gray-500 px-4 py-2 rounded <?= $userReaction === 'Tidak Suka' ? 'text-blue-500' : '' ?>">
                             <i class="fas fa-thumbs-down"></i> <?= $dislikeCount ?>
                         </button>
                     </form>
@@ -357,21 +356,26 @@ $commentCount = $commentResult->num_rows;
                     </button>
                     <form method="post" action="">
                         <input type="hidden" name="bookmark" value="toggle">
-                        <button type="submit" class="flex items-center border border-blue-500 text-gray-500 px-4 py-3 rounded <?= $isBookmarked ? 'bg-blue-100' : '' ?>">
+                        <button type="submit" class="flex items-center border border-blue-500 text-gray-500 px-4 py-3 rounded <?= $isBookmarked ? 'text-blue-500' : '' ?>">
                             <i class="fas fa-bookmark"></i>
                         </button>
                     </form>
+                    <button id="reportButton" class="flex items-center border border-blue-500 text-gray-500 px-4 py-2 rounded">
+                        <i class="fas fa-flag"></i>
+                    </button>
                 </div>
 
                 <!-- Label Section -->
+                <?php if (!empty($tags)): ?>
                 <div class="mt-4">
                     <span class="block text-gray-700 font-bold">Label:</span>
                     <div class="flex flex-wrap gap-2 mt-2">
                         <?php foreach ($tags as $tag): ?>
-                            <span class="inline-block bg-white text-blue-500 border border-blue-500 px-3 py-1 rounded-full"><?= htmlspecialchars($tag) ?></span>
+                            <a href="../search.php?query=<?= urlencode($tag) ?>" class="inline-block bg-white text-blue-500 border border-blue-500 px-3 py-1 rounded-full"><?= htmlspecialchars($tag) ?></a>
                         <?php endforeach; ?>
                     </div>
                 </div>
+                <?php endif; ?>
 
                 <!-- Komentar -->
                 <div class="mt-4 w-full pr-4">
@@ -414,7 +418,7 @@ $commentCount = $commentResult->num_rows;
         </div>
 
         <!-- Berita Teratas Hari Ini dan Label -->
-        <div class="w-full lg:w-1/3 pl-4 mt-28 lg:mt-32 lg:pl-0">
+        <div class="w-full lg:w-1/3 lg:pl-4 mt-16 lg:mt-20">
             <div class="mb-4">
                 <span class="inline-block bg-[#FFC300] text-white px-6 py-1 rounded-t-md">Berita Teratas Hari Ini</span>
                 <div class="border-b-4 border-[#FFC300] mt-0"></div>
@@ -481,7 +485,9 @@ $commentCount = $commentResult->num_rows;
             </div>
         </div>
     </div>
+</div>
 
+<div class="container mx-auto max-w-screen-xl mt-8 px-4 md:px-6 lg:px-8">
     <!-- Berita Lainnya -->
     <div class="mt-8">
         <span class="inline-block bg-[#45C630] text-white px-6 py-1 rounded-t-md">Berita Lainnya</span>
@@ -523,6 +529,77 @@ $commentCount = $commentResult->num_rows;
             <button id="cancelDelete" class="bg-gray-300 text-gray-700 px-4 py-2 rounded mr-2">Batal</button>
             <button id="confirmDelete" class="bg-red-500 text-white px-4 py-2 rounded">Hapus</button>
         </div>
+    </div>
+</div>
+
+<!-- Modal Pelaporan -->
+<div id="reportModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden z-20">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+        <h2 class="text-lg font-bold mb-4">Laporkan Artikel</h2>
+        <form id="reportForm">
+            <div class="mb-4">
+                <label class="block mb-2">Pilih alasan pelaporan:</label>
+                <div class="space-y-2">
+                    <label class="flex items-center">
+                        <input type="radio" name="reportReason" value="Konten seksual" class="form-radio">
+                        <span class="ml-2">Konten seksual</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="reportReason" value="Konten kekerasan atau menjijikkan" class="form-radio">
+                        <span class="ml-2">Konten kekerasan atau menjijikkan</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="reportReason" value="Konten kebencian atau pelecehan" class="form-radio">
+                        <span class="ml-2">Konten kebencian atau pelecehan</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="reportReason" value="Tindakan berbahaya" class="form-radio">
+                        <span class="ml-2">Tindakan berbahaya</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="reportReason" value="Spam atau misinformasi" class="form-radio">
+                        <span class="ml-2">Spam atau misinformasi</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="reportReason" value="Masalah hukum" class="form-radio">
+                        <span class="ml-2">Masalah hukum</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="reportReason" value="Teks bermasalah" class="form-radio">
+                        <span class="ml-2">Teks bermasalah</span>
+                    </label>
+                </div>
+            </div>
+            <div class="mb-4 hidden" id="additionalOptions">
+                <label class="block mb-2">Pilih satu:</label>
+                <select class="form-select w-full">
+                    <option>Penyalahgunaan obat-obatan atau narkoba</option>
+                    <option>Penyalahgunaan api atau bahan peledak</option>
+                    <option>Bunuh diri atau menyakiti diri sendiri</option>
+                    <option>Tindakan berbahaya lainnya</option>
+                </select>
+            </div>
+            <button type="button" id="nextButton" class="bg-gray-300 text-gray-700 px-4 py-2 rounded mt-4" disabled>Berikutnya</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Laporan Tambahan -->
+<div id="additionalReportModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+        <h2 class="text-lg font-bold mb-4">Laporan Tambahan Opsional</h2>
+        <textarea class="w-full border border-gray-300 rounded p-2" placeholder="Berikan detail tambahan" maxlength="500"></textarea>
+        <div class="text-right text-sm text-gray-500">0/500</div>
+        <button type="button" id="submitReportButton" class="bg-blue-500 text-white px-4 py-2 rounded mt-4">Laporkan</button>
+    </div>
+</div>
+
+<!-- Modal Terima Kasih -->
+<div id="thankYouModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-96 text-center">
+        <img src="https://img.icons8.com/ios-filled/50/000000/thank-you.png" alt="Thank You" class="mx-auto mb-4">
+        <p>Terima kasih telah melaporkan artikel ini. Laporan Anda akan kami tinjau sesegera mungkin. Jika diperlukan, tindakan lebih lanjut akan diambil sesuai dengan kebijakan kami.</p>
+        <button type="button" id="closeThankYouModal" class="bg-blue-500 text-white px-4 py-2 rounded mt-4">Tutup</button>
     </div>
 </div>
 
@@ -589,6 +666,34 @@ $commentCount = $commentResult->num_rows;
         });
     });
 
+    function deleteComment(commentId) {
+        fetch('news-detail.php?id=<?= $id ?>', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                delete_comment_id: commentId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const commentElement = document.querySelector(`[data-comment-id="${commentId}"]`);
+                if (commentElement) {
+                    commentElement.remove();
+                    updateCommentCount();
+                    // Check if there are no comments left
+                    if (document.querySelectorAll('.user-comment').length === 0) {
+                        document.getElementById('noComments').classList.remove('hidden');
+                    }
+                }
+            } else {
+                alert(data.message || 'Gagal menghapus komentar.');
+            }
+        });
+    }
+
     function addComment() {
         const commentInput = document.getElementById('commentInput');
         const commentText = commentInput.value.trim();
@@ -610,7 +715,7 @@ $commentCount = $commentResult->num_rows;
                     const commentDate = new Date();
 
                     const commentHtml = `
-                        <div class="mb-4 user-comment opacity-0 transition-opacity duration-500 group">
+                        <div class="mb-4 user-comment opacity-0 transition-opacity duration-500 group" data-comment-id="${data.commentId}">
                             <div class="flex items-start">
                                 <img src="${profilePic}" alt="Profile Picture" class="w-10 h-10 rounded-full mr-2 flex-shrink-0">
                                 <div class="flex-1">
@@ -634,6 +739,9 @@ $commentCount = $commentResult->num_rows;
                     commentInput.value = '';
                     updateCommentCount();
                     handleReadMore(newComment.querySelector('.comment-text'), newComment.querySelector('.read-more'));
+
+                    // Hide the "no comments" message
+                    document.getElementById('noComments').classList.add('hidden');
                 } else {
                     alert(data.message || 'Gagal menambahkan komentar.');
                 }
@@ -697,24 +805,8 @@ $commentCount = $commentResult->num_rows;
     document.getElementById('confirmDelete').addEventListener('click', function () {
         if (commentToDelete) {
             const commentId = commentToDelete.dataset.commentId;
-
-            // Buat form untuk mengirim permintaan POST
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '';
-
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'delete_comment_id';
-            input.value = commentId;
-
-            form.appendChild(input);
-            document.body.appendChild(form);
-            form.submit();
-
-            // Setelah form submit, hapus elemen komentar dari DOM
-            commentToDelete.remove();
-            updateCommentCount();
+            deleteComment(commentId);
+            closeModal();
         }
     });
 
@@ -729,12 +821,14 @@ $commentCount = $commentResult->num_rows;
         });
     });
 
-    document.getElementById('bookmarkButton').addEventListener('click', function () {
-        const bookmarked = this.dataset.bookmarked === 'true';
-        this.dataset.bookmarked = !bookmarked;
-        this.classList.toggle('text-blue-500', !bookmarked);
-        this.classList.toggle('text-gray-500', bookmarked);
-        alert(bookmarked ? 'Bookmark dihapus' : 'Ditambahkan ke bookmark');
+    document.getElementById('bookmarkButton').addEventListener('click', function (e) {
+        e.preventDefault();
+        const form = this.closest('form');
+        form.submit();
+        this.classList.toggle('bg-blue-100');
+        this.classList.toggle('text-blue-500');
+        this.classList.toggle('bg-white');
+        this.classList.toggle('text-gray-500');
     });
 
     // Initial update of comment count
@@ -742,6 +836,38 @@ $commentCount = $commentResult->num_rows;
 
     document.addEventListener('DOMContentLoaded', function() {
         updateCommentCount();
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const reportButton = document.getElementById('reportButton');
+        const reportModal = document.getElementById('reportModal');
+
+        reportButton.addEventListener('click', function () {
+            reportModal.classList.remove('hidden');
+        });
+
+        document.querySelectorAll('input[name="reportReason"]').forEach(radio => {
+            radio.addEventListener('change', function () {
+                document.getElementById('additionalOptions').classList.remove('hidden');
+                document.getElementById('nextButton').classList.remove('bg-gray-300');
+                document.getElementById('nextButton').classList.add('bg-blue-500');
+                document.getElementById('nextButton').disabled = false;
+            });
+        });
+
+        document.getElementById('nextButton').addEventListener('click', function () {
+            reportModal.classList.add('hidden');
+            document.getElementById('additionalReportModal').classList.remove('hidden');
+        });
+
+        document.getElementById('submitReportButton').addEventListener('click', function () {
+            document.getElementById('additionalReportModal').classList.add('hidden');
+            document.getElementById('thankYouModal').classList.remove('hidden');
+        });
+
+        document.getElementById('closeThankYouModal').addEventListener('click', function () {
+            document.getElementById('thankYouModal').classList.add('hidden');
+        });
     });
 </script>
 
