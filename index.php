@@ -111,7 +111,7 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
 <div class="flex-grow container mx-auto mt-8 mb-8 relative z-0 px-4 lg:px-20">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <!-- News Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-1 gap-4 order-2 lg:order-1">
+        <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-4 order-2 lg:order-1">
             <?php
             $query = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan FROM berita ORDER BY RAND() LIMIT 3";
             $result = $conn->query($query);
@@ -126,11 +126,11 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
                 $description = strip_tags($row['konten_artikel']);
                 $description = substr($description, 0, 100) . (strlen($description) > 100 ? '...' : '');
             ?>
-                <a href="../category/news-detail.php?id=<?= $row['id'] ?>" class="flex flex-col lg:flex-row items-center lg:items-start transform lg:scale-105 mb-6">
+                <a href="../category/news-detail.php?id=<?= $row['id'] ?>" class="flex flex-col md:flex-row lg:flex-row items-start lg:items-start transform lg:scale-105 mb-6">
                     <div class="w-64 h-32 bg-gray-200 flex items-center justify-center overflow-hidden rounded-lg mb-2 lg:mb-0">
                         <img src="<?= $firstImage ?: 'https://via.placeholder.com/200x150' ?>" class="w-full h-full object-cover">
                     </div>
-                    <div class="flex flex-col justify-center text-center md:text-center lg:text-left lg:ml-6 lg:w-full lg:pr-8">
+                    <div class="flex flex-col justify-start text-center md:text-left lg:text-left md:ml-6 lg:ml-6 lg:w-full lg:pr-8">
                         <h3 class="text-md font-bold mt-1 line-clamp-3"><?= $title ?></h3>
                         <p class="text-gray-500 mt-1 line-clamp-3 text-xs"><?= $description ?></p>
                         <span class="text-sm mt-1 inline-block">
@@ -197,7 +197,7 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
                     }
                     ?>
                     <a href="../category/news-detail.php?id=<?= $beritaTerkini[$i]['id'] ?>" class="relative overflow-hidden rounded-lg">
-                        <img src="<?= $firstImage ?: 'https://via.placeholder.com/300x200' ?>" class="w-full h-56 object-cover">
+                        <img src="<?= $firstImage ?: 'https://via.placeholder.com/300x200' ?>" class="w-full h-56 md:h-56 lg:h-56 object-cover">
                         <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
                             <span class="text-white font-bold"><?= $beritaTerkini[$i]['kategori'] ?> | <?= timeAgo($beritaTerkini[$i]['tanggal_diterbitkan']) ?></span>
                             <h3 class="text-white text-lg font-bold mt-1"><?= $beritaTerkini[$i]['judul'] ?></h3>
@@ -209,7 +209,7 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
             <?php endfor; ?>
         </div>
         <!-- 3 Gambar di Bawah dengan Teks di Samping Kanan -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-4">
             <?php for ($i = 3; $i < 6; $i++): ?>
                 <?php if (isset($beritaTerkini[$i])): ?>
                     <?php
@@ -218,11 +218,11 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
                         $firstImage = $image['src'];
                     }
                     ?>
-                    <a href="../category/news-detail.php?id=<?= $beritaTerkini[$i]['id'] ?>" class="flex items-center">
-                        <img src="<?= $firstImage ?: 'https://via.placeholder.com/200x150' ?>" class="w-full md:w-1/2 lg:w-1/2 h-32 md:h-40 lg:h-48 object-cover rounded-lg">
+                    <a href="../category/news-detail.php?id=<?= $beritaTerkini[$i]['id'] ?>" class="flex flex-col md:flex-row items-start">
+                        <img src="<?= $firstImage ?: 'https://via.placeholder.com/200x150' ?>" class="w-full md:w-1/3 h-32 md:h-40 object-cover rounded-lg">
                         <div class="ml-4">
                             <h3 class="text-md font-bold text-white"><?= $beritaTerkini[$i]['judul'] ?></h3>
-                            <p class="text-gray-300 text-sm"><?= substr(strip_tags($beritaTerkini[$i]['konten_artikel']), 0, 150) . '...' ?></p>
+                            <p class="text-gray-300 text-sm"><?= substr(strip_tags($beritaTerkini[$i]['konten_artikel']), 0, 100) . '...' ?></p>
                         </div>
                     </a>
                 <?php else: ?>
@@ -257,9 +257,11 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
                         </a>
                         <p class="text-gray-500 mt-1"><?= $description ?></p>
                     </div>
-                    <img src="<?= $firstImage ?: 'https://via.placeholder.com/400x300' ?>" class="w-64 h-48 object-cover rounded-lg ml-4">
+                    <div class="flex-shrink-0 h-48 bg-gray-200 flex items-center justify-center overflow-hidden rounded-lg ml-4" style="width: 300px;">
+                        <img src="<?= $firstImage ?: 'https://via.placeholder.com/400x300' ?>" class="w-full h-full object-cover">
+                    </div>
                 </div>
-            <?php endforeach; ?>
+             <?php endforeach; ?>
         </div>
 
         <!-- Baru Baru Ini Section -->
@@ -300,7 +302,7 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
                 <div class="p-4" style="padding-left: 0; padding-right: 0;">
                     <span class="text-red-500 font-bold"><?= $rowRandomCategory['kategori'] ?></span> <span class="text-gray-500">| <?= date('d F Y', strtotime($rowRandomCategory['tanggal_diterbitkan'])) ?></span>
                     <h3 class="text-lg font-bold mt-1"><?= $rowRandomCategory['judul'] ?></h3>
-                    <p class="text-gray-700 mt-2"><?= substr(strip_tags($rowRandomCategory['konten_artikel']), 0, 150) . '...' ?></p>
+                    <p class="text-gray-700 mt-2"><?= substr(strip_tags($rowRandomCategory['konten_artikel']), 0, 100) . '...' ?></p>
                 </div>
             </a>
         </div>
@@ -334,7 +336,7 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
                     ?>
                         <li class="mb-2 border-b border-gray-300 pb-2">
                             <span class="text-gray-400 text-sm block"><?= timeAgo($rowRandomCategoryList['tanggal_diterbitkan']) ?></span>
-                            <a href="../category/news-detail.php?id=<?= $rowRandomCategoryList['id'] ?>" class="text-black hover:underline"><?= $rowRandomCategoryList['judul'] ?></a>
+                            <a href="../category/news-detail.php?id=<?= $rowRandomCategoryList['id'] ?>" class="text-black hover:underline font-bold"><?= $rowRandomCategoryList['judul'] ?></a>
                         </li>
                     <?php endwhile; ?>
                 </ul>
@@ -362,7 +364,7 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
                 <div>
                     <span class="text-red-500 font-bold"><?= $item['kategori'] ?></span> <span class="text-gray-500">| <?= date('d F Y', strtotime($item['tanggal_diterbitkan'])) ?></span>
                     <h3 class="text-lg font-bold mt-1"><?= $item['judul'] ?></h3>
-                    <p class="text-gray-700 mt-2"><?= substr(strip_tags($item['konten_artikel']), 0, 150) . '...' ?></p>
+                    <p class="text-gray-700 mt-2"><?= substr(strip_tags($item['konten_artikel']), 0, 100) . '...' ?></p>
                 </div>
             </div>
         <?php endforeach; ?>
@@ -389,7 +391,7 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
                 }
 
                 $descriptionLainnya = strip_tags($rowLainnya['konten_artikel']);
-                $descriptionLainnya = substr($descriptionLainnya, 0, 150) . '...';
+                $descriptionLainnya = substr($descriptionLainnya, 0, 100) . '...';
 
                 $timeAgoLainnya = timeAgo($rowLainnya['tanggal_diterbitkan']);
             ?>
@@ -401,7 +403,7 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
                         </a>
                         <p class="text-gray-500 mt-1"><?= $descriptionLainnya ?></p>
                     </div>
-                    <div class="w-full max-w-2xl h-48 bg-gray-200 flex items-center justify-center overflow-hidden rounded-lg ml-4">
+                    <div class="flex-shrink-0 h-48 bg-gray-200 flex items-center justify-center overflow-hidden rounded-lg ml-4" style="width: 300px;">
                         <img src="<?= $firstImageLainnya ?: 'https://via.placeholder.com/400x300' ?>" class="w-full h-full object-cover">
                     </div>
                 </div>
