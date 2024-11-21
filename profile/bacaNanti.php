@@ -26,7 +26,7 @@ if ($user_id) {
 }
 ?>
 
-<div class="container mx-auto px-4 lg:px-8 mb-12">
+<div class="container mx-auto px-4 lg:px-8 mb-12" style="margin-left: 0;">
     <?php if (empty($articles)): ?>
         <div class="text-center mt-12">
             <i class="fas fa-folder text-6xl text-gray-400"></i>
@@ -56,7 +56,7 @@ if ($user_id) {
                     </div>
                 </div>
             </div>
-            <div class="border-b border-gray-300 mb-4 max-w-6xl"></div>
+            <div class="border-b border-gray-300 mb-4"></div>
         <?php endforeach; ?>
     <?php endif; ?>
 </div>
