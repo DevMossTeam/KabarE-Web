@@ -4,19 +4,6 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 include '../connection/config.php'; // Pastikan jalur relatif ini benar
 
-function timeAgo($datetime) {
-    $now = new DateTime();
-    $posted = new DateTime(datetime: $datetime);
-    $interval = $now->diff($posted);
-
-    if ($interval->y > 0) return $interval->y . " tahun yang lalu";
-    if ($interval->m > 0) return $interval->m . " bulan yang lalu";
-    if ($interval->d > 0) return $interval->d . " hari yang lalu";
-    if ($interval->h > 0) return $interval->h . " jam yang lalu";
-    if ($interval->i > 0) return $interval->i . " menit yang lalu";
-    return "baru saja";
-}
-
 $user_id = $_SESSION['user_id'] ?? null;
 $articles = [];
 
@@ -50,14 +37,14 @@ if ($user_id) {
     <?php else: ?>
         <?php foreach ($articles as $article): ?>
             <div class="flex items-start mb-6 relative">
-                <div class="flex-grow max-w-4xl pr-6">
+                <div class="flex-grow max-w-3xl pr-4">
                     <h3 class="text-2xl font-medium mt-2 mb-2">
                         <a href="../category/news-detail.php?id=<?= htmlspecialchars($article['berita_id']) ?>" class="hover:underline">
                             <?= htmlspecialchars($article['judul']) ?>
                         </a>
                     </h3>
-                    <p class="text-gray-500 text-sm mb-2" data-time="<?= $article['tanggal_bookmark'] ?>">
-                        | Disimpan <?= timeAgo($article['tanggal_bookmark']) ?>
+                    <p class="text-gray-500 text-sm mb-2">
+                        | Disimpan <?= date('d F Y', strtotime($article['tanggal_bookmark'])) ?>
                     </p>
                 </div>
                 <div class="relative">
@@ -73,43 +60,6 @@ if ($user_id) {
         <?php endforeach; ?>
     <?php endif; ?>
 </div>
-
-<script>
-    function updateTimeAgo() {
-        const elements = document.querySelectorAll('[data-time]');
-        elements.forEach(el => {
-            const time = el.getAttribute('data-time');
-            const localTime = new Date(time);
-            localTime.setHours(localTime.getHours() + 7);
-            const timeAgo = calculateTimeAgo(localTime);
-            el.textContent = `| Disimpan ${timeAgo}`;
-        });
-    }
-
-    function calculateTimeAgo(date) {
-        const now = new Date();
-        const seconds = Math.floor((now - date) / 1000);
-        const intervals = [
-            { label: 'tahun', seconds: 31536000 },
-            { label: 'bulan', seconds: 2592000 },
-            { label: 'hari', seconds: 86400 },
-            { label: 'jam', seconds: 3600 },
-            { label: 'menit', seconds: 60 },
-            { label: 'detik', seconds: 1 }
-        ];
-
-        for (const interval of intervals) {
-            const count = Math.floor(seconds / interval.seconds);
-            if (count > 0) {
-                return `${count} ${interval.label} yang lalu`;
-            }
-        }
-        return 'baru saja';
-    }
-
-    setInterval(updateTimeAgo, 60000); // Update setiap menit
-    updateTimeAgo(); // Inisialisasi
-</script>
 
 <?php
 function get_first_image($content) {
