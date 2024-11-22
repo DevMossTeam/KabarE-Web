@@ -107,20 +107,23 @@ function timeAgo($datetime) {
                     }
 
                     $descriptionLainnya = strip_tags($rowLainnya['konten_artikel']);
-                    $descriptionLainnya = substr($descriptionLainnya, 0, 150) . '...';
+                    $descriptionLainnya = substr($descriptionLainnya, 0, 100) . '...';
 
                     $timeAgoLainnya = timeAgo($rowLainnya['tanggal_diterbitkan']);
                 ?>
                     <div class="flex mb-4 items-start">
-                        <span class="text-gray-400 text-sm flex-shrink-0 w-24"><?= $timeAgoLainnya ?></span>
-                        <div class="flex-grow ml-4">
+                        <div class="flex-grow">
                             <a href="news-detail.php?id=<?= $rowLainnya['id'] ?>">
                                 <h3 class="text-lg font-bold"><?= $rowLainnya['judul'] ?></h3>
                             </a>
                             <p class="text-gray-500 mt-1"><?= $descriptionLainnya ?></p>
+                            <span class="text-sm mt-1">
+                                <span class="text-red-500 font-bold"><?= $rowLainnya['kategori'] ?></span>
+                                <span class="text-gray-400"> | <?= $timeAgoLainnya ?></span>
+                            </span>
                         </div>
-                        <div class="w-full max-w-2xl h-48 bg-gray-200 flex items-center justify-center overflow-hidden rounded-lg ml-4">
-                            <img src="<?= $firstImageLainnya ?: 'https://via.placeholder.com/400x300' ?>" class="w-full h-full object-cover">
+                        <div class="w-64 h-40 bg-gray-200 flex-shrink-0 flex items-center justify-center overflow-hidden rounded-lg ml-4">
+                            <img src="<?= $firstImageLainnya ?: 'https://via.placeholder.com/300x200' ?>" class="w-full h-full object-cover">
                         </div>
                     </div>
                     <div class="border-b border-gray-300 mt-1 mb-4"></div>

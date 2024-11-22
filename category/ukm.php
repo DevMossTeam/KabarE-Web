@@ -68,19 +68,19 @@ function timeAgo($datetime) {
             $resultPopuler = $conn->query($queryPopuler);
 
             while ($rowPopuler = $resultPopuler->fetch_assoc()):
-                $firstImagePopuler = ''; // Default jika tidak ada gambar
+                $firstImagePopuler = '';
                 if (preg_match('/<img.+src=[\'"](?P<src>.+?)[\'"].*>/i', $rowPopuler['konten_artikel'], $image)) {
                     $firstImagePopuler = $image['src'];
                 }
 
-                // Waktu relatif
                 $timeAgo = timeAgo($rowPopuler['tanggal_diterbitkan']);
+                $judulPopuler = substr($rowPopuler['judul'], 0, 100) . (strlen($rowPopuler['judul']) > 100 ? '...' : '');
             ?>
                 <a href="news-detail.php?id=<?= $rowPopuler['id'] ?>" class="relative overflow-hidden rounded-lg">
                     <img src="<?= $firstImagePopuler ?: 'https://via.placeholder.com/300x200' ?>" class="w-full h-56 object-cover">
                     <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
-                        <span class="text-white font-bold"><?= $rowPopuler['kategori'] ?> | <?= $timeAgo ?></span>
-                        <h3 class="text-white text-lg font-bold mt-1"><?= $rowPopuler['judul'] ?></h3>
+                        <span class="text-white font-bold text-sm"><?= $rowPopuler['kategori'] ?> | <?= $timeAgo ?></span>
+                        <h3 class="text-white text-sm font-bold mt-1"><?= $judulPopuler ?></h3>
                     </div>
                 </a>
             <?php endwhile; ?>
@@ -107,20 +107,23 @@ function timeAgo($datetime) {
                     }
 
                     $descriptionLainnya = strip_tags($rowLainnya['konten_artikel']);
-                    $descriptionLainnya = substr($descriptionLainnya, 0, 150) . '...';
+                    $descriptionLainnya = substr($descriptionLainnya, 0, 100) . '...';
 
                     $timeAgoLainnya = timeAgo($rowLainnya['tanggal_diterbitkan']);
                 ?>
                     <div class="flex mb-4 items-start">
-                        <span class="text-gray-400 text-sm flex-shrink-0 w-24"><?= $timeAgoLainnya ?></span>
-                        <div class="flex-grow ml-4">
+                        <div class="flex-grow">
                             <a href="news-detail.php?id=<?= $rowLainnya['id'] ?>">
                                 <h3 class="text-lg font-bold"><?= $rowLainnya['judul'] ?></h3>
                             </a>
                             <p class="text-gray-500 mt-1"><?= $descriptionLainnya ?></p>
+                            <span class="text-sm mt-1">
+                                <span class="text-red-500 font-bold"><?= $rowLainnya['kategori'] ?></span>
+                                <span class="text-gray-400"> | <?= $timeAgoLainnya ?></span>
+                            </span>
                         </div>
-                        <div class="w-full max-w-2xl h-48 bg-gray-200 flex items-center justify-center overflow-hidden rounded-lg ml-4">
-                            <img src="<?= $firstImageLainnya ?: 'https://via.placeholder.com/400x300' ?>" class="w-full h-full object-cover">
+                        <div class="w-64 h-40 bg-gray-200 flex-shrink-0 flex items-center justify-center overflow-hidden rounded-lg ml-4">
+                            <img src="<?= $firstImageLainnya ?: 'https://via.placeholder.com/300x200' ?>" class="w-full h-full object-cover">
                         </div>
                     </div>
                     <div class="border-b border-gray-300 mt-1 mb-4"></div>
