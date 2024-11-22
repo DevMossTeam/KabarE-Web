@@ -122,6 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lupa Password</title>
+    <link rel="shortcut icon" href="../assets/web-icon/Ic-main-KabarE.svg" type="KabarE">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script>
         // Reset the OTP timer when accessing this page
