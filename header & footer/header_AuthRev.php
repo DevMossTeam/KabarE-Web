@@ -12,7 +12,7 @@
 
 <body class="bg-gray-100 flex flex-col min-h-screen overflow-x-hidden">
     <!-- Navbar -->
-    <nav id="authRevNavbar" class="z-10 relative">
+    <nav id="authRevNavbar" class="z-10 sticky top-0">
         <div class="bg-blue-500 p-4 lg:px-8">
             <div class="container mx-auto flex justify-start items-center">
                 <a href="/index.php" class="text-white text-2xl font-bold">
