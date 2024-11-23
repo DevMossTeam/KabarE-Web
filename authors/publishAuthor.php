@@ -63,9 +63,21 @@ $totalResult = $totalStmt->get_result();
 $totalRow = $totalResult->fetch_assoc();
 $totalPages = ceil($totalRow['total'] / $limit);
 
+// Fungsi untuk memformat angka menjadi K, M, B
+function formatNumber($num) {
+    if ($num >= 1000000000) {
+        return round($num / 1000000000, 1) . 'B';
+    } elseif ($num >= 1000000) {
+        return round($num / 1000000, 1) . 'M';
+    } elseif ($num >= 1000) {
+        return round($num / 1000, 1) . 'K';
+    }
+    return $num;
+}
+
 // Filter dan Pencarian
-echo "<div class='flex items-center justify-between mb-4'>
-    <div class='relative flex items-center w-3/4 ml-4'>
+echo "<div class='flex flex-col md:flex-row items-center justify-between mb-4'>
+    <div class='relative flex items-center w-full md:w-2/3 lg:w-5/6 md:ml-4 mb-4 md:mb-0'>
         <div class='relative flex-grow'>
             <input type='text' id='searchInput' class='pl-10 pr-4 py-2 border rounded-lg w-full text-gray-500' placeholder='Filter'>
             <img src='https://img.icons8.com/ios-filled/50/808080/filter.png' alt='Filter' class='w-5 h-5 absolute left-3 top-2.5 cursor-pointer' id='filterButton'>
@@ -77,16 +89,16 @@ echo "<div class='flex items-center justify-between mb-4'>
             </div>
         </div>
     </div>
-    <div class='flex items-center mr-4'>
-        <span class='text-sm text-gray-600'>".(($page - 1) * $limit + 1)." - ".min($page * $limit, $totalRow['total'])." dari ".$totalRow['total']."</span>
-        <div class='ml-4'>
+    <div class='flex items-center w-full md:w-auto md:justify-end mr-4'>
+        <span class='text-sm text-gray-600'>".formatNumber(($page - 1) * $limit + 1)." - ".formatNumber(min($page * $limit, $totalRow['total']))." dari ".formatNumber($totalRow['total'])."</span>
+        <div class='ml-4 flex space-x-2'>
             <a href='?page=".max(1, $page - 1)."' class='px-2 py-1 border rounded-l-md ".($page > 1 ? "bg-white text-gray-600 hover:bg-gray-100" : "bg-gray-200 text-gray-400")."'>Prev</a>
             <a href='?page=".min($totalPages, $page + 1)."' class='px-2 py-1 border rounded-r-md ".($page < $totalPages ? "bg-white text-gray-600 hover:bg-gray-100" : "bg-gray-200 text-gray-400")."'>Next</a>
         </div>
     </div>
 </div>";
 
-echo "<div class='container mx-auto mt-4 lg:px-8' id='publicationContainer'>";
+echo "<div class='container mx-auto mt-4 px-4 md:px-8 lg:px-8' id='publicationContainer'>";
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
         $firstImage = '';
@@ -94,15 +106,17 @@ if ($result->num_rows > 0) {
             $firstImage = $image['src'];
         }
         $timeAgo = timeAgo($row['tanggal_diterbitkan']);
-        echo "<div class='flex items-center mb-8'> <!-- Jarak atas bawah -->
-                <img src='{$firstImage}' class='w-40 h-20 object-cover rounded-lg mr-4'>
-                <div class='flex-grow'> <!-- Menghapus max-w-lg untuk memberikan lebih banyak ruang -->
-                    <h3 class='text-lg font-bold mt-1 break-words'> <!-- Gunakan break-words untuk memindahkan teks -->
+        echo "<div class='flex items-start mb-8'> <!-- Menggunakan items-start untuk menyelaraskan ke atas -->
+                <div class='flex-none w-40 h-20 mr-4'> <!-- Atur lebar dan tinggi gambar -->
+                    <img src='{$firstImage}' class='object-cover rounded-lg w-full h-full'>
+                </div>
+                <div class='flex-grow'> <!-- Atur lebar maksimum lebih besar -->
+                    <h3 class='text-lg md:text-base lg:text-lg font-bold mt-0 break-words'> <!-- Ukuran teks responsif -->
                         {$row['judul']}
                     </h3>
                     <span class='text-gray-400 text-sm'>Dipublish {$timeAgo}</span>
                 </div>
-                <div class='flex space-x-2 ml-4'> <!-- Menggunakan ml-4 untuk memberikan jarak dari judul -->
+                <div class='flex-none flex space-x-2 ml-4'> <!-- Menggunakan flex-none untuk menjaga lebar tetap -->
                     <a href='#' class='text-blue-500 edit-button' data-id='{$row['id']}'>
                         <img src='https://img.icons8.com/ios-filled/50/0000FF/edit.png' alt='Edit' class='w-5 h-5'>
                     </a>
