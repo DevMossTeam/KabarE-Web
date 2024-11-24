@@ -2,6 +2,51 @@
 session_start(); // Mulai sesi
 include '../connection/config.php'; // Pastikan path ini sesuai dengan struktur folder Anda
 
+// Inisialisasi variabel dengan nilai default
+$judul = '';
+$konten = '';
+$visibilitas = 'public'; // Atur default visibilitas jika diperlukan
+$kategori = '';
+$tags = '';
+
+// Cek apakah ada ID untuk edit
+if (isset($_GET['edit_id'])) {
+    $edit_id = $_GET['edit_id'];
+
+    // Query untuk mendapatkan data artikel
+    $query = "SELECT b.id, b.judul, b.konten_artikel, b.visibilitas, b.kategori
+              FROM berita b
+              WHERE b.id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param('s', $edit_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $article = $result->fetch_assoc();
+        $judul = $article['judul'];
+        $konten = $article['konten_artikel'];
+        $visibilitas = $article['visibilitas'];
+        $kategori = $article['kategori'];
+    } else {
+        echo "Artikel tidak ditemukan.";
+        exit;
+    }
+
+    // Query untuk mendapatkan tag terkait langsung dari tabel tag
+    $tagQuery = "SELECT nama_tag FROM tag WHERE berita_id = ?";
+    $tagStmt = $conn->prepare($tagQuery);
+    $tagStmt->bind_param('s', $edit_id);
+    $tagStmt->execute();
+    $tagResult = $tagStmt->get_result();
+
+    $tagsArray = [];
+    while ($tagRow = $tagResult->fetch_assoc()) {
+        $tagsArray[] = $tagRow['nama_tag'];
+    }
+    $tags = implode(',', $tagsArray);
+}
+
 function generateId($conn) {
     $prefix = "BRT";
     $newId = null;
@@ -94,6 +139,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
             margin: 0 auto;
             background-color: #f0f0f0;
         }
+        .tag-item {
+            display: inline-flex;
+            align-items: center;
+            background-color: #e2e8f0; /* Warna abu-abu */
+            color: #1a202c; /* Warna teks */
+            border-radius: 9999px; /* Membuat bungkusan bulat */
+            padding: 0.25rem 0.5rem; /* Padding dalam bungkusan */
+            margin: 0.25rem; /* Jarak antar bungkusan */
+        }
+
+        .tag-item button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-right: 0.5rem; /* Jarak antara tombol "×" dan teks */
+        }
     </style>
 </head>
 <body class="bg-white">
@@ -113,12 +175,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
             <div class="w-full lg:w-3/4 pr-8">
                 <div class="mb-4">
                     <label for="title" class="block text-lg font-semibold mb-2">Judul Artikel</label>
-                    <input type="text" name="title" id="title" placeholder="Tulis judul artikelmu sendiri" class="w-full border-b-2 border-gray-300 outline-none focus:border-blue-500">
+                    <input type="text" name="title" id="title" value="<?php echo htmlspecialchars($judul); ?>" placeholder="Tulis judul artikelmu sendiri" class="w-full border-b-2 border-gray-300 outline-none focus:border-blue-500">
                 </div>
 
                 <div class="mb-2">
                     <label for="articleContent" class="block text-lg font-semibold mb-2">Form Penulisan Artikel</label>
-                    <div id="quillEditor" class="border border-gray-300 rounded p-4 h-96"></div>
+                    <div id="quillEditor" class="border border-gray-300 rounded p-4 h-96">
+                        <?php echo $konten; // Tampilkan konten HTML yang disimpan ?>
+                    </div>
                     <input type="hidden" name="content" id="hiddenContent">
                 </div>
             </div>
@@ -155,11 +219,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
                         <p class="text-sm text-gray-600">Atur visibilitas artikel agar dapat dilihat oleh kelompok yang diinginkan.</p>
                         <div class="mt-2">
                             <label class="inline-flex items-center">
-                                <input type="radio" name="visibility" value="public" class="form-radio" checked>
+                                <input type="radio" name="visibility" value="public" class="form-radio" <?php echo ($visibilitas == 'public') ? 'checked' : ''; ?>>
                                 <span class="ml-2">Public</span>
                             </label>
                             <label class="inline-flex items-center ml-4">
-                                <input type="radio" name="visibility" value="private" class="form-radio">
+                                <input type="radio" name="visibility" value="private" class="form-radio" <?php echo ($visibilitas == 'private') ? 'checked' : ''; ?>>
                                 <span class="ml-2">Private</span>
                             </label>
                         </div>
@@ -168,24 +232,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
                     <div class="mb-4">
                         <h2 class="font-semibold">Tambahkan Tag</h2>
                         <p class="text-sm text-gray-600">Tambahkan tag untuk membantu pembaca menemukan berita artikel.</p>
-                        <div id="labelContainer" class="flex flex-wrap mb-2"></div>
+                        <div id="labelContainer" class="flex flex-wrap mb-2">
+                            <?php
+                            if (!empty($tags)) {
+                                $tagArray = explode(',', $tags);
+                                foreach ($tagArray as $tag) {
+                                    echo "<span class='tag-item bg-gray-200 text-black rounded-full px-2 py-0.5 m-1 flex items-center'>
+                                            <button type='button' class='mr-2 text-black' onclick='removeLabel(this)'>×</button>
+                                            <span>{$tag}</span>
+                                          </span>";
+                                }
+                            }
+                            ?>
+                        </div>
                         <input type="text" id="labelInput" placeholder="Tambah tag" class="w-full border-b-2 border-gray-300 outline-none focus:border-blue-500">
                     </div>
 
                     <div>
                         <h2 class="font-semibold">Kategori</h2>
                         <p class="text-sm text-gray-600">Menambah kategori untuk mempermudah pencarian artikel.</p>
-                        <select id="categorySelect" class="w-full border-b-2 border-gray-300 focus:outline-none mt-2" size="1" onclick="this.size=5" onblur="this.size=1" onchange="this.size=1; this.blur();">
-                            <option disabled selected>Pilih Kategori</option>
-                            <option>Kampus</option>
-                            <option>Prestasi</option>
-                            <option>Politik</option>
-                            <option>Kesehatan</option>
-                            <option>Olahraga</option>
-                            <option>Ekonomi</option>
-                            <option>Bisnis</option>
-                            <option>UKM</option>
-                            <option>Berita Lainnya</option>
+                        <select id="categorySelect" name="category" class="w-full border-b-2 border-gray-300 focus:outline-none mt-2">
+                            <option value="" disabled <?php echo empty($kategori) ? 'selected' : ''; ?>>Pilih Kategori</option>
+                            <option value="Kampus" <?php echo ($kategori == 'Kampus') ? 'selected' : ''; ?>>Kampus</option>
+                            <option value="Prestasi" <?php echo ($kategori == 'Prestasi') ? 'selected' : ''; ?>>Prestasi</option>
+                            <option value="Politik" <?php echo ($kategori == 'Politik') ? 'selected' : ''; ?>>Politik</option>
+                            <option value="Kesehatan" <?php echo ($kategori == 'Kesehatan') ? 'selected' : ''; ?>>Kesehatan</option>
+                            <option value="Olahraga" <?php echo ($kategori == 'Olahraga') ? 'selected' : ''; ?>>Olahraga</option>
+                            <option value="Ekonomi" <?php echo ($kategori == 'Ekonomi') ? 'selected' : ''; ?>>Ekonomi</option>
+                            <option value="Bisnis" <?php echo ($kategori == 'Bisnis') ? 'selected' : ''; ?>>Bisnis</option>
+                            <option value="UKM" <?php echo ($kategori == 'UKM') ? 'selected' : ''; ?>>UKM</option>
+                            <option value="Berita Lainnya" <?php echo ($kategori == 'Berita Lainnya') ? 'selected' : ''; ?>>Berita Lainnya</option>
                         </select>
                     </div>
                 </div>
@@ -365,8 +441,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
 
         function removeLabel(button) {
             const label = button.parentElement;
-            labelContainer.removeChild(label);
-            updateLabelInputState();
+            label.remove();
         }
 
         function updateLabelInputState() {
@@ -377,13 +452,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
             }
         }
 
-        categorySelect.addEventListener('click', function() {
-            this.size = 5;
+        categorySelect.addEventListener('focus', function() {
+            this.size = 5; // Tampilkan 5 opsi saat dropdown difokuskan
         });
 
         categorySelect.addEventListener('change', function() {
-            this.size = 1;
-            this.blur();
+            this.size = 1; // Kembali ke ukuran normal setelah memilih
+            this.blur(); // Hilangkan fokus untuk menutup dropdown
+        });
+
+        categorySelect.addEventListener('blur', function() {
+            this.size = 1; // Pastikan dropdown kembali ke ukuran normal saat kehilangan fokus
         });
 
         // Gabungkan event listener untuk tombol pratinjau

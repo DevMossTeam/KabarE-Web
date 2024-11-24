@@ -30,6 +30,35 @@ if ($user_id === null) {
     exit;
 }
 
+// Proses penghapusan artikel
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
+    $delete_id = $_POST['delete_id'];
+
+    // Mulai transaksi
+    $conn->begin_transaction();
+
+    try {
+        // Hapus dari tabel tag
+        $tagQuery = "DELETE FROM tag WHERE berita_id = ?";
+        $tagStmt = $conn->prepare($tagQuery);
+        $tagStmt->bind_param('s', $delete_id);
+        $tagStmt->execute();
+
+        // Hapus dari tabel berita
+        $beritaQuery = "DELETE FROM berita WHERE id = ?";
+        $beritaStmt = $conn->prepare($beritaQuery);
+        $beritaStmt->bind_param('s', $delete_id);
+        $beritaStmt->execute();
+
+        // Commit transaksi
+        $conn->commit();
+        $deleteSuccess = true;
+    } catch (Exception $e) {
+        $conn->rollback();
+        $deleteSuccess = false;
+    }
+}
+
 // Ambil parameter filter
 $sort = isset($_GET['sort']) ? $_GET['sort'] : 'newest';
 $visibility = isset($_GET['visibility']) ? $_GET['visibility'] : null;
@@ -44,7 +73,7 @@ $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
 // Query untuk mendapatkan data
-$query = "SELECT id, judul, konten_artikel, tanggal_diterbitkan
+$query = "SELECT id, judul, konten_artikel, tanggal_diterbitkan, visibilitas
           FROM berita 
           WHERE user_id = ? $visibilityCondition 
           ORDER BY tanggal_diterbitkan $orderBy 
@@ -106,17 +135,19 @@ if ($result->num_rows > 0) {
             $firstImage = $image['src'];
         }
         $timeAgo = timeAgo($row['tanggal_diterbitkan']);
-        echo "<div class='flex items-start mb-8'> <!-- Menggunakan items-start untuk menyelaraskan ke atas -->
-                <div class='flex-none w-40 h-20 mr-4'> <!-- Atur lebar dan tinggi gambar -->
+        $visibilitas = isset($row['visibilitas']) ? $row['visibilitas'] : 'Tidak diketahui';
+        echo "<div class='flex items-start mb-8'>
+                <div class='flex-none w-40 h-20 mr-4'>
                     <img src='{$firstImage}' class='object-cover rounded-lg w-full h-full'>
                 </div>
-                <div class='flex-grow'> <!-- Atur lebar maksimum lebih besar -->
-                    <h3 class='text-lg md:text-base lg:text-lg font-bold mt-0 break-words'> <!-- Ukuran teks responsif -->
+                <div class='flex-grow'>
+                    <h3 class='text-lg md:text-base lg:text-lg font-bold mt-0 break-words'>
                         {$row['judul']}
                     </h3>
                     <span class='text-gray-400 text-sm'>Dipublish {$timeAgo}</span>
+                    <span class='ml-2 text-xs bg-gray-200 text-gray-600 rounded-full px-2 py-0.5'>{$visibilitas}</span>
                 </div>
-                <div class='flex-none flex space-x-2 ml-4'> <!-- Menggunakan flex-none untuk menjaga lebar tetap -->
+                <div class='flex-none flex space-x-2 ml-4'>
                     <a href='#' class='text-blue-500 edit-button' data-id='{$row['id']}'>
                         <img src='https://img.icons8.com/ios-filled/50/0000FF/edit.png' alt='Edit' class='w-5 h-5'>
                     </a>
@@ -133,6 +164,36 @@ if ($result->num_rows > 0) {
           </div>";
 }
 echo "</div>";
+
+// Tambahkan modal HTML
+echo "<div id='modal' class='fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex justify-center items-center'>
+        <div class='bg-white p-4 rounded-lg shadow-lg max-w-md mx-auto'>
+            <div class='flex items-center mb-4'>
+                <img id='modalIcon' src='' alt='Icon' class='w-8 h-8 mr-2'>
+                <h2 id='modalTitle' class='text-lg font-bold'></h2>
+            </div>
+            <p id='modalMessage' class='mb-4'></p>
+            <div class='flex justify-end space-x-2'>
+                <button id='confirmButton' class='px-4 py-2 bg-blue-500 text-white rounded'>Konfirmasi</button>
+                <button id='cancelButton' class='px-4 py-2 bg-gray-300 rounded'>Batal</button>
+            </div>
+        </div>
+      </div>";
+
+if (isset($deleteSuccess) && $deleteSuccess) {
+    echo "<div id='deleteSuccessModal' class='fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center'>
+            <div class='bg-white p-4 rounded-lg shadow-lg max-w-md mx-auto'>
+                <div class='flex items-center mb-4'>
+                    <img src='https://img.icons8.com/ios-filled/50/00FF00/checkmark.png' alt='Success' class='w-8 h-8 mr-2'>
+                    <h2 class='text-lg font-bold'>Artikel Berhasil Dihapus</h2>
+                </div>
+                <p class='mb-4'>Artikel dan tag terkait telah berhasil dihapus.</p>
+                <div class='flex justify-end'>
+                    <button id='closeDeleteSuccessModal' class='px-4 py-2 bg-blue-500 text-white rounded'>Tutup</button>
+                </div>
+            </div>
+          </div>";
+}
 
 $conn->close();
 ?>
@@ -153,7 +214,7 @@ $conn->close();
 
     document.getElementById('searchInput').addEventListener('input', function() {
         var searchQuery = this.value.toLowerCase();
-        var articles = document.querySelectorAll('#publicationContainer .flex.items-center');
+        var articles = document.querySelectorAll('#publicationContainer .flex.items-start');
 
         articles.forEach(function(article) {
             var title = article.querySelector('h3').textContent.toLowerCase();
@@ -163,5 +224,103 @@ $conn->close();
                 article.style.display = 'none';
             }
         });
+    });
+
+    document.querySelectorAll('#filterMenu a').forEach(function(filterLink) {
+        filterLink.addEventListener('click', function(event) {
+            event.preventDefault();
+            var filterText = this.textContent;
+            var url = new URL(window.location.href);
+
+            if (filterText === 'Terlama') {
+                url.searchParams.set('sort', 'oldest');
+            } else if (filterText === 'Terbaru') {
+                url.searchParams.set('sort', 'newest');
+            } else if (filterText === 'Public') {
+                url.searchParams.set('visibility', 'public');
+            } else if (filterText === 'Private') {
+                url.searchParams.set('visibility', 'private');
+            }
+
+            window.location.href = url.toString();
+        });
+    });
+
+    document.getElementById('searchInput').addEventListener('focus', function() {
+        this.value = '';
+    });
+
+    // Fungsi untuk menampilkan modal
+    function showModal(title, message, iconUrl, confirmCallback) {
+        var modal = document.getElementById('modal');
+        document.getElementById('modalTitle').textContent = title;
+        document.getElementById('modalMessage').textContent = message;
+        document.getElementById('modalIcon').src = iconUrl;
+        modal.classList.remove('hidden');
+
+        // Tambahkan event listener untuk tombol konfirmasi
+        document.getElementById('confirmButton').onclick = function() {
+            confirmCallback();
+            modal.classList.add('hidden');
+        };
+
+        // Tambahkan event listener untuk tombol batal
+        document.getElementById('cancelButton').onclick = function() {
+            modal.classList.add('hidden');
+        };
+
+        // Tutup modal saat klik di luar modal
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.classList.add('hidden');
+            }
+        };
+    }
+
+    // Event listener untuk tombol edit
+    document.querySelectorAll('.edit-button').forEach(function(button) {
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
+            var id = this.getAttribute('data-id');
+            showModal(
+                'Edit Artikel',
+                'Apakah Anda yakin ingin mengedit artikel ini?',
+                'https://img.icons8.com/ios-filled/50/0000FF/edit.png',
+                function() {
+                    // Redirect ke Main_author.php dengan ID artikel
+                    window.location.href = 'Main_author.php?edit_id=' + id;
+                }
+            );
+        });
+    });
+
+    // Event listener untuk tombol hapus
+    document.querySelectorAll('.delete-button').forEach(function(button) {
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
+            var id = this.getAttribute('data-id');
+            showModal(
+                'Hapus Artikel',
+                'Apakah Anda yakin ingin menghapus artikel ini?',
+                'https://img.icons8.com/ios-filled/50/FF0000/delete.png',
+                function() {
+                    // Kirim permintaan penghapusan
+                    var form = document.createElement('form');
+                    form.method = 'POST';
+                    form.style.display = 'none';
+                    var input = document.createElement('input');
+                    input.name = 'delete_id';
+                    input.value = id;
+                    form.appendChild(input);
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            );
+        });
+    });
+
+    // Tutup modal sukses hapus
+    document.getElementById('closeDeleteSuccessModal')?.addEventListener('click', function() {
+        document.getElementById('deleteSuccessModal').classList.add('hidden');
     });
 </script>
