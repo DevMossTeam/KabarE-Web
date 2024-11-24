@@ -234,8 +234,10 @@ $conn->close();
 
             if (filterText === 'Terlama') {
                 url.searchParams.set('sort', 'oldest');
+                url.searchParams.delete('visibility');
             } else if (filterText === 'Terbaru') {
                 url.searchParams.set('sort', 'newest');
+                url.searchParams.delete('visibility');
             } else if (filterText === 'Public') {
                 url.searchParams.set('visibility', 'public');
             } else if (filterText === 'Private') {
