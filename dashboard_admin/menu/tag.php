@@ -64,12 +64,12 @@
                         />
 
                         <!-- Add New Tag Button -->
-                        <button 
+                        <!-- <button 
                             id="openDrawerBtn" 
                             class="bg-blue-600 text-white rounded-lg px-4 py-2 text-sm font-semibold hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 w-full sm:w-auto md:mt-2"
                         >
                             + Add New Tag
-                        </button>
+                        </button> -->
                     </div>
 
                     <div class="mb-4 alert-dynamic">
@@ -83,7 +83,7 @@
                                     <table class="min-w-full divide-y divide-gray-200 table-fixed">
                                         <thead class="bg-gray-100 text-gray-600 uppercase text-sm">
                                             <tr>
-                                                <th class="py-2 px-4 border-b">ID</th>
+                                                <th class="py-2 px-4 border-b">No</th>
                                                 <th class="py-2 px-4 border-b">Nama Tag</th>
                                                 <th class="py-2 px-4 border-b">Aksi</th>
                                             </tr>
@@ -191,64 +191,62 @@
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
-            });
+            });      
 
-        // Function to update table data based on current page
-        function updateTable() {
-            const tableBody = document.getElementById('tag-table-body');
-            const startIndex = (currentPage - 1) * itemsPerPage;
-            const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+            function updateTable(filteredTags = tagsData) {
+                const tableBody = document.getElementById('tag-table-body');
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const uniqueNames = new Set(); // Track unique `nama_tag`
+                let displayedCount = 0; // Track the number of displayed rows
 
-            // Clear previous rows
-            tableBody.innerHTML = '';
+                tableBody.innerHTML = '';
 
-            // Populate rows with data for the current page
-            for (let i = startIndex; i < endIndex; i++) {
-                const tag = tagsData[i];
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="py-4 px-6 border-b text-center">${tag.id}</td>
-                    <td class="py-4 px-6 border-b">${tag.nama_tag}</td>
-                    <td class="py-4 px-6 border-b text-center">
-                        <div class="relative inline-block text-left">
-                            <div>
-                                <button 
-                                    type="button" 
-                                    class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 focus:ring-1 ring-inset ring-blue-300 hover:bg-gray-50 focus:outline-none"
-                                    id="menu-button-${i + 1}" 
-                                    aria-expanded="false" 
-                                    aria-haspopup="true" 
-                                    onclick="toggleDropdown(event, ${i + 1}, '${tag.nama_tag}')">
-                                    <img src="../asset/elipses.svg" class="h-8" alt="dropdown" />
-                                </button>
-                            </div>
+                if (filteredTags.length === 0) {
+                    // Add "No data available" row if no data matches
+                    const noDataRow = document.createElement('tr');
+                    noDataRow.innerHTML = `
+                        <td colspan="5" class="py-4 px-6 text-center text-base text-gray-900">
+                            No data available
+                        </td>
+                    `;
+                    tableBody.appendChild(noDataRow);
+                } else {
+                    for (let i = 0; i < filteredTags.length; i++) {
+                        const tag = filteredTags[i];
+                        if (!uniqueNames.has(tag.nama_tag)) {
+                            uniqueNames.add(tag.nama_tag);
 
-                            <!-- Dropdown menu -->
-                            <div id="dropdown-menu-${i + 1}" class="hidden absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button-${i + 1}" tabindex="-1">
-                                <div class="py-1" role="none">    
-                                    <!-- Edit Button -->        
-                                    <a href="#" class="close-drawer-btn flex items-center gap-2 block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1" onclick="getEditTag(${tag.id})">
-                                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path></svg>
-                                        <span>Edit</span>
-                                    </a>
-                                    <a href="#" class="close-drawer-btn flex items-center gap-2 block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1" onclick="deleteTag(${tag.id})">
-                                        <svg aria-hidden="true" class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        <span>Delete</span>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </td>
-                `;
-                tableBody.appendChild(row);
+                            if (displayedCount >= startIndex && displayedCount < startIndex + itemsPerPage) {
+                                const row = document.createElement('tr');
+                                const rowNumber = displayedCount - startIndex + 1; // Incremental ID starting at 1 for current page
+                                row.innerHTML = `
+                                    <td class="py-4 px-6 border-b text-center">${rowNumber}</td>
+                                    <td class="py-4 px-6 border-b">${tag.nama_tag}</td>
+                                    <td class="py-4 px-6 border-b text-right">
+                                        <button type="button" data-modal-target="delete-user-modal" data-modal-toggle="delete-user-modal" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-800 focus:ring-4 focus:ring-red-300 mr-2" onclick="deleteTag('${tag.nama_tag}')">
+                                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            Hapus
+                                        </button>
+                                    </td>
+                                `;
+                                tableBody.appendChild(row);
+                            }
+
+                            displayedCount++; // Increment count of displayed rows
+                        }
+                    }
+                }
+
+                const resultsInfo = document.getElementById('results-info');
+                const totalUnique = uniqueNames.size; // Total unique tags
+                const startIndexDisplay = Math.min(startIndex + 1, totalUnique);
+                const endIndexDisplay = Math.min(startIndex + itemsPerPage, totalUnique);
+
+                resultsInfo.textContent = `Showing ${startIndexDisplay}-${endIndexDisplay} of ${totalUnique} unique results`;
             }
 
-            // Update results info
-            const resultsInfo = document.getElementById('results-info');
-            resultsInfo.textContent = `Showing ${startIndex + 1}-${endIndex} of ${totalItems} results`;
-        }
 
         // Function to update pagination buttons
         function updatePagination() {
@@ -300,84 +298,29 @@
             updatePagination(); 
         }
 
-        function updateTable(filteredTags = tagsData) {
-            const tableBody = document.getElementById('tag-table-body');
-            const startIndex = (currentPage - 1) * itemsPerPage;
-            const endIndex = Math.min(startIndex + itemsPerPage, filteredTags.length);
-
-            tableBody.innerHTML = '';
-
-            for (let i = startIndex; i < endIndex; i++) {
-                const tag = filteredTags[i];
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="py-4 px-6 border-b text-center">${tag.id}</td>
-                    <td class="py-4 px-6 border-b">${tag.nama_tag}</td>
-                    <td class="py-4 px-6 border-b text-center">
-                        <div class="relative inline-block text-left">
-                            <div>
-                                <button 
-                                    type="button" 
-                                    class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 focus:ring-1 ring-inset ring-blue-300 hover:bg-gray-50 focus:outline-none"
-                                    id="menu-button-${i + 1}" 
-                                    aria-expanded="false" 
-                                    aria-haspopup="true" 
-                                    onclick="toggleDropdown(event, ${i + 1}, '${tag.nama_tag}')">
-                                    <img src="../asset/elipses.svg" class="h-8" alt="dropdown" />
-                                </button>
-                            </div>
-
-                            <!-- Dropdown menu -->
-                            <div id="dropdown-menu-${i + 1}" class="hidden absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button-${i + 1}" tabindex="-1">
-                                <div class="py-1" role="none">            
-                                   <!-- Edit Button -->
-                                    <a href="#" class="flex items-center gap-2 block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1" onclick="getEditTag(${tag.id})">
-                                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path>
-                                            <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        <span>Edit</span>
-                                    </a>
-
-                                    <a href="#" class="flex items-center gap-2 block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1" onclick="deleteTag(${tag.id})">
-                                        <svg aria-hidden="true" class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        <span>Delete</span>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </td>
-                `;
-                tableBody.appendChild(row);
-            }
-
-            const resultsInfo = document.getElementById('results-info');
-            resultsInfo.textContent = `Showing ${startIndex + 1}-${endIndex} of ${filteredTags.length} results`;
-        }
-
-
-        function deleteTag(tagId) {
+        function deleteTag(tagName) {
             if (confirm('Are you sure you want to delete this tag?')) {
-                fetch(`http://localhost/KabarE-Web/api/tag.php?id=${tagId}`, {
+                // Ensure that the tag name is URL encoded to handle spaces and special characters
+                const encodedTagName = encodeURIComponent(tagName);
+
+                fetch(`http://localhost/KabarE-Web/api/tag.php?name=${encodedTagName}`, {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ id: tagId })
+                    // No body required for the DELETE request, name is in the URL
                 })
                 .then(response => response.json())
                 .then(data => {
-                    if (data.message === 'Tag deleted successfully') {
+                    if (data.message === `Tags with the name "${tagName}" deleted successfully`) {
                         showAlert('success', 'Tag deleted successfully!');
                         // Close the dropdown
-                        const dropdown = document.querySelector(`#dropdown-menu-${tagId}`);
+                        const dropdown = document.querySelector(`#dropdown-menu-${tagName}`);
                         if (dropdown) {
                             dropdown.classList.add('hidden');
                         }
                         // Remove the tag from the data and update table/pagination
-                        tagsData = tagsData.filter(tag => tag.id !== tagId);
+                        tagsData = tagsData.filter(tag => tag.nama_tag !== tagName);
                         totalItems = tagsData.length;
                         
                         // Check if the current page is now empty after deletion
@@ -397,7 +340,6 @@
                 });
             }
         }
-
 
         function showAlert(type, message) {
             // Create the alert div
