@@ -16,7 +16,7 @@
                             <p class="text-lg mb-0">Politeknik Negeri Jember</p>
                                 <p class="text-lg mt-0 mb-2">UKM Explant</p>
                                 <p class="text-sm mb-2">Media Berita Mahasiswa Terpercaya</p> <!-- Perbesar teks -->
-                                <a href="../header & footer/footer-info/download/download.php" class="text-white no-underline text-sm">DOWNLOAD SEKARANG</a> <!-- Ubah warna teks dan hilangkan garis bawah -->
+                                <a href="/header & footer/footer-info/download/download.php" class="text-white no-underline text-sm">DOWNLOAD SEKARANG</a> <!-- Ubah warna teks dan hilangkan garis bawah -->
                                 <div class="flex items-center mt-2">
                                     <i class="fas fa-map-marker-alt mr-2"></i>
                                     <p class="text-xs">Jl. Medan Merdeka Barat No.4-5, Jakarta Pusat.</p>

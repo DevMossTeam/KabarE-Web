@@ -271,11 +271,11 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
         });
 
         editProfileButton.addEventListener('click', () => {
-            location.href = '../settings/umum.php';
+            location.href = '/settings/mainSetting.php?page=umum'; // Pastikan jalur ini benar
         });
 
         draftButton.addEventListener('click', () => {
-            location.href = '../authors/publishAuthor.php'; // Arahkan langsung ke halaman publishAuthor
+            location.href = '/authors/publishAuthor.php'; // Sesuaikan jalur jika perlu
         });
 
         contentButton.addEventListener('click', () => {
@@ -323,7 +323,7 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
 
          // Fungsi untuk mengubah lokasi ke mainEditor.php
          function loadContent(url) {
-            location.href = '/profile/' + url; // Pastikan '/editor/' ditambahkan jika file berada di dalam folder 'editor'
+            location.href = '/profile/' + url; // Pastikan '/profile/' adalah jalur yang benar
         }
 
         // Update current date
@@ -341,6 +341,29 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
             if (userEmail) {
                 userEmail.addEventListener('click', () => {
                     loadContent('mainEditor.php');
+                });
+            }
+        });
+
+        // Fungsi untuk mengubah lokasi ke halaman profil
+        function loadContent(url) {
+            location.href = '/profile/' + url; // Pastikan '/profile/' adalah jalur yang benar
+        }
+
+        // Event listener untuk tombol konten
+        document.addEventListener('DOMContentLoaded', () => {
+            const bacaNantiButton = document.getElementById('bacaNantiButton');
+            const likedButton = document.getElementById('likedButton');
+
+            if (bacaNantiButton) {
+                bacaNantiButton.addEventListener('click', () => {
+                    loadContent('bacaNanti.php');
+                });
+            }
+
+            if (likedButton) {
+                likedButton.addEventListener('click', () => {
+                    loadContent('liked.php');
                 });
             }
         });

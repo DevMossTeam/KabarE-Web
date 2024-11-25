@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KabarE Download</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="shortcut icon" href="../../../assets/web-icon/Ic-main-KabarE.svg" type="KabarE Download">
+    <link rel="shortcut icon" href="../../assets/web-icon/Ic-main-KabarE.svg" type="KabarE">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
     <script src="slider.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
