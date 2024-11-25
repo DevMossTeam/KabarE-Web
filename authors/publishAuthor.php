@@ -73,20 +73,24 @@ $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
 // Query untuk mendapatkan data
-$query = "SELECT id, judul, konten_artikel, tanggal_diterbitkan, visibilitas
+$query = "SELECT berita.id, berita.judul, berita.konten_artikel, berita.tanggal_diterbitkan, berita.visibilitas
           FROM berita 
-          WHERE user_id = ? $visibilityCondition 
-          ORDER BY tanggal_diterbitkan $orderBy 
+          JOIN user ON berita.user_id = user.uid
+          WHERE user.uid = ? $visibilityCondition 
+          ORDER BY berita.tanggal_diterbitkan $orderBy 
           LIMIT ? OFFSET ?";
 $stmt = $conn->prepare($query);
-$stmt->bind_param('iii', $user_id, $limit, $offset);
+$stmt->bind_param('sii', $user_id, $limit, $offset);
 $stmt->execute();
 $result = $stmt->get_result();
 
 // Total data untuk pagination
-$totalQuery = "SELECT COUNT(*) as total FROM berita WHERE user_id = ? $visibilityCondition";
+$totalQuery = "SELECT COUNT(*) as total 
+               FROM berita 
+               JOIN user ON berita.user_id = user.uid
+               WHERE user.uid = ? $visibilityCondition";
 $totalStmt = $conn->prepare($totalQuery);
-$totalStmt->bind_param('i', $user_id);
+$totalStmt->bind_param('s', $user_id);
 $totalStmt->execute();
 $totalResult = $totalStmt->get_result();
 $totalRow = $totalResult->fetch_assoc();
@@ -243,6 +247,8 @@ $conn->close();
             } else if (filterText === 'Private') {
                 url.searchParams.set('visibility', 'private');
             }
+
+            url.searchParams.set('page', '1');
 
             window.location.href = url.toString();
         });
