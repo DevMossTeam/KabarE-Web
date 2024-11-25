@@ -171,7 +171,7 @@
             const tableBody = document.getElementById('pengguna-table-body');
             const startIndex = (currentPage - 1) * itemsPerPage;
             const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
-            
+
             // Count how many admin users exist in the data
             const adminCount = userData.filter(pengguna => pengguna.role === 'admin').length;
 
@@ -192,14 +192,24 @@
                 for (let i = startIndex; i < endIndex; i++) {
                     const pengguna = userData[i];
 
+                    // Create the image element if profile_pic exists
+                    let profilePicHtml = '';
+                    if (pengguna.profile_pic) {
+                        const profilePicUrl = URL.createObjectURL(pengguna.profile_pic);
+                        profilePicHtml = `<img class="w-10 h-10 rounded-full" src="${profilePicUrl}" alt="Profile Pic">`;
+                    } else {
+                        profilePicHtml = `<img class="w-10 h-10 rounded-full" src="default-avatar.jpg" alt="Default Avatar">`; // Default image if profile_pic is not available
+                    }
+
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td class="py-4 px-6 border-b text-left text-base font-semibold text-gray-900 max-w-[100px] overflow-x-auto whitespace-nowrap">
+                        <td class="py-4 px-6 border-b text-left text-base text-gray-900 max-w-[100px] overflow-x-auto whitespace-nowrap">
                             ${pengguna.uid}
                         </td>
 
-                        <td class="py-4 px-6 border-b ">
-                            <div class="text-sm font-normal text-gray-500">
+                        <td class="py-4 px-6 border-b flex items-center">
+                            ${profilePicHtml}
+                            <div class="text-sm font-normal text-gray-500 ml-4">
                                 <div class="text-base font-semibold text-gray-900">${pengguna.nama_pengguna}</div>
                                 <div class="text-sm font-normal text-gray-500">${pengguna.email}</div>
                             </div>
@@ -234,73 +244,86 @@
             resultsInfo.textContent = `Showing ${startIndex + 1}-${endIndex} of ${totalItems} results`;
         }
 
+
         function updateTable(filteredPenggunas = userData) {
-                const tableBody = document.getElementById('pengguna-table-body');
-                const startIndex = (currentPage - 1) * itemsPerPage;
-                const endIndex = Math.min(startIndex + itemsPerPage, filteredPenggunas.length);
+            const tableBody = document.getElementById('pengguna-table-body');
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, filteredPenggunas.length);
 
-                // Count how many admin users exist in the data
-                const adminCount = filteredPenggunas.filter(pengguna => pengguna.role === 'admin').length;
+            // Count how many admin users exist in the data
+            const adminCount = filteredPenggunas.filter(pengguna => pengguna.role === 'admin').length;
 
-                // Clear previous rows
-                tableBody.innerHTML = '';
+            // Clear previous rows
+            tableBody.innerHTML = '';
 
-                // If there is no data to display
-                if (filteredPenggunas.length === 0) {
-                    const noDataRow = document.createElement('tr');
-                    noDataRow.innerHTML = `
-                        <td colspan="5" class="py-4 px-6 text-center text-base font-semibold text-gray-900">
-                            No data available
+            // If there is no data to display
+            if (filteredPenggunas.length === 0) {
+                const noDataRow = document.createElement('tr');
+                noDataRow.innerHTML = `
+                    <td colspan="5" class="py-4 px-6 text-center text-base text-gray-900">
+                        No data available
+                    </td>
+                `;
+                tableBody.appendChild(noDataRow);
+            } else {
+                // Populate rows with data for the current page
+                for (let i = startIndex; i < endIndex; i++) {
+                    const pengguna = filteredPenggunas[i];
+
+                    // If profile_pic is a Blob or base64 data, handle it
+                    let profilePicSrc = '';
+                    if (pengguna.profile_pic) {
+                        if (pengguna.profile_pic instanceof Blob) {
+                            profilePicSrc = URL.createObjectURL(pengguna.profile_pic); // For Blob data
+                        } else if (typeof pengguna.profile_pic === 'string' && pengguna.profile_pic.startsWith('data:image')) {
+                            profilePicSrc = pengguna.profile_pic; // If it's already base64
+                        }
+                    }
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="py-4 px-6 border-b text-left text-base text-gray-900 max-w-[100px] overflow-x-auto whitespace-nowrap">
+                            ${pengguna.uid}
+                        </td>
+
+                        <td class="py-4 px-6 border-b flex items-center">
+                            <!-- Display image if exists, otherwise show a default avatar -->
+                            <img class="w-10 h-10 rounded-full" src="${profilePicSrc || 'path/to/default-avatar.png'}" alt="${pengguna.nama_pengguna} avatar">
+                            <div class="text-sm font-normal text-gray-500 ml-4">
+                                <div class="text-base font-semibold text-gray-900">${pengguna.nama_pengguna}</div>
+                                <div class="text-sm font-normal text-gray-500">${pengguna.email}</div>
+                            </div>
+                        </td>
+                        <td class="py-4 px-6 border-b text-base text-left font-medium text-gray-900 whitespace-nowrap">${pengguna.role}</td>
+                        <td class="py-4 px-6 border-b text-base text-left font-sm text-gray-600 whitespace-nowrap">${pengguna.waktu_login || "N/A"}</td>
+                        <td class="py-4 px-6 border-b text-right">
+                            <!-- Only show delete button if not the last admin -->
+                            ${adminCount > 1 || pengguna.role !== 'admin' ? `
+                            <button type="button" data-modal-target="delete-user-modal" data-modal-toggle="delete-user-modal" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-800 focus:ring-4 focus:ring-red-300 mr-2" onclick="deletePengguna('${pengguna.uid}')">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                </svg>
+                                Hapus
+                            </button>` : ''}
+
+                            <button type="button" class="modal_roleUserUbahStatus-toggle inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-yellow-500 rounded-lg hover:bg-yellow-800 focus:ring-4 focus:ring-yellow-300" onclick="getEditPengguna('${pengguna.uid}')">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path>
+                                    <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path>
+                                </svg>
+                                Ubah Role
+                            </button>
                         </td>
                     `;
-                    tableBody.appendChild(noDataRow);
-                } else {
-                    // Populate rows with data for the current page
-                    for (let i = startIndex; i < endIndex; i++) {
-                        const pengguna = filteredPenggunas[i];
-
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td class="py-4 px-6 border-b text-left text-base font-semibold text-gray-900 max-w-[100px] overflow-x-auto whitespace-nowrap">
-                                ${pengguna.uid}
-                            </td>
-
-                            <td class="py-4 px-6 border-b">
-                                <div class="text-sm font-normal text-gray-500">
-                                    <div class="text-base font-semibold text-gray-900">${pengguna.nama_pengguna}</div>
-                                    <div class="text-sm font-normal text-gray-500">${pengguna.email}</div>
-                                </div>
-                            </td>
-                            <td class="py-4 px-6 border-b text-base text-left font-medium text-gray-900 whitespace-nowrap">${pengguna.role}</td>
-                            <td class="py-4 px-6 border-b text-base text-left font-sm text-gray-600 whitespace-nowrap">${pengguna.waktu_login || "N/A"}</td>
-                            <td class="py-4 px-6 border-b text-right">
-                                <!-- Only show delete button if not the last admin -->
-                                ${adminCount > 1 || pengguna.role !== 'admin' ? `
-                                <button type="button" data-modal-target="delete-user-modal" data-modal-toggle="delete-user-modal" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-800 focus:ring-4 focus:ring-red-300" onclick="deletePengguna('${pengguna.uid}')">
-                                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                                    </svg>
-                                    Hapus
-                                </button>` : ''}
-                                <button type="button" class="modal_roleUserUbahStatus-toggle inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-yellow-500 rounded-lg hover:bg-yellow-800 focus:ring-4 focus:ring-yellow-300" onclick="getEditPengguna('${pengguna.uid}')">
-                                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path>
-                                        <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path>
-                                    </svg>
-                                    Ubah Role
-                                </button>
-
-                                
-                            </td>
-                        `;
-                        tableBody.appendChild(row);
-                    }
+                    tableBody.appendChild(row);
                 }
+            }
 
             // Update results info
             const resultsInfo = document.getElementById('results-info');
             resultsInfo.textContent = `Showing ${startIndex + 1}-${endIndex} of ${filteredPenggunas.length} results`;
         }
+
 
 
 
