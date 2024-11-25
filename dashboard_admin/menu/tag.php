@@ -33,43 +33,59 @@
                                         <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                             <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
                                         </svg>
-                                        <a href="#" class="ml-1 text-gray-700 hover:text-primary-600 md:ml-2">Berita</a>
+                                        <a href="#" class="ml-1 text-gray-700 hover:text-primary-600 md:ml-2">Pengguna</a>
                                     </div>
-                                </li>
-                                <li>
-                                    <div class="flex items-center">
-                                        <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        <span class="ml-1 text-gray-400 md:ml-2" aria-current="page">Tag</span>
-                                    </div>
-                                </li>
+                                </li>                              
                             </ol>
                 </nav>
 
                 <!-- Table Container -->
                 <div class="bg-white shadow-md rounded-lg p-6 border border-gray-200">
                     <div class="mb-4">
-                        <h1 class="text-xl font-semibold text-gray-900 sm:text-2xl">Daftar Tag Berita</h1>
+                        <h1 class="text-xl font-semibold text-gray-900 sm:text-2xl">Daftar Pengguna</h1>
                     </div>
 
-                  <!-- Filter Input -->
-                    <div class="flex items-center justify-between mb-4 flex-wrap">
-                        <!-- Search Input -->
-                        <input 
-                            type="text" 
-                            placeholder="Search Name"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full sm:w-96 p-2.5 mb-2 sm:mb-0"
-                            id="search-input"
-                        />
+                    <!-- Filter Input -->
+                        <div class="flex items-center justify-between mb-4">
+                            <input 
+                                type="text" 
+                                placeholder="Search Name"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-96 p-2.5" 
+                                id="search-input"
+                            />                          
 
-                        <!-- Add New Tag Button -->
-                        <button 
-                            id="openDrawerBtn" 
-                            class="bg-blue-600 text-white rounded-lg px-4 py-2 text-sm font-semibold hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 w-full sm:w-auto md:mt-2"
-                        >
-                            + Add New Tag
-                        </button>
+                            <!-- Main modal -->
+                            <div class="modal_roleUserUbahStatus hidden fixed top-0 left-0 right-0 bottom-0 z-50 flex justify-center items-center bg-black bg-opacity-50">
+                                <!-- Modal content wrapper -->
+                                <form id="roleForm" action="#" method="POST" class="bg-white rounded-lg shadow-lg max-w-lg w-full p-4 relative">
+                                    <!-- Modal header -->
+                                    <div class="flex items-center justify-between pb-4 border-b">
+                                        <h3 class="text-lg font-semibold text-gray-900">Ubah Status Pengguna</h3>
+                                        <button type="button" class="modal_roleUserUbahStatus-close text-gray-500 hover:text-gray-900">
+                                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <!-- Modal body -->
+                                    <div class="py-4">            
+                                        <div>
+                                            <label for="roles" class="block mb-2 text-sm font-medium text-gray-900">Role</label>
+                                            <select id="roles" name="role" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                                                <option selected>Pilih Role</option>
+                                                <option value="pembaca">pembaca</option>
+                                                <option value="penulis">penulis</option>
+                                                <option value="admin">admin</option>                
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <!-- Modal footer -->
+                                    <div class="flex justify-end pt-4 border-t">
+                                        <button type="button" class="modal_roleUserUbahStatus-close ml-2 px-4 py-2 text-gray-700 border rounded-lg hover:bg-gray-100 mr-2">Balik</button>
+                                        <button type="submit" class="modal_roleUserUbahStatus-close px-4 py-2 text-white bg-blue-700 rounded-lg hover:bg-blue-800">Submit</button>                                        
+                                    </div>
+                                </form>
+                            </div>
                     </div>
 
                     <div class="mb-4 alert-dynamic">
@@ -81,34 +97,34 @@
                             <div class="inline-block min-w-full align-middle">
                                 <div class="overflow-hidden shadow">
                                     <table class="min-w-full divide-y divide-gray-200 table-fixed">
-                                        <thead class="bg-gray-100 text-gray-600 uppercase text-sm">
+                                        <thead class="bg-gray-100 text-sm">
                                             <tr>
-                                                <th class="py-2 px-4 border-b">ID</th>
-                                                <th class="py-2 px-4 border-b">Nama Tag</th>
-                                                <th class="py-2 px-4 border-b">Aksi</th>
+                                                <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase ">
+                                                    Id
+                                                </th>
+                                                <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase">
+                                                    Pengguna
+                                                </th>
+                                                <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase">
+                                                    Role
+                                                </th>
+                                                <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase">
+                                                    Terakhir Login
+                                                </th>
+                                                <th scope="col" class="p-4 text-xs font-medium text-center text-gray-500 uppercase">
+                                                    Aksi
+                                                </th>
                                             </tr>
                                         </thead>
-                                        <tbody id="tag-table-body" class="text-gray-600 text-sm">
+                                        <tbody id="pengguna-table-body" class="text-gray-600 text-sm">
                                             <!-- Data rows will be inserted here dynamically -->
                                         </tbody>
                                     </table>
-                                </div> <!-- Closing for overflow-hidden shadow -->
-                            </div> <!-- Closing for inline-block min-w-full align-middle -->
-                        </div> <!-- Closing for overflow-x-auto -->
-                    </div> <!-- Closing for flex flex-col -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-                    <!-- <table class="min-w-full bg-white">
-                        <thead class="bg-gray-100 text-gray-600 uppercase text-sm">
-                            <tr>
-                                <th class="py-2 px-4 border-b">ID</th>
-                                <th class="py-2 px-4 border-b">Nama Tag</th>
-                                <th class="py-2 px-4 border-b">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tag-table-body" class="text-gray-600 text-sm">
-                            
-                        </tbody>
-                    </table> -->
 
                     <!-- Pagination -->
                     <div id="pagination" class="flex justify-between items-center mt-4">
@@ -127,67 +143,24 @@
             </div>
         </div>
     </div>
-   
-   
-    <!-- Add Tag Drawer -->
-    <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden"></div>
-            <div id="drawer-create-product-default" class="fixed top-0 right-0 z-40 w-full h-screen max-w-xs p-4 overflow-y-auto transition-transform transform translate-x-full bg-white" tabindex="-1" aria-labelledby="drawer-label" aria-hidden="true">
-                <!-- Modal Header -->
-                <div class="flex justify-between items-center border-b pb-3">
-                    <h3 class="text-lg font-semibold">Add New Tag</h3>
-                    <button class="close-drawer-btn text-gray-500 hover:text-gray-900">
-                        <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                        </svg>
-                    </button>
-                </div>
-                <!-- <button type="button" class="close-drawer-btn text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 absolute top-2.5 right-2.5 inline-flex items-center">
-                    <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                    </svg>
-                    <span class="sr-only">Close menu</span>
-                </button> -->
-                <form id="tagForm" action="#">
-                    <div class="space-y-4">
-                        <input type="hidden" id="editTagId" name="editTagId">
-                        <div>
-                            <label for="name" class="block mb-2 text-sm font-medium text-gray-900">Nama Tag</label>
-                            <input type="text" name="nama_tag" id="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="Nama Tag" required>
-                        </div>
-
-                        <div class="flex justify-end pt-4 space-x-2">
-                            <button type="submit" class="text-white w-full justify-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
-                                Simpan
-                            </button>
-                            <!-- Cancel Button -->
-                            <button type="button" class="close-drawer-btn inline-flex w-full justify-center text-gray-500 items-center bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-primary-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10">
-                                <svg aria-hidden="true" class="w-5 h-5 -ml-1 sm:mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                </svg>
-                                Cancel
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-    </div>
 
      <!--script -->
     <script>
         let currentPage = 1;
         const itemsPerPage = 10;
         let totalItems = 0;
-        let tagsData = [];
+        let userData = [];
 
-        // Fetch data from the API
-        fetch('http://localhost/KabarE-Web/api/tag.php')
+        fetch('http://localhost/KabarE-Web/api/user.php')
             .then(response => response.json())
             .then(data => {
-                tagsData = data.data || [];
-                totalItems = tagsData.length;
+                console.log(data);  // Log the entire data object to check the structure
+                userData = data.data || [];
+                totalItems = userData.length;
+                console.log(totalItems);
+                console.log(userData);
                 updateTable();
                 updatePagination();
-                console.log(tagsData);
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
@@ -195,60 +168,164 @@
 
         // Function to update table data based on current page
         function updateTable() {
-            const tableBody = document.getElementById('tag-table-body');
+            const tableBody = document.getElementById('pengguna-table-body');
             const startIndex = (currentPage - 1) * itemsPerPage;
             const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+
+            // Count how many admin users exist in the data
+            const adminCount = userData.filter(pengguna => pengguna.role === 'admin').length;
 
             // Clear previous rows
             tableBody.innerHTML = '';
 
-            // Populate rows with data for the current page
-            for (let i = startIndex; i < endIndex; i++) {
-                const tag = tagsData[i];
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="py-4 px-6 border-b text-center">${tag.id}</td>
-                    <td class="py-4 px-6 border-b">${tag.nama_tag}</td>
-                    <td class="py-4 px-6 border-b text-center">
-                        <div class="relative inline-block text-left">
-                            <div>
-                                <button 
-                                    type="button" 
-                                    class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 focus:ring-1 ring-inset ring-blue-300 hover:bg-gray-50 focus:outline-none"
-                                    id="menu-button-${i + 1}" 
-                                    aria-expanded="false" 
-                                    aria-haspopup="true" 
-                                    onclick="toggleDropdown(event, ${i + 1}, '${tag.nama_tag}')">
-                                    <img src="../asset/elipses.svg" class="h-8" alt="dropdown" />
-                                </button>
-                            </div>
-
-                            <!-- Dropdown menu -->
-                            <div id="dropdown-menu-${i + 1}" class="hidden absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button-${i + 1}" tabindex="-1">
-                                <div class="py-1" role="none">    
-                                    <!-- Edit Button -->        
-                                    <a href="#" class="close-drawer-btn flex items-center gap-2 block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1" onclick="getEditTag(${tag.id})">
-                                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path></svg>
-                                        <span>Edit</span>
-                                    </a>
-                                    <a href="#" class="close-drawer-btn flex items-center gap-2 block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1" onclick="deleteTag(${tag.id})">
-                                        <svg aria-hidden="true" class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        <span>Delete</span>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
+            // If there is no data to display
+            if (userData.length === 0) {
+                const noDataRow = document.createElement('tr');
+                noDataRow.innerHTML = `
+                    <td colspan="5" class="py-4 px-6 text-center text-base font-semibold text-gray-900">
+                        No data available
                     </td>
                 `;
-                tableBody.appendChild(row);
+                tableBody.appendChild(noDataRow);
+            } else {
+                // Populate rows with data for the current page
+                for (let i = startIndex; i < endIndex; i++) {
+                    const pengguna = userData[i];
+
+                    // Create the image element if profile_pic exists
+                    let profilePicHtml = '';
+                    if (pengguna.profile_pic) {
+                        const profilePicUrl = URL.createObjectURL(pengguna.profile_pic);
+                        profilePicHtml = `<img class="w-10 h-10 rounded-full" src="${profilePicUrl}" alt="Profile Pic">`;
+                    } else {
+                        profilePicHtml = `<img class="w-10 h-10 rounded-full" src="default-avatar.jpg" alt="Default Avatar">`; // Default image if profile_pic is not available
+                    }
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="py-4 px-6 border-b text-left text-base text-gray-900 max-w-[100px] overflow-x-auto whitespace-nowrap">
+                            ${pengguna.uid}
+                        </td>
+
+                        <td class="py-4 px-6 border-b flex items-center">
+                            ${profilePicHtml}
+                            <div class="text-sm font-normal text-gray-500 ml-4">
+                                <div class="text-base font-semibold text-gray-900">${pengguna.nama_pengguna}</div>
+                                <div class="text-sm font-normal text-gray-500">${pengguna.email}</div>
+                            </div>
+                        </td>
+                        <td class="py-4 px-6 border-b text-base text-left font-medium text-gray-900 whitespace-nowrap">${pengguna.role}</td>
+                        <td class="py-4 px-6 border-b text-base text-left font-sm text-gray-600 whitespace-nowrap">${pengguna.waktu_login || "N/A"}</td>
+                        <td class="py-4 px-6 border-b text-right">
+                            <button type="button" class="modal_roleUserUbahStatus-toggle inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-yellow-500 rounded-lg hover:bg-yellow-800 focus:ring-4 focus:ring-yellow-300" onclick="getEditPengguna('${pengguna.uid}')">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path>
+                                    <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path>
+                                </svg>
+                                Ubah Role
+                            </button>
+
+                            <!-- Only show delete button if not the last admin -->
+                            ${adminCount > 1 || pengguna.role !== 'admin' ? `
+                            <button type="button" data-modal-target="delete-user-modal" data-modal-toggle="delete-user-modal" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-800 focus:ring-4 focus:ring-red-300" onclick="deletePengguna('${pengguna.uid}')">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                </svg>
+                                Hapus
+                            </button>` : ''}
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                }
             }
 
             // Update results info
             const resultsInfo = document.getElementById('results-info');
             resultsInfo.textContent = `Showing ${startIndex + 1}-${endIndex} of ${totalItems} results`;
         }
+
+
+        function updateTable(filteredPenggunas = userData) {
+            const tableBody = document.getElementById('pengguna-table-body');
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, filteredPenggunas.length);
+
+            // Count how many admin users exist in the data
+            const adminCount = filteredPenggunas.filter(pengguna => pengguna.role === 'admin').length;
+
+            // Clear previous rows
+            tableBody.innerHTML = '';
+
+            // If there is no data to display
+            if (filteredPenggunas.length === 0) {
+                const noDataRow = document.createElement('tr');
+                noDataRow.innerHTML = `
+                    <td colspan="5" class="py-4 px-6 text-center text-base text-gray-900">
+                        No data available
+                    </td>
+                `;
+                tableBody.appendChild(noDataRow);
+            } else {
+                // Populate rows with data for the current page
+                for (let i = startIndex; i < endIndex; i++) {
+                    const pengguna = filteredPenggunas[i];
+
+                    // If profile_pic is a Blob or base64 data, handle it
+                    let profilePicSrc = '';
+                    if (pengguna.profile_pic) {
+                        if (pengguna.profile_pic instanceof Blob) {
+                            profilePicSrc = URL.createObjectURL(pengguna.profile_pic); // For Blob data
+                        } else if (typeof pengguna.profile_pic === 'string' && pengguna.profile_pic.startsWith('data:image')) {
+                            profilePicSrc = pengguna.profile_pic; // If it's already base64
+                        }
+                    }
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="py-4 px-6 border-b text-left text-base text-gray-900 max-w-[100px] overflow-x-auto whitespace-nowrap">
+                            ${pengguna.uid}
+                        </td>
+
+                        <td class="py-4 px-6 border-b flex items-center">
+                            <!-- Display image if exists, otherwise show a default avatar -->
+                            <img class="w-10 h-10 rounded-full" src="${profilePicSrc || 'path/to/default-avatar.png'}" alt="${pengguna.nama_pengguna} avatar">
+                            <div class="text-sm font-normal text-gray-500 ml-4">
+                                <div class="text-base font-semibold text-gray-900">${pengguna.nama_pengguna}</div>
+                                <div class="text-sm font-normal text-gray-500">${pengguna.email}</div>
+                            </div>
+                        </td>
+                        <td class="py-4 px-6 border-b text-base text-left font-medium text-gray-900 whitespace-nowrap">${pengguna.role}</td>
+                        <td class="py-4 px-6 border-b text-base text-left font-sm text-gray-600 whitespace-nowrap">${pengguna.waktu_login || "N/A"}</td>
+                        <td class="py-4 px-6 border-b text-right">
+                            <!-- Only show delete button if not the last admin -->
+                            ${adminCount > 1 || pengguna.role !== 'admin' ? `
+                            <button type="button" data-modal-target="delete-user-modal" data-modal-toggle="delete-user-modal" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-800 focus:ring-4 focus:ring-red-300 mr-2" onclick="deletePengguna('${pengguna.uid}')">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                </svg>
+                                Hapus
+                            </button>` : ''}
+
+                            <button type="button" class="modal_roleUserUbahStatus-toggle inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-yellow-500 rounded-lg hover:bg-yellow-800 focus:ring-4 focus:ring-yellow-300" onclick="getEditPengguna('${pengguna.uid}')">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path>
+                                    <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path>
+                                </svg>
+                                Ubah Role
+                            </button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                }
+            }
+
+            // Update results info
+            const resultsInfo = document.getElementById('results-info');
+            resultsInfo.textContent = `Showing ${startIndex + 1}-${endIndex} of ${filteredPenggunas.length} results`;
+        }
+
+
+
 
         // Function to update pagination buttons
         function updatePagination() {
@@ -290,113 +367,92 @@
 
         document.getElementById('search-input').addEventListener('input', function () {
             const query = this.value.toLowerCase();
-            filterTags(query);
+            filterPenggunas(query);
         });
 
-        function filterTags(query) {
-            const filteredTags = tagsData.filter(tag => tag.nama_tag.toLowerCase().includes(query));
-            totalItems = filteredTags.length; 
-            updateTable(filteredTags); 
+        function filterPenggunas(query) {
+            const filteredPenggunas = userData.filter(pengguna => pengguna.nama_pengguna.toLowerCase().includes(query));
+            totalItems = filteredPenggunas.length; 
+            updateTable(filteredPenggunas); 
             updatePagination(); 
         }
 
-        function updateTable(filteredTags = tagsData) {
-            const tableBody = document.getElementById('tag-table-body');
-            const startIndex = (currentPage - 1) * itemsPerPage;
-            const endIndex = Math.min(startIndex + itemsPerPage, filteredTags.length);
+        
 
-            tableBody.innerHTML = '';
+        // Get modal elements
+        const modal = document.querySelector('.modal_roleUserUbahStatus');
+        const modalToggle = document.querySelector('.modal_roleUserUbahStatus-toggle'); // Ensure modalToggle exists if it's a button triggering modal opening
+        const modalCloseButtons = modal.querySelectorAll('.modal_roleUserUbahStatus-close');
 
-            for (let i = startIndex; i < endIndex; i++) {
-                const tag = filteredTags[i];
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="py-4 px-6 border-b text-center">${tag.id}</td>
-                    <td class="py-4 px-6 border-b">${tag.nama_tag}</td>
-                    <td class="py-4 px-6 border-b text-center">
-                        <div class="relative inline-block text-left">
-                            <div>
-                                <button 
-                                    type="button" 
-                                    class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 focus:ring-1 ring-inset ring-blue-300 hover:bg-gray-50 focus:outline-none"
-                                    id="menu-button-${i + 1}" 
-                                    aria-expanded="false" 
-                                    aria-haspopup="true" 
-                                    onclick="toggleDropdown(event, ${i + 1}, '${tag.nama_tag}')">
-                                    <img src="../asset/elipses.svg" class="h-8" alt="dropdown" />
-                                </button>
-                            </div>
-
-                            <!-- Dropdown menu -->
-                            <div id="dropdown-menu-${i + 1}" class="hidden absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button-${i + 1}" tabindex="-1">
-                                <div class="py-1" role="none">            
-                                   <!-- Edit Button -->
-                                    <a href="#" class="flex items-center gap-2 block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1" onclick="getEditTag(${tag.id})">
-                                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path>
-                                            <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        <span>Edit</span>
-                                    </a>
-
-                                    <a href="#" class="flex items-center gap-2 block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1" onclick="deleteTag(${tag.id})">
-                                        <svg aria-hidden="true" class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        <span>Delete</span>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </td>
-                `;
-                tableBody.appendChild(row);
-            }
-
-            const resultsInfo = document.getElementById('results-info');
-            resultsInfo.textContent = `Showing ${startIndex + 1}-${endIndex} of ${filteredTags.length} results`;
+        // Open modal - Ensure there is a trigger element for modal toggle
+        if (modalToggle) {
+            modalToggle.addEventListener('click', () => {
+                modal.classList.remove('hidden'); // Show the modal
+            });
         }
 
+        // Close modal when clicking close buttons (SVG icon and 'Balik' button)
+        modalCloseButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                modal.classList.add('hidden'); // Hide the modal
+            });
+        });
 
-        function deleteTag(tagId) {
-            if (confirm('Are you sure you want to delete this tag?')) {
-                fetch(`http://localhost/KabarE-Web/api/tag.php?id=${tagId}`, {
+        // Close modal when clicking outside the modal content
+        window.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                modal.classList.add('hidden'); // Close the modal if clicked outside of it
+            }
+        });
+
+
+        function deletePengguna(penggunaId) {
+            console.log("delete id" + penggunaId);
+            if (confirm('Are you sure you want to delete this pengguna?')) {
+                // Update the URL to match the correct API endpoint
+                const apiUrl = `http://localhost/KabarE-Web/api/user.php?id=${penggunaId}`;
+
+                fetch(apiUrl, {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ id: tagId })
+                    }
                 })
                 .then(response => response.json())
                 .then(data => {
-                    if (data.message === 'Tag deleted successfully') {
-                        showAlert('success', 'Tag deleted successfully!');
-                        // Close the dropdown
-                        const dropdown = document.querySelector(`#dropdown-menu-${tagId}`);
+                    if (data.status === 'success') {
+                        showAlert('success', 'Pengguna deleted successfully!');
+                        
+                        // Close the dropdown if it exists
+                        const dropdown = document.querySelector(`#dropdown-menu-${penggunaId}`);
                         if (dropdown) {
                             dropdown.classList.add('hidden');
                         }
-                        // Remove the tag from the data and update table/pagination
-                        tagsData = tagsData.filter(tag => tag.id !== tagId);
-                        totalItems = tagsData.length;
-                        
+
+                        // Remove the pengguna from the data and update table/pagination
+                        userData = userData.filter(pengguna => pengguna.uid !== penggunaId);
+                        totalItems = userData.length;
+
                         // Check if the current page is now empty after deletion
-                        if (tagsData.length <= (currentPage - 1) * itemsPerPage) {
+                        if (userData.length <= (currentPage - 1) * itemsPerPage) {
                             currentPage = Math.max(1, currentPage - 1); // Go back to previous page if the current page is now out of range
                         }
 
+                        // Update table and pagination after deletion
                         updateTable();
                         updatePagination();
                     } else {
-                        showAlert('error', 'Failed to delete the tag.');
+                        showAlert('error', 'Failed to delete the pengguna.');
                     }
                 })
                 .catch(error => {
-                    console.error('Error deleting tag:', error);
-                    showAlert('error', 'An error occurred while deleting the tag.');
+                    console.error('Error deleting pengguna:', error);
+                    showAlert('error', 'An error occurred while deleting the pengguna.');
                 });
             }
         }
+
+
 
 
         function showAlert(type, message) {
@@ -457,7 +513,7 @@
         }
 
         // Function to handle dropdown actions
-        function toggleDropdown(event, index, tagName) {
+        function toggleDropdown(event, index, penggunaName) {
             const dropdown = document.getElementById(`dropdown-menu-${index}`);
             const isVisible = !dropdown.classList.contains('hidden');
 
@@ -478,143 +534,138 @@
                     document.removeEventListener('click', closeDropdown); // Remove the event listener after closing
                 }
             });
-        }
+        }                      
 
-        
-        
-        // Function to handle opening and closing of the drawer with overlay
-        function handleDrawer(drawerId, overlayId, openButtonSelector, closeButtonSelector) {
-            const openDrawerButtons = document.querySelectorAll(openButtonSelector); // All open buttons
-            const closeDrawerButtons = document.querySelectorAll(closeButtonSelector); // All close buttons
-            const drawer = document.getElementById(drawerId); // Drawer element
-            const overlay = document.getElementById(overlayId); // Overlay element
 
-            // Open the drawer when the open button is clicked
-            openDrawerButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    drawer.classList.remove('translate-x-full');  // Show the drawer (remove translate effect)
-                    overlay.classList.remove('hidden');  // Show the overlay
-                    overlay.classList.add('block');  // Make the overlay visible
-                    drawer.setAttribute('aria-hidden', 'false'); // Accessibility
-                });
-            });
+        // Function to fetch and populate user data into the modal        
+        let currentPenggunaId = null; 
 
-            // Close the drawer when any close button is clicked
-            closeDrawerButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    drawer.classList.add('translate-x-full');  // Hide the drawer (add translate effect)
-                    overlay.classList.add('hidden');  // Hide the overlay
-                    overlay.classList.remove('block');  // Make the overlay invisible
-                    drawer.setAttribute('aria-hidden', 'true'); // Accessibility
-                });
-            });
+        function getEditPengguna(editPengguna) {
+            currentPenggunaId = editPengguna;
+            console.log("Stored currentPenggunaId:", currentPenggunaId);
+            console.log('Editing pengguna with ID:', editPengguna);  
 
-            overlay.addEventListener('click', () => {
-                    drawer.classList.add('translate-x-full');  // Hide the drawer
-                    overlay.classList.add('hidden');  // Hide the overlay
-                    overlay.classList.remove('block');  // Make the overlay invisible
-                    drawer.setAttribute('aria-hidden', 'true'); // Accessibility
-                    resetFormAndCloseDrawer();
-                });
-        }
-
-        // Call the function with specific arguments for your drawer and overlay
-        handleDrawer('drawer-create-product-default', 'overlay', '.openDrawerBtn', '.close-drawer-btn');
-
-        document.getElementById('tagForm').addEventListener('submit', async function (event) {
-            event.preventDefault(); // Prevent the default form submission
-
-            const formData = new FormData(this);
-            const nama_tag = formData.get('nama_tag'); // Get the 'nama_tag' input value
-
-            // Check if we are in edit mode by looking for a data attribute on the form
-            const tagId = this.getAttribute('data-edit-id');
-            const url = tagId 
-                ? `http://localhost/KabarE-Web/api/tag.php?id=${tagId}` // Update URL if in edit mode
-                : 'http://localhost/KabarE-Web/api/tag.php';            // Create URL if creating new tag
-
-            const method = tagId ? 'PUT' : 'POST'; // Use PUT for updates, POST for creation
-
-            try {
-                console.log('Form Data to Submit:', { nama_tag, tagId }); // Log the data for debugging
-
-                // Make the fetch request with dynamic method and URL
-                const response = await fetch(url, {
-                    method: method,
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ nama_tag }),
-                });
-
-                // Update the table and pagination after submission
-                await updateTable();
-                await updatePagination();
-
-                if (response.ok) {
-                    showAlert('success', `Data ${tagId ? 'updated' : 'created'} successfully.`);
-                    resetFormAndCloseDrawer(); // Reset the form and close drawer after success
-                } else {
-                    const errorData = await response.json();
-                    console.error(`Failed to ${tagId ? 'update' : 'create'} tag: ${errorData.message}`);
-                    showAlert('error', `Failed to ${tagId ? 'update' : 'create'} tag: ${errorData.message}`);
-                }
-            } catch (error) {
-                console.error("Error submitting form:", error);
-                showAlert('error', `An error occurred: ${error.message || "Unknown error"}`);
+            // Ensure the editPengguna is not undefined or null
+            if (!editPengguna) {
+                console.error("No ID provided for edit!");
+                showAlert('error', 'No valid ID provided for edit.');
+                return;  // Exit if the ID is invalid
             }
-        });
 
-        // Helper function to reset the form and close the drawer
-        function resetFormAndCloseDrawer() {
-            const drawer = document.getElementById('drawer-create-product-default');
-            const overlay = document.getElementById('overlay');
-            
-            // Clear the form input and reset the button text
-            const form = document.getElementById('tagForm');
-            form.reset(); // Resets all form inputs to their default values
+            // Log the ID before fetching to ensure it's valid
+            console.log("Attempting to fetch data for ID:", editPengguna);
 
-            // Explicitly remove the data-edit-id if present
-            form.removeAttribute('data-edit-id');
-            
-            // Reset the button text
-            document.querySelector('#tagForm button[type="submit"]').textContent = 'Create';
-
-            // Hide drawer and overlay
-            drawer.classList.add('translate-x-full');
-            overlay.classList.add('hidden');
-            overlay.classList.remove('block');
-            drawer.setAttribute('aria-hidden', 'true');
-        }
-
-
-        function getEditTag(editTag) {
-            console.log('Editing tag with ID:', editTag);
-            fetch(`http://localhost/KabarE-Web/api/tag.php?id=${editTag}`)
+            fetch(`http://localhost/KabarE-Web/api/user.php?id=${editPengguna}`)
                 .then(response => response.json())
                 .then(responseData => {
-                    console.log('API Response Data:', responseData); // Log the whole response to inspect
+                    console.log('API Response Data:', responseData);  // Log the entire response for debugging
 
-                    // Check if responseData contains 'data' and 'data.nama_tag'
-                    if (responseData && responseData.data && responseData.data.nama_tag) {
-                        const tagData = responseData.data; // Access the 'data' object
-                        document.getElementById('name').value = tagData.nama_tag;  // Set input value with 'nama_tag'
-                        document.getElementById('tagForm').setAttribute('data-edit-id', editTag);
-                        
-                        const submitButton = document.querySelector('#tagForm button[type="submit"]');
-                        if (submitButton) {
-                            submitButton.textContent = 'Update'; // Change button to 'Update' for editing
+                    if (responseData && responseData.data) {
+                        const penggunaData = responseData.data;
+                        console.log("Fetched pengguna data:", penggunaData);  // Log the pengguna data
+
+                        const roleSelect = document.querySelector('#roles');
+                        if (roleSelect) {
+                            roleSelect.value = penggunaData.role;  // Set the current role as the selected option
                         }
 
-                        document.querySelector('.openDrawerBtn').click(); // Open the drawer after fetching
+                        // Show the modal
+                        const modal = document.querySelector('.modal_roleUserUbahStatus');
+                        if (modal) {
+                            modal.classList.remove('hidden');  // Show modal
+                        }                        
+                        
                     } else {
-                        showAlert('error', 'Tag data not found!');
+                        console.error('Pengguna data not found!');
+                        showAlert('error', 'Pengguna data not found!');
                     }
                 })
                 .catch(error => {
-                    console.error("Error fetching tag data:", error);
-                    showAlert('error', 'Error fetching tag data.');
+                    console.error("Error fetching pengguna data:", error);
+                    showAlert('error', 'Error fetching pengguna data.');
                 });
+        }
+
+        // Handle form submission for role update
+        document.getElementById('roleForm').addEventListener('submit', async function (event) {
+            event.preventDefault();  // Prevent the default form submission
+            console.log("id update:" + currentPenggunaId);
+            
+            // Check if currentPenggunaId is set before continuing
+            if (!currentPenggunaId) {
+                console.error('User ID is missing!');
+                showAlert('error', 'User ID is missing!');
+                return;  // Exit if the ID is missing
+            }
+
+            const formData = new FormData(this);
+            const role = formData.get('role');  // Get selected role value
+
+            const UbahPenggunaId = currentPenggunaId;
+            console.log("Retrieved penggunaId for submission:", UbahPenggunaId);
+            console.log('Form Data to Submit:', { role, UbahPenggunaId });  // Log role and ID
+
+            // Display selected role in the console
+            console.log("Selected role: ", role);
+
+            const url = `http://localhost/KabarE-Web/api/user.php?id=${UbahPenggunaId}`;
+
+            try {
+                console.log('Form Data to Submit:', { role, UbahPenggunaId });
+
+                const response = await fetch(url, {
+                    method: 'PUT',  // Use PUT method for updating
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ role }),
+                });
+
+                if (response.ok) {
+                    showAlert('success', `Pengguna role updated successfully.`);
+                    document.querySelector('.modal_roleUserUbahStatus').classList.add('hidden');  // Hide modal after success
+                    fetchDataAndUpdateTable();
+
+                    currentPenggunaId = null;
+                    console.log("Reset currentPenggunaId:", currentPenggunaId);  // Confirm reset
+                } else {
+                    const errorData = await response.json();
+                    console.error('Gagal memperbarui peran pengguna:', errorData.message);
+                    showAlert('error', `Gagal memperbarui peran: ${errorData.message}`);
+                }
+            } catch (error) {
+                console.error("Kesalahan saat mengirim formulir:", error);
+                showAlert('error', `Terjadi kesalahan: ${error.message || "Kesalahan tidak diketahui"}`);
+            }
+        });
+
+        function resetFormAndCloseDrawer() {
+            const form = document.getElementById('roleForm');
+            if (form) {
+                form.reset();  // Resets the form fields
+                document.querySelector('.modal_roleUserUbahStatus').classList.add('hidden');  // Close the modal
+            } else {
+                console.error('Form not found.');
+            }
+        }
+        
+        // Fetch data and update table and pagination
+        async function fetchDataAndUpdateTable() {
+            try {
+                const response = await fetch('http://localhost/KabarE-Web/api/user.php');
+                const data = await response.json();
+                
+                console.log(data);  // Log the entire data object to check the structure
+                userData = data.data || [];
+                totalItems = userData.length;
+                console.log(totalItems);
+                console.log(userData);
+                
+                updateTable();
+                updatePagination();
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
         }
     </script>
 </body>
