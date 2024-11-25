@@ -536,6 +536,18 @@ $commentCount = $commentResult->num_rows;
     </div>
 </div>
 
+<!-- Tambahkan elemen modal konfirmasi hapus -->
+<div id="deleteModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+    <div class="bg-white p-6 rounded-lg shadow-lg transform scale-95 transition-transform duration-300">
+        <h2 class="text-lg font-bold mb-4">Hapus Komentar</h2>
+        <p>Apakah Anda yakin ingin menghapus komentar ini?</p>
+        <div class="flex justify-end mt-4">
+            <button type="button" id="cancelDelete" class="bg-gray-300 text-gray-700 px-4 py-2 rounded mr-2">Batal</button>
+            <button type="button" id="confirmDelete" class="bg-red-500 text-white px-4 py-2 rounded">Hapus</button>
+        </div>
+    </div>
+</div>
+
 <script>
     function timeAgo(date) {
         const seconds = Math.floor((new Date() - date) / 1000);
@@ -731,7 +743,7 @@ $commentCount = $commentResult->num_rows;
             e.stopPropagation(); // Mencegah event bubbling yang dapat menutup modal
             const commentDiv = optionsButton.closest('.user-comment');
             commentToDelete = commentDiv;
-            showModal();
+            showModal('deleteModal');
         }
     });
 
@@ -739,11 +751,13 @@ $commentCount = $commentResult->num_rows;
         if (commentToDelete) {
             const commentId = commentToDelete.dataset.commentId;
             deleteComment(commentId);
-            closeModal();
+            closeModal('deleteModal');
         }
     });
 
-    document.getElementById('cancelDelete').addEventListener('click', closeModal);
+    document.getElementById('cancelDelete').addEventListener('click', function () {
+        closeModal('deleteModal');
+    });
 
     document.getElementById('shareButton').addEventListener('click', function () {
         const url = window.location.href; // Mendapatkan URL lengkap halaman
