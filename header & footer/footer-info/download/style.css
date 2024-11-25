@@ -1,0 +1,394 @@
+@media all and (max-width: 660px) {
+    .pen {
+        max-width: 335px;
+    }
+    .element {
+        width: 101px;
+    }
+    .element.inactive {
+        width: 61px;
+    }
+    .element.active {
+        width: 181px;
+    }
+    .stage {
+        max-width: 335px;
+    }
+}
+
+@-webkit-keyframes appear {
+    15% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@-moz-keyframes appear {
+    15% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@-o-keyframes appear {
+    15% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes appear {
+    15% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.footer {
+    padding: 0;
+    margin: 50px 0;
+    background: linear-gradient(to right, #2C5C99, #4A99FF);
+    max-width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.footer-content {
+    width: 70%;
+    padding: 40px;
+}
+
+.footer-box {
+    margin: 20px 0;
+    padding: 20px;
+    background: linear-gradient(to right, #4A99FF, #2C5C99);
+    max-width: 100%;
+    border: 1px solid #ccc;
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+    .footer,
+    .footer-box {
+        max-width: 960px;
+        margin: 0 auto;
+    }
+}
+
+.rectangle-container {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+    background: none;
+}
+
+.rectangle-top,
+.rectangle-bottom {
+    height: 350px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0;
+    background: none;
+}
+
+.rectangle-top {
+    background: linear-gradient(to right, #2C5C99, #4A99FF);
+}
+
+.rectangle-bottom {
+    background: linear-gradient(to right, #4A99FF, #2C5C99);
+}
+
+.text-box1,
+.text-box2 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.text-box1 h2,
+.text-box1 p,
+.text-box2 h2,
+.text-box2 p {
+    font-size: 40px;
+    font-weight: 600;
+    color: white;
+    margin: 0;
+}
+
+.square-container {
+    background: #ffffff;
+    height: 100px;
+    width: 100%;
+    margin: 50px auto;
+    max-width: 100%;
+}
+
+.header-content {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    margin: 50px auto;
+    max-width: 100%;
+    flex-wrap: wrap;
+}
+
+.image-container {
+    position: relative;
+    width: 300px;
+    margin-right: 60px;
+    transform: translateX(-20px);
+}
+
+.wellcome-image {
+    width: 90%;
+    opacity: 0;
+    animation: fadeInLeft 1s forwards;
+}
+
+.home-image {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 180px;
+    opacity: 0;
+    animation: slideIn 1s 1s forwards;
+}
+
+.text-container {
+    max-width: 600px;
+}
+
+.text-container h2 {
+    margin-top: 0;
+    font-weight: bold;
+}
+
+.text-container p {
+    margin-bottom: 1em;
+}
+
+.text-container a {
+    color: #007BFF;
+    text-decoration: none;
+}
+
+.text-container a:hover {
+    text-decoration: underline;
+}
+
+@keyframes fadeInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(25%, -50%);
+    }
+}
+
+.text-box1 {
+    justify-content: space-between;
+    margin-left: 40px;
+}
+
+.text-box1 img {
+    margin-left: auto;
+}
+
+.text-box2 {
+    justify-content: space-between;
+    margin-right: 40px;
+}
+
+.text-box2 img {
+    margin-right: auto;
+}
+
+@media (max-width: 1280px) {
+    .home-image {
+        width: 150px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .image-container {
+        margin-right: 100px;
+        transform: translateX(-60px);
+    }
+    .text-container {
+        margin-left: 40px;
+    }
+    .home-image {
+        width: 130px;
+        animation: slideOut 1s 1s forwards;
+    }
+}
+
+@media (max-width: 768px) {
+    .image-container {
+        margin-right: 0;
+        transform: translateX(-20px);
+    }
+    .wellcome-image {
+        width: 75%;
+    }
+    .home-image {
+        width: 140px;
+        transform: translate(-50%, -50%);
+        animation: slideOut 1s 1s forwards;
+    }
+}
+
+@media (max-width: 640px) {
+    .header-content {
+        flex-direction: column;
+        align-items: center;
+        margin-top: -20px;
+    }
+    .image-container {
+        margin-right: 0;
+        margin-bottom: 20px;
+        margin-top: 20px;
+        transform: translateX(-10px);
+    }
+    .wellcome-image {
+        width: 70%;
+    }
+    .home-image {
+        width: 130px;
+        transform: translate(-50%, -50%);
+        animation: slideOut 1s 1s forwards;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(25%, -50%);
+    }
+}
+
+.foot-image-right {
+    float: right;
+    width: 120px;
+    height: auto;
+    margin-left: 10px;
+}
+
+.foot-image-left {
+    float: left;
+    width: 120px;
+    height: auto;
+    margin-right: 10px;
+}
+
+.text-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.slider {
+    position: relative;
+    max-width: 100%;
+    margin: 100px auto;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+}
+
+.slides {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.slide {
+    width: 20%;
+    box-sizing: border-box;
+    transition: opacity 0.5s ease-in-out;
+    opacity: 0.5;
+}
+
+.slide.active {
+    opacity: 1;
+}
+
+.slide img {
+    width: 100%;
+    display: block;
+}
+
+.navigation {
+    text-align: center;
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+}
+
+.dot {
+    cursor: pointer;
+    height: 15px;
+    width: 15px;
+    margin: 0 5px;
+    background-color: #bbb;
+    border-radius: 50%;
+    display: inline-block;
+    transition: background-color 0.6s ease;
+}
+
+.dot.active {
+    background-color: #717171;
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInFromWellcome {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-25%, -50%);
+    }
+}
