@@ -49,6 +49,9 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
         $stmt->close();
     }
 }
+
+// Cek peran pengguna
+$isPenulis = ($role === 'penulis');
 ?>
 
 <!DOCTYPE html>
@@ -95,7 +98,7 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
                         </div>
                     </form>
 
-                    <!-- Ikon Notifikasi, Draft, dan Upload -->
+                    <!-- Ikon Notifikasi -->
                     <div class="relative z-30">
                         <button id="notificationButton" class="text-gray-500 hover:text-[#4A99FF] focus:outline-none">
                             <i class="fas fa-bell text-xl"></i>
@@ -106,7 +109,8 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
                         </div>
                     </div>
 
-                    <!-- Ubah tombol draft agar langsung mengarahkan ke halaman publishAuthor.php -->
+                    <?php if ($isPenulis): ?>
+                    <!-- Tampilkan tombol hanya jika pengguna adalah penulis -->
                     <div class="relative z-30">
                         <button id="draftButton" class="text-gray-500 hover:text-[#4A99FF] focus:outline-none">
                             <i class="fas fa-file-alt text-xl"></i>
@@ -118,7 +122,9 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
                             <i class="fas fa-upload text-xl"></i>
                         </button>
                     </div>
+                    <?php endif; ?>
 
+                    <!-- Profil -->
                     <div class="relative z-30">
                         <button id="profileButton" class="flex items-center text-gray-500 focus:outline-none">
                             <img src="data:image/jpeg;base64,<?= base64_encode($profile_pic) ?>" alt="Profile Picture" class="w-8 h-8 rounded-full">
@@ -162,7 +168,7 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
                     </div>
                 </div>
             </div>
-        </div>
+        </div>  
 
         <!-- Bagian Bawah Navbar -->
         <div class="bg-blue-500 p-2">
@@ -266,21 +272,18 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
             otherCategoryMenuScroll.classList.toggle('hidden');
         });
 
-        uploadButton.addEventListener('click', () => {
-            location.href = '/authors/Main_author.php'; // Arahkan ke halaman Main_author
-        });
-
-        editProfileButton.addEventListener('click', () => {
-            location.href = '/settings/mainSetting.php?page=umum'; // Pastikan jalur ini benar
-        });
-
+        <?php if ($isPenulis): ?>
         draftButton.addEventListener('click', () => {
             location.href = '/authors/publishAuthor.php'; // Sesuaikan jalur jika perlu
         });
 
-        contentButton.addEventListener('click', () => {
-            contentMenu.classList.toggle('hidden');
-            contentButton.querySelector('.fa-chevron-down').classList.toggle('rotate-180');
+        uploadButton.addEventListener('click', () => {
+            location.href = '/authors/Main_author.php'; // Arahkan ke halaman Main_author
+        });
+        <?php endif; ?>
+
+        editProfileButton.addEventListener('click', () => {
+            location.href = '/settings/mainSetting.php?page=umum'; // Pastikan jalur ini benar
         });
 
         let lastScrollTop = 0;
@@ -351,6 +354,10 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
         }
 
         // Event listener untuk tombol konten
+        contentButton.addEventListener('click', () => {
+            contentMenu.classList.toggle('hidden');
+            contentButton.querySelector('.fa-chevron-down').classList.toggle('rotate-180');
+        });
         document.addEventListener('DOMContentLoaded', () => {
             const bacaNantiButton = document.getElementById('bacaNantiButton');
             const likedButton = document.getElementById('likedButton');
