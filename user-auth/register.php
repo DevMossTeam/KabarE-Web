@@ -97,28 +97,41 @@ function sendOTP($email, $otp) {
     }
 }
 
+$error = null; // Inisialisasi variabel error
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $nama_pengguna = $_POST['username'];
     $email = $_POST['email'];
     $namaLengkap = $_POST['fullname'];
 
-    // Buat OTP 6 digit
-    $otp = rand(100000, 999999);
+    // Cek apakah email sudah ada di database
+    $query = "SELECT * FROM user WHERE email = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-    // Simpan data di sesi
-    $_SESSION['nama_pengguna'] = $nama_pengguna;
-    $_SESSION['email'] = $email;
-    $_SESSION['nama_lengkap'] = $namaLengkap;
-    $_SESSION['otp'] = $otp;
-    $_SESSION['from_register'] = true;
-
-    // Kirim email OTP
-    if (sendOTP($email, $otp)) {
-        // Arahkan ke halaman verifikasi email
-        header('Location: verif_email.php');
-        exit;
+    if ($result->num_rows > 0) {
+        $error = "Email sudah terdaftar. Silakan gunakan email lain.";
     } else {
-        $error = "Gagal mengirim email. Silakan coba lagi.";
+        // Buat OTP 6 digit
+        $otp = rand(100000, 999999);
+
+        // Simpan data di sesi
+        $_SESSION['nama_pengguna'] = $nama_pengguna;
+        $_SESSION['email'] = $email;
+        $_SESSION['nama_lengkap'] = $namaLengkap;
+        $_SESSION['otp'] = $otp;
+        $_SESSION['from_register'] = true;
+
+        // Kirim email OTP
+        if (sendOTP($email, $otp)) {
+            // Arahkan ke halaman verifikasi email
+            header('Location: verif_email.php');
+            exit;
+        } else {
+            $error = "Gagal mengirim email. Silakan coba lagi.";
+        }
     }
 }
 ?>
@@ -141,11 +154,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <form action="register.php" method="POST" class="w-full max-w-md px-8 pt-6 pb-8 mb-4">
             <h2 class="text-3xl font-bold mb-2 text-center text-blue-500">Belum Punya Akun?</h2>
             <p class="text-center text-gray-600 mb-6">Daftar sekarang di KabarE dan nikmati akses penuh ke berita terkini dan fitur menarik dengan langkah mudah!</p>
-            <?php if (isset($error)): ?>
-                <div class="mb-4 text-red-500 text-center">
-                    <?php echo $error; ?>
-                </div>
-            <?php endif; ?>
             <div class="mb-4">
                 <label for="fullname" class="block text-sm font-bold mb-2 text-gray-700">NAMA LENGKAP</label>
                 <input type="text" id="fullname" name="fullname" placeholder="Masukkan nama lengkap" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
@@ -156,7 +164,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
             <div class="mb-4">
                 <label for="email" class="block text-sm font-bold mb-2 text-gray-700">ALAMAT EMAIL</label>
-                <input type="email" id="email" name="email" placeholder="Masukkan email" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                <input type="email" id="email" name="email" placeholder="Masukkan email" class="shadow appearance-none border <?php echo $error ? 'border-red-500' : ''; ?> rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                <?php if ($error): ?>
+                    <div class="text-red-500 text-center mt-2">
+                        <?php echo $error; ?>
+                    </div>
+                <?php endif; ?>
             </div>
             <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Konfirmasi</button>
             <p class="text-center text-gray-600 mt-4">Sudah Memiliki akun? <a href="login.php" class="text-blue-500 hover:underline">Masuk</a></p>
