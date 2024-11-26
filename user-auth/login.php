@@ -2,14 +2,19 @@
 session_start();
 include '../connection/config.php';
 
-$errorMessage = '';
+// Inisialisasi pesan kesalahan dari session
+$usernameError = $_SESSION['usernameError'] ?? '';
+$passwordError = $_SESSION['passwordError'] ?? '';
+$errorCount = $_SESSION['errorCount'] ?? 0;
+
+// Hapus pesan kesalahan dari session setelah diambil
+unset($_SESSION['usernameError'], $_SESSION['passwordError']);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $input = $_POST['usernameOrEmail'] ?? null;
     $password = $_POST['password'] ?? null;
 
     if ($input && $password) {
-        // Cek apakah input adalah email atau nama pengguna
         if (filter_var($input, FILTER_VALIDATE_EMAIL)) {
             $stmt = $conn->prepare("SELECT uid, email, nama_pengguna, password, profile_pic FROM user WHERE email = ?");
         } else {
@@ -22,14 +27,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $result = $stmt->get_result();
 
             $loginSuccess = false;
+            $userExists = false;
             while ($user = $result->fetch_assoc()) {
+                $userExists = true;
                 if (password_verify($password, $user['password'])) {
                     $_SESSION['user_id'] = $user['uid'];
                     $_SESSION['email'] = $user['email'];
-                    $_SESSION['profile_pic'] = $user['profile_pic'] ?: 'default-profile.png'; // Default jika kosong
+                    $_SESSION['profile_pic'] = $user['profile_pic'] ?: 'default-profile.png';
                     setcookie('user_id', $user['uid'], time() + (86400 * 30), "/");
                     setcookie('email', $user['email'], time() + (86400 * 30), "/");
                     $loginSuccess = true;
+                    $_SESSION['errorCount'] = 0; // Reset error count on success
                     break;
                 }
             }
@@ -38,16 +46,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 header("Location: /index.php");
                 exit();
             } else {
-                $errorMessage = "Password salah atau email/username tidak ditemukan.";
+                $_SESSION['errorCount'] = ++$errorCount; // Increment error count
+                if (!$userExists) {
+                    $_SESSION['usernameError'] = "Username atau email yang Anda masukkan salah. Silakan coba lagi.";
+                } else {
+                    $_SESSION['passwordError'] = "Password yang Anda masukkan salah. Silakan coba lagi.";
+                }
+                if (!$userExists && !$loginSuccess) {
+                    $_SESSION['usernameError'] = "Username atau email dan password yang Anda masukkan salah. Silakan coba lagi.";
+                }
+                if ($_SESSION['errorCount'] >= 5) {
+                    $_SESSION['usernameError'] = "Anda terlalu sering salah memasukkan username atau password. Silakan coba lagi nanti atau ulang password Anda.";
+                }
             }
 
             $stmt->close();
         } else {
-            $errorMessage = "Terjadi kesalahan pada query.";
+            $_SESSION['errorMessage'] = "Terjadi kesalahan pada query.";
         }
     } else {
-        $errorMessage = "Silakan masukkan username/email dan password.";
+        if (!$input) {
+            $_SESSION['usernameError'] = "Silakan masukkan username/email.";
+        }
+        if (!$password) {
+            $_SESSION['passwordError'] = "Silakan masukkan password.";
+        }
     }
+
+    // Redirect untuk menghindari pengulangan form submission
+    header("Location: login.php");
+    exit();
 }
 ?>
 <!DOCTYPE html>
@@ -133,14 +161,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <form action="login.php" method="POST" class="w-full max-w-md px-8 pt-6 pb-8 mb-4">
             <h2 class="text-3xl font-bold mb-2 text-center text-blue-500">Selamat Datang Kembali!</h2>
             <p class="text-center text-gray-600 mb-6">Ayo masuk dan jangan lewatkan berita penting di kampusmu!</p>
-            <div class="mb-4">
+            <div class="mb-4 relative">
                 <label for="usernameOrEmail" class="block text-sm font-bold mb-2 text-gray-700">USERNAME ATAU EMAIL</label>
-                <input type="text" id="usernameOrEmail" name="usernameOrEmail" placeholder="Masukkan email atau username" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                <input type="text" id="usernameOrEmail" name="usernameOrEmail" placeholder="Masukkan email atau username" class="shadow appearance-none border <?php echo $usernameError ? 'border-red-500' : 'border-gray-300'; ?> rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                <?php if ($usernameError): ?>
+                <i class="fas fa-exclamation-circle text-red-500 absolute right-3 top-10"></i>
+                <p class="text-red-500 text-xs italic mt-2"><?php echo $usernameError; ?></p>
+                <?php endif; ?>
             </div>
             <div class="mb-6 relative">
                 <label for="password" class="block text-sm font-bold mb-2 text-gray-700">PASSWORD</label>
-                <input type="password" id="password" name="password" placeholder="Masukkan password" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                <input type="password" id="password" name="password" placeholder="Masukkan password" class="shadow appearance-none border <?php echo $passwordError ? 'border-red-500' : 'border-gray-300'; ?> rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                <?php if (!$passwordError): ?>
                 <i class="fas fa-eye absolute right-3 top-10 cursor-pointer"></i>
+                <?php endif; ?>
+                <?php if ($passwordError): ?>
+                <i class="fas fa-exclamation-circle text-red-500 absolute right-3 top-10"></i>
+                <p class="text-red-500 text-xs italic mt-2"><?php echo $passwordError; ?></p>
+                <?php endif; ?>
             </div>
             <div class="flex justify-end mb-2">
                 <a href="forgot_password.php" class="text-blue-500 hover:underline">Lupa Password?</a>
@@ -163,21 +201,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </form>
     </div>
 
-    <!-- Modal -->
-    <?php if ($errorMessage): ?>
-    <div id="errorModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-        <div class="bg-white p-6 rounded shadow-md text-center">
-            <i class="fas fa-exclamation-circle text-red-500 text-4xl mb-4"></i>
-            <p><?php echo $errorMessage; ?></p>
-            <button onclick="closeModal()" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Tutup</button>
-        </div>
-    </div>
-    <script>
-        function closeModal() {
-            document.getElementById('errorModal').style.display = 'none';
-        }
-    </script>
-    <?php endif; ?>
     <script>
         // Toggle password visibility
         document.querySelectorAll('.fa-eye').forEach(icon => {
