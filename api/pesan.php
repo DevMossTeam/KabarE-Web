@@ -23,33 +23,59 @@ class PesanAPI {
                       FROM pesan 
                       JOIN user ON pesan.user_id = user.uid";
             $result = mysqli_query($this->conn, $query);
-            
-            if ($result) {
-                $pesan = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    
+            if ($result && mysqli_num_rows($result) > 0) {
+                $pesan = [];
+                while ($row = mysqli_fetch_assoc($result)) {
+                    // Check if profile_pic is not null and convert it to base64
+                    if ($row['profile_pic']) {
+                        $row['profile_pic'] = base64_encode($row['profile_pic']);
+                    }
+                    $pesan[] = $row;
+                }
+    
                 echo json_encode(['data' => $pesan, 'message' => 'Pesan fetched successfully']);
             } else {
-                echo json_encode(['error' => 'Failed to fetch pesan']);
+                echo json_encode(['data' => [], 'message' => 'No pesan found']);
             }
         } catch (Exception $e) {
             echo json_encode(['error' => $e->getMessage()]);
         }
-    }
-    
-    // Fetch a single pesan by ID
+    }    
+        
     public function fetchPesanById($id) {
         try {
+            if (empty($id) || !is_numeric($id)) {
+                echo json_encode(['error' => 'Invalid ID parameter']);
+                return;
+            }
+
             $query = "SELECT pesan.*, user.nama_pengguna, user.email, user.profile_pic 
-                      FROM pesan 
-                      JOIN user ON pesan.user_id = user.uid 
-                      WHERE pesan.id_utama = ?";
+                    FROM pesan 
+                    JOIN user ON pesan.user_id = user.uid 
+                    WHERE pesan.id = ?";
+            
             $stmt = mysqli_prepare($this->conn, $query);
+            if (!$stmt) {
+                throw new Exception('Statement preparation failed');
+            }
+
             mysqli_stmt_bind_param($stmt, 'i', $id);
             mysqli_stmt_execute($stmt);
             $result = mysqli_stmt_get_result($stmt);
-            
+
+            if (!$result) {
+                throw new Exception('Query execution failed');
+            }
+
             $pesan = mysqli_fetch_assoc($result);
-            
+
             if ($pesan) {
+                // Check if profile_pic is a BLOB and convert it to base64
+                if ($pesan['profile_pic']) {
+                    $pesan['profile_pic'] = base64_encode($pesan['profile_pic']);
+                }
+
                 echo json_encode(['data' => $pesan, 'message' => 'Pesan fetched successfully']);
             } else {
                 echo json_encode(['message' => 'Pesan not found']);
@@ -58,38 +84,55 @@ class PesanAPI {
             echo json_encode(['error' => $e->getMessage()]);
         }
     }
+
     
-    // Update an existing pesan
+    // Update
     public function updatePesan($id, $data) {
-        if (isset($data['user_id'], $data['pesan'], $data['status_read'], $data['status'])) {
-            try {
-                $query = "UPDATE pesan 
-                          SET user_id = ?, pesan = ?, status_read = ?, status = ?, berita_id = ?, komen_id = ? 
-                          WHERE id_utama = ?";
-                $stmt = mysqli_prepare($this->conn, $query);
-                mysqli_stmt_bind_param(
-                    $stmt, 
-                    'sssssii', 
-                    $data['user_id'], $data['pesan'], $data['status_read'], $data['status'], 
-                    $data['berita_id'], $data['komen_id'], $id
-                );
-                if (mysqli_stmt_execute($stmt)) {
-                    $this->fetchPesanById($id); // Return the updated pesan data
-                } else {
-                    echo json_encode(['message' => 'Failed to update pesan']);
-                }
-            } catch (Exception $e) {
-                echo json_encode(['error' => $e->getMessage()]);
+        if (empty($id) || !is_numeric($id)) {
+            echo json_encode(['message' => 'Invalid ID']);
+            return;
+        }
+
+        $set_clause = [];
+        $params = [];
+        $types = '';
+
+        foreach ($data as $key => $value) {
+            $set_clause[] = "$key = ?";
+            $params[] = $value;
+            $types .= 's'; 
+        }
+
+        $set_clause_str = implode(', ', $set_clause);
+
+        $query = "UPDATE pesan SET $set_clause_str WHERE id = ?";
+        
+        $stmt = mysqli_prepare($this->conn, $query);
+        if (!$stmt) {
+            echo json_encode(['message' => 'Failed to prepare statement']);
+            return;
+        }
+
+        $params[] = $id; 
+        $types .= 'i';  
+
+        mysqli_stmt_bind_param($stmt, $types, ...$params);
+
+        try {
+            if (mysqli_stmt_execute($stmt)) {
+                $this->fetchPesanById($id); 
+            } else {
+                echo json_encode(['message' => 'Failed to update pesan']);
             }
-        } else {
-            echo json_encode(['message' => 'Invalid input']);
+        } catch (Exception $e) {
+            echo json_encode(['error' => $e->getMessage()]);
         }
     }
 
     // Delete a pesan by ID
     public function deletePesan($id) {
         try {
-            $query = "SELECT * FROM pesan WHERE id_utama = ?";
+            $query = "SELECT * FROM pesan WHERE id = ?";
             $stmt = mysqli_prepare($this->conn, $query);
             mysqli_stmt_bind_param($stmt, 'i', $id);
             mysqli_stmt_execute($stmt);
@@ -97,7 +140,7 @@ class PesanAPI {
             $pesan = mysqli_fetch_assoc($result);
 
             if ($pesan) {
-                $delete_query = "DELETE FROM pesan WHERE id_utama = ?";
+                $delete_query = "DELETE FROM pesan WHERE id = ?";
                 $delete_stmt = mysqli_prepare($this->conn, $delete_query);
                 mysqli_stmt_bind_param($delete_stmt, 'i', $id);
                 if (mysqli_stmt_execute($delete_stmt)) {
