@@ -11,6 +11,9 @@ switch ($page) {
     case 'keamanan':
         include 'keamanan.php';
         break;
+    case 'general':
+        include 'general.php';
+        break;
     default:
         include 'umum.php';
         break;

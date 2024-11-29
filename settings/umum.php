@@ -57,8 +57,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_pic'])) {
     $stmt->close();
     exit();
 }
+
+// Hapus foto profil
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'remove_profile_pic') {
+    $stmt = $conn->prepare("UPDATE user SET profile_pic = NULL WHERE uid = ?");
+    $stmt->bind_param("s", $user_id);
+    if ($stmt->execute()) {
+        $_SESSION['profile_pic'] = null;
+        echo json_encode(['success' => true]);
+    } else {
+        echo json_encode(['success' => false, 'error' => $stmt->error]);
+    }
+    $stmt->close();
+    exit();
+}
 ?>
 <?php include '../header & footer/header_setting.php'; ?>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
 <div class="container mx-auto mt-8 flex space-x-8 lg:px-8">
     <!-- Pembungkus Edit Profile -->
@@ -70,10 +86,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_pic'])) {
                     <form id="uploadForm" action="" method="POST" enctype="multipart/form-data">
                         <input type="file" name="profile_pic" id="profilePicInput" class="hidden" accept="image/*" onchange="previewImage(event)">
                         <div class="w-40 h-40 rounded-full bg-gray-200 flex items-center justify-center mb-2">
-                            <img id="profilePicPreview" src="data:image/jpeg;base64,<?= base64_encode($profile_pic) ?>" alt="Profile Picture" class="w-full h-full rounded-full object-cover <?php echo empty($profile_pic) ? 'hidden' : ''; ?>">
-                            <i id="defaultIcon" class="fas fa-user text-8xl text-gray-500 <?php echo !empty($profile_pic) ? 'hidden' : ''; ?>"></i>
-                            <div class="absolute bottom-1 right-1 bg-blue-500 text-white px-3 py-2 rounded-full cursor-pointer" onclick="document.getElementById('profilePicInput').click()">
+                            <?php if ($profile_pic): ?>
+                                <img id="profilePicPreview" src="data:image/jpeg;base64,<?= base64_encode($profile_pic) ?>" alt="Profile Picture" class="w-full h-full rounded-full object-cover">
+                            <?php else: ?>
+                                <i id="profilePicPreview" class="fa-solid fa-user text-gray-500 text-6xl"></i>
+                            <?php endif; ?>
+                            <div class="absolute bottom-1 right-1 bg-blue-500 text-white px-3 py-2 rounded-full cursor-pointer" onclick="toggleMenu(event)">
                                 <i class="fas fa-camera text-white text-lg"></i>
+                            </div>
+                            <div id="cameraMenu" class="hidden absolute bottom-0 right-0 transform translate-y-full translate-x-8 bg-white text-black rounded-lg shadow-md">
+                                <ul>
+                                    <li class="px-4 py-2 cursor-pointer hover:bg-gray-200" onclick="document.getElementById('profilePicInput').click()">Ganti Foto Profil</li>
+                                    <li class="px-4 py-2 cursor-pointer hover:bg-gray-200 <?php echo empty($profile_pic) ? 'text-gray-400 cursor-not-allowed' : ''; ?>" onclick="showRemoveConfirmation()" <?php echo empty($profile_pic) ? 'style="pointer-events: none;"' : ''; ?>>Hapus Foto Profil</li>
+                                </ul>
                             </div>
                         </div>
                     </form>
@@ -154,11 +179,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_pic'])) {
     </div>
 </div>
 
+<div id="removeConfirmationPopup" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white p-4 rounded-lg shadow-md">
+        <p>Apakah Anda yakin ingin menghapus foto profil?</p>
+        <div class="flex justify-end space-x-2 mt-4">
+            <button class="bg-red-500 text-white px-4 py-2 rounded" onclick="closeRemovePopup()">Batal</button>
+            <button class="bg-green-500 text-white px-4 py-2 rounded" onclick="confirmRemoveProfilePicture()">Ya</button>
+        </div>
+    </div>
+</div>
+
+<div id="noChangePopup" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white p-4 rounded-lg shadow-md">
+        <p>Tidak ada perubahan pada foto profil.</p>
+        <div class="flex justify-end mt-4">
+            <button class="bg-blue-500 text-white px-4 py-2 rounded" onclick="closeNoChangePopup()">OK</button>
+        </div>
+    </div>
+</div>
+
 <script>
     let currentEdit = null;
 
     const fieldLabels = {
         namaLengkap: "Nama Lengkap",
+        posisi: "Posisi",
         username: "Username",
         infoLainnya: "Kredensial"
     };
@@ -246,11 +291,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_pic'])) {
         reader.onload = function() {
             const output = document.getElementById('profilePicPreview');
             const defaultIcon = document.getElementById('defaultIcon');
-            output.src = reader.result;
-            output.classList.remove('hidden');
-            defaultIcon.classList.add('hidden');
+            if (output && output.src === reader.result) {
+                showNoChangePopup();
+            } else {
+                if (output) {
+                    output.src = reader.result;
+                    output.classList.remove('hidden');
+                } else {
+                    const img = document.createElement('img');
+                    img.id = 'profilePicPreview';
+                    img.src = reader.result;
+                    img.className = 'w-full h-full rounded-full object-cover';
+                    document.querySelector('.w-40.h-40').appendChild(img);
+                    defaultIcon.classList.add('hidden');
+                }
+            }
         };
         reader.readAsDataURL(event.target.files[0]);
+    }
+
+    function showNoChangePopup() {
+        document.getElementById('noChangePopup').classList.remove('hidden');
+    }
+
+    function closeNoChangePopup() {
+        document.getElementById('noChangePopup').classList.add('hidden');
     }
 
     function confirmChange() {
@@ -289,4 +354,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_pic'])) {
         })
         .catch(error => console.error('Error:', error));
     }
+
+    function toggleMenu(event) {
+        event.stopPropagation();
+        const menu = document.getElementById('cameraMenu');
+        menu.classList.toggle('hidden');
+    }
+
+    function showRemoveConfirmation() {
+        document.getElementById('cameraMenu').classList.add('hidden'); // Sembunyikan menu
+        document.getElementById('removeConfirmationPopup').classList.remove('hidden');
+    }
+
+    function closeRemovePopup() {
+        document.getElementById('removeConfirmationPopup').classList.add('hidden');
+    }
+
+    function confirmRemoveProfilePicture() {
+        fetch(window.location.href, {
+            method: 'POST',
+            body: new URLSearchParams({ action: 'remove_profile_pic' })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const output = document.getElementById('profilePicPreview');
+                const defaultIcon = document.getElementById('defaultIcon');
+
+                if (output) {
+                    output.remove(); // Hapus elemen gambar jika ada
+                }
+
+                if (!defaultIcon) {
+                    // Tambahkan elemen <i> jika belum ada
+                    const iconElement = document.createElement('i');
+                    iconElement.id = 'defaultIcon';
+                    iconElement.className = 'fa-solid fa-user w-full h-full rounded-full object-cover';
+                    document.querySelector('.w-40.h-40').appendChild(iconElement);
+                } else {
+                    defaultIcon.classList.remove('hidden');
+                }
+
+                closeRemovePopup();
+            } else {
+                console.error('Error:', data.error);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    document.addEventListener('click', function(event) {
+        const menu = document.getElementById('cameraMenu');
+        if (menu.classList.contains('hidden') && event.target.closest('.fas.fa-camera')) {
+            toggleMenu(event);
+        }
+    });
 </script>
