@@ -88,13 +88,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                         <div class="w-40 h-40 rounded-full bg-gray-200 flex items-center justify-center mb-2">
                             <?php if ($profile_pic): ?>
                                 <img id="profilePicPreview" src="data:image/jpeg;base64,<?= base64_encode($profile_pic) ?>" alt="Profile Picture" class="w-full h-full rounded-full object-cover">
-                            <?php else: ?>
-                                <i id="profilePicPreview" class="fa-solid fa-user text-gray-500 text-6xl"></i>
                             <?php endif; ?>
                             <div class="absolute bottom-1 right-1 bg-blue-500 text-white px-3 py-2 rounded-full cursor-pointer" onclick="toggleMenu(event)">
                                 <i class="fas fa-camera text-white text-lg"></i>
                             </div>
-                            <div id="cameraMenu" class="hidden absolute bottom-0 right-0 transform translate-y-full translate-x-8 bg-white text-black rounded-lg shadow-md">
+                            <div id="cameraMenu" class="hidden absolute bottom-0 right-0 transform translate-y-full translate-x-24 bg-white text-black rounded-lg shadow-md">
                                 <ul>
                                     <li class="px-4 py-2 cursor-pointer hover:bg-gray-200" onclick="document.getElementById('profilePicInput').click()">Ganti Foto Profil</li>
                                     <li class="px-4 py-2 cursor-pointer hover:bg-gray-200 <?php echo empty($profile_pic) ? 'text-gray-400 cursor-not-allowed' : ''; ?>" onclick="showRemoveConfirmation()" <?php echo empty($profile_pic) ? 'style="pointer-events: none;"' : ''; ?>>Hapus Foto Profil</li>
@@ -116,31 +114,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             <div class="space-y-4 max-w-5xl mx-auto">
                 <!-- Nama Lengkap -->
                 <div class="flex items-center pb-2">
-                    <i class="fas fa-user text-gray-500"></i>
+                    <i class="fas fa-user text-gray-500 text-xl"></i>
                     <div class="flex-1 ml-10">
                         <div>
                             <p class="text-gray-600">Nama Lengkap</p>
-                            <p class="font-semibold" id="namaLengkapText"><?php echo htmlspecialchars($nama_lengkap); ?></p>
-                            <p class="text-gray-500 border-b border-gray-300 focus:border-b-2 focus:border-blue-500 outline-none" id="namaLengkapInfo" contenteditable="false" data-default-text="Informasi ini harus akurat">Informasi ini harus akurat</p>
+                            <p class="font-semibold" id="namaLengkapText" contenteditable="false"><?php echo htmlspecialchars($nama_lengkap); ?></p>
+                            <p class="text-gray-500 border-b border-gray-300 focus:border-b-2 focus:border-blue-500 outline-none" id="namaLengkapInfo" data-default-text="Informasi ini harus akurat">Informasi ini harus akurat</p>
                         </div>
                     </div>
-                    <i class="fas fa-pen text-blue-500 cursor-pointer ml-6" onclick="toggleEdit('namaLengkap')"></i>
+                    <i class="fas fa-pen text-blue-500 text-xl cursor-pointer ml-6" onclick="toggleEdit('namaLengkap')"></i>
                 </div>
                 <!-- Username -->
                 <div class="flex items-center pb-2">
-                    <i class="fas fa-user-tag text-gray-500"></i>
+                    <i class="fas fa-user-tag text-gray-500 text-xl"></i>
                     <div class="flex-1 ml-10">
                         <div>
                             <p class="text-gray-600">Username</p>
-                            <p class="font-semibold" id="usernameText"><?php echo htmlspecialchars($nama_pengguna); ?></p>
-                            <p class="text-gray-500 border-b border-gray-300 focus:border-b-2 focus:border-blue-500 outline-none" id="usernameInfo" contenteditable="false" data-default-text="Nama ini akan terlihat pembaca dan tertera sebagai editor">Nama ini akan terlihat pembaca dan tertera sebagai editor</p>
+                            <p class="font-semibold" id="usernameText" contenteditable="false"><?php echo htmlspecialchars($nama_pengguna); ?></p>
+                            <p class="text-gray-500 border-b border-gray-300 focus:border-b-2 focus:border-blue-500 outline-none" id="usernameInfo" data-default-text="Nama ini akan terlihat pembaca dan tertera sebagai editor">Nama ini akan terlihat pembaca dan tertera sebagai editor</p>
                         </div>
                     </div>
-                    <i class="fas fa-pen text-blue-500 cursor-pointer ml-6" onclick="toggleEdit('username')"></i>
+                    <i class="fas fa-pen text-blue-500 text-xl cursor-pointer ml-6" onclick="toggleEdit('username')"></i>
                 </div>
                 <!-- Posisi -->
                 <div class="flex items-center pb-2">
-                    <i class="fas fa-briefcase text-gray-500"></i>
+                    <i class="fas fa-briefcase text-gray-500 text-xl"></i>
                     <div class="flex-1 ml-10">
                         <div>
                             <p class="text-gray-600">Posisi</p>
@@ -148,21 +146,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                             <p class="text-gray-500 border-b border-gray-300 focus:border-b-2 focus:border-blue-500 outline-none" id="posisiInfo" contenteditable="false" data-default-text="Informasi ini tidak dapat diubah oleh anda">Informasi ini tidak dapat diubah oleh anda</p>
                         </div>
                     </div>
-                    <i class="fas fa-pen text-blue-500 cursor-pointer ml-6" onclick="toggleEdit('posisi')"></i>
+                    <i class="fas fa-pen text-gray-400 text-xl cursor-not-allowed ml-6"></i>
                 </div>
                 <!-- Kredensial -->
                 <div class="flex items-center pb-2">
-                    <i class="fas fa-info-circle text-gray-500"></i>
+                    <i class="fas fa-info-circle text-gray-500 text-xl"></i>
                     <div class="flex-1 ml-10">
                         <div>
                             <p class="text-gray-600">Kredensial</p>
-                            <p class="font-semibold" id="infoLainnyaText">
+                            <p class="font-semibold" id="infoLainnyaText" contenteditable="false">
                                 <?php echo htmlspecialchars($kredensial ?: 'isi kredensial dibawah'); ?>
                             </p>
-                            <p class="text-gray-500 border-b border-gray-300 focus:border-b-2 focus:border-blue-500 outline-none" id="infoLainnyaInfo" contenteditable="false" data-default-text="Nama ini akan terlihat pembaca dan tertera sebagai editor">Nama ini akan terlihat pembaca dan tertera sebagai editor</p>
+                            <p class="text-gray-500 border-b border-gray-300 focus:border-b-2 focus:border-blue-500 outline-none" id="infoLainnyaInfo" data-default-text="Nama ini akan terlihat pembaca dan tertera sebagai editor">Nama ini akan terlihat pembaca dan tertera sebagai editor</p>
                         </div>
                     </div>
-                    <i class="fas fa-pen text-blue-500 cursor-pointer ml-6" onclick="toggleEdit('infoLainnya')"></i>
+                    <i class="fas fa-pen text-blue-500 text-xl cursor-pointer ml-6" onclick="toggleEdit('infoLainnya')"></i>
                 </div>
             </div>
         </div>
@@ -209,25 +207,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     };
 
     function toggleEdit(field) {
-        const infoElement = document.getElementById(`${field}Info`);
-        infoElement.dataset.originalText = infoElement.textContent;
-        infoElement.textContent = '';
-        infoElement.contentEditable = true;
-        infoElement.focus();
+        const textElement = document.getElementById(`${field}Text`);
+        textElement.dataset.originalText = textElement.textContent;
+        textElement.contentEditable = true;
+        textElement.focus();
         currentEdit = field;
     }
 
     function saveEdit(field) {
-        const infoElement = document.getElementById(`${field}Info`);
-        if (infoElement.textContent.trim() !== '') {
-            showConfirmationPopup(field, infoElement.textContent);
+        const textElement = document.getElementById(`${field}Text`);
+        if (textElement.textContent.trim() !== '') {
+            showConfirmationPopup(field, textElement.textContent);
         }
     }
 
     function cancelEdit(field) {
-        const infoElement = document.getElementById(`${field}Info`);
-        infoElement.textContent = infoElement.dataset.originalText;
-        infoElement.contentEditable = false;
+        const textElement = document.getElementById(`${field}Text`);
+        textElement.textContent = textElement.dataset.originalText;
+        textElement.contentEditable = false;
         currentEdit = null;
     }
 
@@ -258,7 +255,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             console.log('Response:', data);
             if (data.success) {
                 document.getElementById(`${field}Text`).textContent = data.value;
-                document.getElementById(`${field}Info`).contentEditable = false;
+                document.getElementById(`${field}Text`).contentEditable = false;
                 currentEdit = null;
             } else {
                 console.error('Error:', data.error);
@@ -278,9 +275,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
     document.addEventListener('click', function(event) {
         if (currentEdit) {
-            const infoElement = document.getElementById(`${currentEdit}Info`);
+            const textElement = document.getElementById(`${currentEdit}Text`);
             const pencilIcon = document.querySelector(`.fas.fa-pen[onclick="toggleEdit('${currentEdit}')"]`);
-            if (!infoElement.contains(event.target) && !pencilIcon.contains(event.target)) {
+            if (!textElement.contains(event.target) && !pencilIcon.contains(event.target)) {
                 cancelEdit(currentEdit);
             }
         }
@@ -290,7 +287,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         const reader = new FileReader();
         reader.onload = function() {
             const output = document.getElementById('profilePicPreview');
-            const defaultIcon = document.getElementById('defaultIcon');
             if (output && output.src === reader.result) {
                 showNoChangePopup();
             } else {
@@ -301,9 +297,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                     const img = document.createElement('img');
                     img.id = 'profilePicPreview';
                     img.src = reader.result;
-                    img.className = 'w-full h-full rounded-full object-cover';
+                    img.className = 'fa-solid fa-user';
                     document.querySelector('.w-40.h-40').appendChild(img);
-                    defaultIcon.classList.add('hidden');
                 }
             }
         };
@@ -346,7 +341,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 if (data.profile_pic) {
                     document.getElementById('profilePicPreview').src = 'data:image/jpeg;base64,' + btoa(data.profile_pic);
                     document.getElementById('profilePicPreview').classList.remove('hidden');
-                    document.getElementById('defaultIcon').classList.add('hidden');
                 }
                 window.location.href = 'umum.php';
             }
@@ -379,22 +373,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         .then(data => {
             if (data.success) {
                 const output = document.getElementById('profilePicPreview');
-                const defaultIcon = document.getElementById('defaultIcon');
-
                 if (output) {
                     output.remove(); // Hapus elemen gambar jika ada
                 }
-
-                if (!defaultIcon) {
-                    // Tambahkan elemen <i> jika belum ada
-                    const iconElement = document.createElement('i');
-                    iconElement.id = 'defaultIcon';
-                    iconElement.className = 'fa-solid fa-user w-full h-full rounded-full object-cover';
-                    document.querySelector('.w-40.h-40').appendChild(iconElement);
-                } else {
-                    defaultIcon.classList.remove('hidden');
-                }
-
                 closeRemovePopup();
             } else {
                 console.error('Error:', data.error);
@@ -407,6 +388,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         const menu = document.getElementById('cameraMenu');
         if (menu.classList.contains('hidden') && event.target.closest('.fas.fa-camera')) {
             toggleMenu(event);
+        }
+    });
+
+    // Tambahkan event listener untuk menutup menu ketika mengklik di luar
+    document.addEventListener('click', function(event) {
+        const menu = document.getElementById('cameraMenu');
+        const cameraIcon = document.querySelector('.fas.fa-camera');
+        
+        // Jika menu terbuka dan klik terjadi di luar menu dan ikon kamera, tutup menu
+        if (!menu.classList.contains('hidden') && !menu.contains(event.target) && !cameraIcon.contains(event.target)) {
+            menu.classList.add('hidden');
         }
     });
 </script>

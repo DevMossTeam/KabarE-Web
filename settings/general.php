@@ -48,16 +48,6 @@ $result = $stmt->get_result();
         <?php if ($result->num_rows > 0): ?>
             <?php while($row = $result->fetch_assoc()): ?>
                 <div class="bg-white p-4 rounded-lg mb-4">
-                    <div class="w-40 h-40 rounded-full bg-gray-200 flex items-center justify-center mb-2">
-                        <?php if ($profile_pic): ?>
-                            <img id="profilePicPreview" src="data:image/jpeg;base64,<?= base64_encode($profile_pic) ?>" alt="Profile Picture" class="w-full h-full rounded-full object-cover">
-                        <?php else: ?>
-                            <i id="defaultIcon" class="fa-solid fa-user text-gray-500 text-6xl"></i>
-                        <?php endif; ?>
-                        <div class="absolute bottom-1 right-1 bg-blue-500 text-white px-3 py-2 rounded-full cursor-pointer" onclick="toggleMenu(event)">
-                            <i class="fas fa-camera text-white text-lg"></i>
-                        </div>
-                    </div>
                     <div class="flex items-center mb-2">
                         <img src="https://img.icons8.com/ios-filled/24/888888/user.png" alt="Nama Lengkap Icon" class="mr-2" width="" height="8">
                         <div class="flex-grow">
