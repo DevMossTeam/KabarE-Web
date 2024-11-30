@@ -1,32 +1,61 @@
 <?php include '../header.php'; ?>
 <?php include '../category_header.php'; ?>
-<?php renderCategoryHeader(categoryName: 'Tentang Kami'); ?>
+<?php renderCategoryHeader(categoryName: 'Tentang KabarE'); ?>
 
 <main class="container mx-auto my-8 flex-grow">
-    <div class="p-4 max-w-4xl mx-auto text-center">
+    <div class="p-4 max-w-4xl mx-auto">
+        <!-- Logo dan Judul -->
+        <div class="flex items-center mb-8">
+            <img src="../../assets/web-icon/Ic-main-KabarE.svg" alt="KabarE Logo" class="w-8 h-8">
+            <h1 class="text-2xl font-bold ml-4">Tentang KabarE</h1>
+        </div>
+        
+        <!-- Deskripsi dan Fitur -->
+        <div class="text-justify mb-8">
+            <p class="mb-4">
+                KabarE adalah aplikasi berita resmi dari UKPM Explant di Politeknik Negeri Jember. 
+                Aplikasi ini menyediakan berita terkini, ulasan mendalam, dan informasi penting yang 
+                relevan dengan mahasiswa dan civitas kampus. KabarE dirancang untuk memberikan 
+                akses cepat dan mudah terhadap berita-berita kampus, serta topik-topik menarik 
+                yang dibahas oleh komunitas UKPM Explant.
+            </p>
+            <p class="mb-4">
+                Dengan fitur yang intuitif dan tampilan yang menarik, KabarE menjadi platform ideal 
+                bagi mereka yang ingin tetap terhubung dengan informasi terbaru. Selain itu, aplikasi 
+                ini memungkinkan pengguna untuk memberikan umpan balik, berbagi artikel, dan 
+                berinteraksi langsung melalui fitur pusat bantuan.
+            </p>
+        </div>
+
+        <!-- Fitur Unggulan -->
+        <div class="mb-4">
+            <h2 class="font-bold mb-4">Fitur Unggulan:</h2>
+            <ul class="list-disc list-inside space-y-2 ml-4">
+                <li>Berita terbaru langsung dari UKPM Explant</li>
+                <li>Kategori berita yang bervariasi</li>
+                <li>Pusat bantuan untuk pertanyaan atau dukungan</li>
+                <li>Notifikasi berita penting</li>
+            </ul>
+        </div>
+
+        <p class="mb-2">KabarE tersedia untuk diunduh secara gratis di platform mobile.</p>
+        <hr class="border-gray-300 mb-6">
+
+        <!-- Download Section -->
         <div class="mb-8">
-            <img src="path/to/your/image.png" alt="Tentang Kami" class="mx-auto">
+            <h2 class="text-xl font-bold mb-4">Unduh KabarE Sekarang</h2>
+            <p class="mb-4">
+                Nikmati akses penuh ke berita kampus di mana pun Anda berada dengan KabarE 
+                versi mobile. Unduh sekarang untuk perangkat Android!
+            </p>
+            <a href="/header & footer/footer-info/download/download.php" class="text-blue-500 hover:text-blue-600 font-medium">
+                Download Sekarang
+            </a>
+            <p class="mt-4">
+                Dapatkan KabarE dan nikmati pengalaman membaca berita yang lebih mudah dan 
+                cepat di ponsel Anda!
+            </p>
         </div>
-        <div class="text-left">
-            <p><strong>Lembaga Penyelenggara:</strong> Politeknik Negeri Jember</p>
-            <p><strong>Unit Kegiatan Mahasiswa:</strong> Explant</p>
-            <p><strong>Koordinator Umum Kegiatan:</strong> Nama Koordinator</p>
-            <p><strong>Alamat:</strong> Alamat lengkap</p>
-            <p><strong>No. Telepon:</strong> 123-456-7890</p>
-            <p><strong>Email:</strong> email@example.com</p>
-            <p><strong>Koordinator Produksi Tim:</strong> Nama Koordinator</p>
-            <p><strong>Penulis Team:</strong> Nama Penulis</p>
-        </div>
-        <hr class="my-8">
-        <h2 class="text-xl font-semibold mb-4">Developer Team</h2>
-        <div class="flex justify-center space-x-4">
-            <div class="w-16 h-16 bg-gray-300 rounded-full"></div>
-            <div class="w-16 h-16 bg-gray-300 rounded-full"></div>
-            <div class="w-16 h-16 bg-gray-300 rounded-full"></div>
-            <div class="w-16 h-16 bg-gray-300 rounded-full"></div>
-            <div class="w-16 h-16 bg-gray-300 rounded-full"></div>
-        </div>
-        <p class="mt-8">Untuk pertanyaan mengenai situs web dan dukungan, Anda dapat mengirimkan email ke devsupport@example.com</p>
     </div>
 </main>
 
