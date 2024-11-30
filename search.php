@@ -1,134 +1,137 @@
 <?php include 'header & footer/header.php'; ?>
-<?php include 'connection/config.php'; ?>
 
-<?php
-// Mendapatkan query pencarian dan kategori
-$query = isset($_GET['query']) ? $_GET['query'] : '';
-$category = isset($_GET['category']) ? $_GET['category'] : '';
-
-// Pagination
-$limit = 30; // Maksimal 30 berita per halaman
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$offset = ($page - 1) * $limit;
-
-try {
-    // Melakukan pencarian di database berdasarkan judul, kategori, atau tag
-    $sql = "SELECT DISTINCT b.id, b.judul, b.konten_artikel, b.kategori, b.tanggal_diterbitkan
-            FROM berita b
-            LEFT JOIN tag t ON b.id = t.berita_id
-            WHERE (b.judul LIKE ? OR b.kategori LIKE ? OR t.nama_tag LIKE ?)
-            LIMIT ? OFFSET ?";
-    $stmt = $conn->prepare($sql);
-    $searchTerm = "%$query%";
-    $stmt->bind_param('sssii', $searchTerm, $searchTerm, $searchTerm, $limit, $offset);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result === false) {
-        throw new Exception("Query gagal");
-    }
-    $numResults = $result->num_rows;
-
-    // Total hasil pencarian
-    $totalQuery = "SELECT COUNT(DISTINCT b.id) as total 
-                   FROM berita b
-                   LEFT JOIN tag t ON b.id = t.berita_id
-                   WHERE (b.judul LIKE ? OR b.kategori LIKE ? OR t.nama_tag LIKE ?)";
-    $totalStmt = $conn->prepare($totalQuery);
-    $totalStmt->bind_param('sss', $searchTerm, $searchTerm, $searchTerm);
-    $totalStmt->execute();
-    $totalResult = $totalStmt->get_result();
-    $totalRow = $totalResult->fetch_assoc();
-    $totalPages = ceil($totalRow['total'] / $limit);
-} catch (Exception $e) {
-    $result = null;
-    $numResults = 0;
-    $totalPages = 0;
-}
-?>
-
-<div class="container mx-auto mt-8 mb-16 px-4 lg:px-12">
+<div class="container mx-auto mt-8 mb-16 px-4 lg:px-12" id="searchResults">
     <div class="mb-4">
-        <h1 class="text-xl font-bold mb-1">Hasil Pencarian untuk "<?php echo htmlspecialchars($query); ?>"</h1>
-        <p class="text-sm text-gray-600"><?php echo $totalRow['total']; ?> data ditemukan</p>
+        <h1 class="text-xl font-bold mb-1">Hasil Pencarian untuk "<span id="searchQuery"></span>"</h1>
+        <p class="text-sm text-gray-600"><span id="totalResults">0</span> data ditemukan</p>
     </div>
-    <?php if ($result && $numResults > 0): ?>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <?php while($row = $result->fetch_assoc()): ?>
-                <?php
-                $firstImage = '';
-                if (preg_match('/<img.+src=[\'"](?P<src>.+?)[\'"].*>/i', $row['konten_artikel'], $image)) {
-                    $firstImage = $image['src'];
-                }
-                $description = strip_tags(html_entity_decode($row['konten_artikel']));
-                $description = substr($description, 0, 100) . '...';
-                ?>
-                <div>
-                    <a href="../category/news-detail.php?id=<?php echo $row['id']; ?>">
-                        <img src="<?php echo $firstImage ?: 'https://via.placeholder.com/400x300'; ?>" class="w-full h-48 object-cover rounded-lg mb-4">
-                    </a>
-                    <a href="../category/news-detail.php?id=<?php echo $row['id']; ?>">
-                        <h2 class="text-2xl font-bold mb-2"><?php echo htmlspecialchars($row['judul']); ?></h2>
-                    </a>
-                    <p class="text-gray-500 mb-2"><?php echo date('d F Y', strtotime($row['tanggal_diterbitkan'])); ?></p>
-                    <p class="text-gray-700 mb-4"><?php echo htmlspecialchars($description); ?></p>
-                </div>
-            <?php endwhile; ?>
-        </div>
-
-        <!-- Pagination controls -->
-        <?php if ($totalPages > 1): ?>
-            <div class="flex justify-center mt-4">
-                <nav class="inline-flex shadow-sm -space-x-px" aria-label="Pagination">
-                    <!-- Tombol "prev" -->
-                    <?php if ($page > 1): ?>
-                        <a href="?query=<?php echo urlencode($query); ?>&category=<?php echo urlencode($category); ?>&page=<?php echo $page - 1; ?>" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                            <span>Prev</span>
-                        </a>
-                    <?php else: ?>
-                        <span class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-gray-200 text-sm font-medium text-gray-500">
-                            <span>Prev</span>
-                        </span>
-                    <?php endif; ?>
-
-                    <!-- Nomor halaman -->
-                    <?php
-                    $startPage = max(1, $page - 5);
-                    $endPage = min($totalPages, $startPage + 9);
-                    for ($i = $startPage; $i <= $endPage; $i++): ?>
-                        <?php if ($i == $page): ?>
-                            <span class="z-10 bg-blue-500 border-blue-600 text-white relative inline-flex items-center px-4 py-2 border text-sm font-medium"><?php echo $i; ?></span>
-                        <?php else: ?>
-                            <a href="?query=<?php echo urlencode($query); ?>&category=<?php echo urlencode($category); ?>&page=<?php echo $i; ?>" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium"><?php echo $i; ?></a>
-                        <?php endif; ?>
-                    <?php endfor; ?>
-
-                    <!-- Tombol "next" -->
-                    <?php if ($page < $totalPages): ?>
-                        <a href="?query=<?php echo urlencode($query); ?>&category=<?php echo urlencode($category); ?>&page=<?php echo $page + 1; ?>" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                            <span>Next</span>
-                        </a>
-                    <?php else: ?>
-                        <span class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-gray-200 text-sm font-medium text-gray-500">
-                            <span>Next</span>
-                        </span>
-                    <?php endif; ?>
-                </nav>
-            </div>
-        <?php endif; ?>
-
-    <?php else: ?>
-        <div class="text-center">
-            <i class="fas fa-search-minus text-gray-400 text-6xl mb-4"></i>
-            <h2 class="text-2xl font-bold mb-2">Tidak Ada Hasil Ditemukan</h2>
-            <p class="text-gray-700 mb-4">Kami tidak dapat menemukan konten yang sesuai dengan pencarian Anda<?php echo $category ? " dalam kategori '$category'" : ''; ?>. Silakan coba dengan kata kunci yang berbeda.</p>
-        </div>
-    <?php endif; ?>
+    <div id="newsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Hasil pencarian akan ditampilkan di sini -->
+    </div>
+    <div id="pagination" class="flex justify-center mt-4">
+        <!-- Pagination akan ditampilkan di sini -->
+    </div>
 </div>
 
-<?php
-// Menutup koneksi
-$conn->close();
-?>
+<script>
+async function fetchSearchResults(query, page = 1) {
+    try {
+        const response = await fetch(`api/pencarian/pencarian.php?query=${encodeURIComponent(query)}&page=${page}`);
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            displayResults(data);
+            displayPagination(data);
+        } else {
+            displayError('Terjadi kesalahan saat mencari data');
+        }
+    } catch (error) {
+        displayError('Terjadi kesalahan pada server');
+    }
+}
+
+function displayResults(data) {
+    document.getElementById('searchQuery').textContent = new URLSearchParams(window.location.search).get('query');
+    document.getElementById('totalResults').textContent = data.total;
+    
+    const container = document.getElementById('newsContainer');
+    container.innerHTML = '';
+    
+    if (data.data.length === 0) {
+        container.innerHTML = `
+            <div class="text-center col-span-3">
+                <i class="fas fa-search-minus text-gray-400 text-6xl mb-4"></i>
+                <h2 class="text-2xl font-bold mb-2">Tidak Ada Hasil Ditemukan</h2>
+                <p class="text-gray-700 mb-4">Silakan coba dengan kata kunci yang berbeda.</p>
+            </div>`;
+        return;
+    }
+    
+    data.data.forEach(news => {
+        container.innerHTML += `
+            <div>
+                <a href="../category/news-detail.php?id=${news.id}">
+                    <img src="${news.gambar}" class="w-full h-48 object-cover rounded-lg mb-4">
+                </a>
+                <a href="../category/news-detail.php?id=${news.id}">
+                    <h2 class="text-2xl font-bold mb-2">${news.judul}</h2>
+                </a>
+                <p class="text-gray-500 mb-2">${new Date(news.tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                <p class="text-gray-700 mb-4">${news.deskripsi}</p>
+            </div>`;
+    });
+}
+
+function displayPagination(data) {
+    const pagination = document.getElementById('pagination');
+    if (data.total_pages <= 1) {
+        pagination.style.display = 'none';
+        return;
+    }
+
+    let html = '<nav class="inline-flex shadow-sm -space-x-px" aria-label="Pagination">';
+    const query = new URLSearchParams(window.location.search).get('query');
+    
+    // Tombol Previous
+    if (data.current_page > 1) {
+        html += `<a href="#" onclick="fetchSearchResults('${query}', ${data.current_page - 1}); return false;" 
+                   class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                   <span>Prev</span>
+                </a>`;
+    } else {
+        html += `<span class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-gray-200 text-sm font-medium text-gray-500">
+                    <span>Prev</span>
+                </span>`;
+    }
+
+    // Nomor halaman
+    const startPage = Math.max(1, data.current_page - 5);
+    const endPage = Math.min(data.total_pages, startPage + 9);
+    
+    for (let i = startPage; i <= endPage; i++) {
+        if (i === data.current_page) {
+            html += `<span class="z-10 bg-blue-500 border-blue-600 text-white relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                        ${i}
+                    </span>`;
+        } else {
+            html += `<a href="#" onclick="fetchSearchResults('${query}', ${i}); return false;" 
+                       class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                       ${i}
+                    </a>`;
+        }
+    }
+
+    // Tombol Next
+    if (data.current_page < data.total_pages) {
+        html += `<a href="#" onclick="fetchSearchResults('${query}', ${data.current_page + 1}); return false;" 
+                   class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                   <span>Next</span>
+                </a>`;
+    } else {
+        html += `<span class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-gray-200 text-sm font-medium text-gray-500">
+                    <span>Next</span>
+                </span>`;
+    }
+
+    html += '</nav>';
+    pagination.innerHTML = html;
+}
+
+function displayError(message) {
+    const container = document.getElementById('newsContainer');
+    container.innerHTML = `
+        <div class="text-center col-span-3">
+            <i class="fas fa-exclamation-circle text-red-500 text-6xl mb-4"></i>
+            <h2 class="text-2xl font-bold mb-2">Error</h2>
+            <p class="text-gray-700 mb-4">${message}</p>
+        </div>`;
+}
+
+// Inisialisasi pencarian saat halaman dimuat
+const urlParams = new URLSearchParams(window.location.search);
+const query = urlParams.get('query') || '';
+const page = parseInt(urlParams.get('page')) || 1;
+fetchSearchResults(query, page);
+</script>
 
 <?php include 'header & footer/footer.php'; ?>

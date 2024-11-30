@@ -82,7 +82,7 @@ try {
     // Query untuk news cards (3 berita di sebelah kiri slider)
     $queryNewsCards = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan 
                       FROM berita 
-                      ORDER BY tanggal_diterbitkan DESC 
+                      ORDER BY RAND() 
                       LIMIT 3";
     $resultNewsCards = $conn->query($queryNewsCards);
     $newsCardsData = [];
