@@ -3,9 +3,9 @@ session_start();
 include '../connection/config.php';
 
 // Tambahkan error logging
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-ini_set('error_log', '../error.log');
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+// ini_set('error_log', '../error.log');
 
 // Definisikan fungsi timeAgo di sini, sebelum digunakan
 function timeAgo($timestamp) {
@@ -247,7 +247,7 @@ try {
                         <?php foreach ($komentar as $comment): ?>
                             <div class="mb-4 user-comment group" data-comment-id="<?= $comment['id'] ?>">
                                 <div class="flex items-start">
-                                    <img src="<?= $comment['profile_pic'] ? 'data:image/jpeg;base64,' . base64_encode($comment['profile_pic']) : '../assets/img/default-profile.png' ?>" 
+                                    <img src="<?= !empty($comment['profile_pic']) ? 'data:image/jpeg;base64,' . $comment['profile_pic'] : '../assets/img/default-profile.png' ?>" 
                                          alt="Profile Picture" 
                                          class="w-10 h-10 rounded-full mr-2 flex-shrink-0 object-cover">
                                     <div class="flex-1">
