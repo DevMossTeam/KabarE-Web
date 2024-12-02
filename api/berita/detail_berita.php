@@ -125,7 +125,8 @@ class BeritaDetail {
     public function getKomentar() {
         try {
             $query = "SELECT k.id, k.teks_komentar, k.tanggal_komentar, 
-                            u.nama_pengguna, u.profile_pic, k.user_id 
+                            u.nama_pengguna, u.uid as user_id,
+                            u.profile_pic  
                      FROM komentar k 
                      JOIN user u ON k.user_id = u.uid 
                      WHERE k.berita_id = ? 
@@ -133,7 +134,17 @@ class BeritaDetail {
             $stmt = $this->conn->prepare($query);
             $stmt->bind_param('s', $this->id);
             $stmt->execute();
-            return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+            
+            $result = $stmt->get_result();
+            $comments = [];
+            
+            while ($row = $result->fetch_assoc()) {
+                // Pastikan profile_pic tidak null
+                $row['profile_pic'] = $row['profile_pic'] ?: '';
+                $comments[] = $row;
+            }
+            
+            return $comments;
         } catch (Exception $e) {
             error_log("Error in getKomentar: " . $e->getMessage());
             return [];

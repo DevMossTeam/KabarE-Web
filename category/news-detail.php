@@ -7,6 +7,36 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 ini_set('error_log', '../error.log');
 
+// Definisikan fungsi timeAgo di sini, sebelum digunakan
+function timeAgo($timestamp) {
+    $time_ago = time() - $timestamp;
+    $periods = array(
+        31536000 => 'tahun',
+        2592000 => 'bulan',
+        604800 => 'minggu',
+        86400 => 'hari',
+        3600 => 'jam',
+        60 => 'menit',
+        1 => 'detik'
+    );
+
+    foreach ($periods as $seconds => $name) {
+        $division = floor($time_ago / $seconds);
+        if ($division != 0) {
+            $time_ago = $division;
+            $period = $name;
+            break;
+        }
+    }
+
+    $output = $time_ago . ' ' . $period;
+    if ($time_ago != 1) {
+        // Tidak perlu menambahkan 's' untuk Bahasa Indonesia
+    }
+
+    return $output . ' yang lalu';
+}
+
 // Ambil ID dari URL
 $id = isset($_GET['id']) ? $_GET['id'] : null;
 $user_id = $_SESSION['user_id'] ?? null;
@@ -217,9 +247,9 @@ try {
                         <?php foreach ($komentar as $comment): ?>
                             <div class="mb-4 user-comment group" data-comment-id="<?= $comment['id'] ?>">
                                 <div class="flex items-start">
-                                    <img src="data:image/jpeg;base64,<?= base64_encode($comment['profile_pic']) ?>" 
+                                    <img src="<?= $comment['profile_pic'] ? 'data:image/jpeg;base64,' . base64_encode($comment['profile_pic']) : '../assets/img/default-profile.png' ?>" 
                                          alt="Profile Picture" 
-                                         class="w-10 h-10 rounded-full mr-2 flex-shrink-0">
+                                         class="w-10 h-10 rounded-full mr-2 flex-shrink-0 object-cover">
                                     <div class="flex-1">
                                         <div class="flex items-center space-x-2">
                                             <span class="font-semibold"><?= htmlspecialchars($comment['nama_pengguna']) ?></span>
@@ -681,25 +711,33 @@ document.addEventListener('click', function(event) {
 </script>
 
 <script>
-    function timeAgo(timestamp) {
-        const seconds = Math.floor((new Date() - timestamp * 1000) / 1000);
-        
-        let interval = Math.floor(seconds / 31536000);
-        if (interval > 1) return interval + " tahun yang lalu";
-        
-        interval = Math.floor(seconds / 2592000);
-        if (interval > 1) return interval + " bulan yang lalu";
-        
-        interval = Math.floor(seconds / 86400);
-        if (interval > 1) return interval + " hari yang lalu";
-        
-        interval = Math.floor(seconds / 3600);
-        if (interval > 1) return interval + " jam yang lalu";
-        
-        interval = Math.floor(seconds / 60);
-        if (interval > 1) return interval + " menit yang lalu";
-        
-        return "baru saja";
+    function timeAgo($timestamp) {
+        $time_ago = time() - $timestamp;
+        $periods = array(
+            31536000 => 'tahun',
+            2592000 => 'bulan',
+            604800 => 'minggu',
+            86400 => 'hari',
+            3600 => 'jam',
+            60 => 'menit',
+            1 => 'detik'
+        );
+
+        foreach ($periods as $seconds => $name) {
+            $division = floor($time_ago / $seconds);
+            if ($division != 0) {
+                $time_ago = $division;
+                $period = $name;
+                break;
+            }
+        }
+
+        $output = $time_ago . ' ' . $period;
+        if ($time_ago != 1) {
+            // Tidak perlu menambahkan 's' untuk Bahasa Indonesia
+        }
+
+        return $output . ' yang lalu';
     }
 
     function updateCommentCount() {
@@ -799,7 +837,7 @@ document.addEventListener('click', function(event) {
                     const commentHtml = `
                         <div class="mb-4 user-comment opacity-0 transition-opacity duration-500 group" data-comment-id="${data.commentId}">
                             <div class="flex items-start">
-                                <img src="${profilePic}" alt="Profile Picture" class="w-10 h-10 rounded-full mr-2 flex-shrink-0">
+                                <img src="${profilePic}" alt="Profile Picture" class="w-10 h-10 rounded-full mr-2 flex-shrink-0 object-cover">
                                 <div class="flex-1">
                                     <div class="flex items-center space-x-2">
                                         <span class="font-semibold">${userName}</span>
