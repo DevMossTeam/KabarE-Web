@@ -17,6 +17,7 @@ class Search {
                     FROM berita b
                     LEFT JOIN tag t ON b.id = t.berita_id
                     WHERE (b.judul LIKE ? OR b.kategori LIKE ? OR t.nama_tag LIKE ?)
+                    AND b.visibilitas = 'public'
                     LIMIT ? OFFSET ?";
             
             $stmt = $this->conn->prepare($sql);
@@ -28,7 +29,8 @@ class Search {
             $totalQuery = "SELECT COUNT(DISTINCT b.id) as total 
                           FROM berita b
                           LEFT JOIN tag t ON b.id = t.berita_id
-                          WHERE (b.judul LIKE ? OR b.kategori LIKE ? OR t.nama_tag LIKE ?)";
+                          WHERE (b.judul LIKE ? OR b.kategori LIKE ? OR t.nama_tag LIKE ?)
+                          AND b.visibilitas = 'public'";
             $totalStmt = $this->conn->prepare($totalQuery);
             $totalStmt->bind_param('sss', $searchTerm, $searchTerm, $searchTerm);
             $totalStmt->execute();

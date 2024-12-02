@@ -69,7 +69,6 @@ if (isset($_SESSION['user_id']) || isset($_COOKIE['user_id'])) {
                     <a href="/settings/umum.php" class="text-[#A2A2A2] font-bold text-lg hover:text-blue-500 border-b-2 border-transparent hover:border-blue-500">Umum</a>
                     <a href="/settings/keamananSetting.php" class="text-[#A2A2A2] font-bold text-lg hover:text-blue-500 border-b-2 border-transparent hover:border-blue-500">Keamanan</a>
                     <a href="/settings/notif_setting.php" class="text-[#A2A2A2] font-bold text-lg hover:text-blue-500 border-b-2 border-transparent hover:border-blue-500">Notifikasi</a>
-                    <a href="/settings/general.php" class="text-[#A2A2A2] font-bold text-lg hover:text-blue-500 border-b-2 border-transparent hover:border-blue-500">General</a>
                 </div>
             </div>
         </div>

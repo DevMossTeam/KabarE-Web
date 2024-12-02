@@ -17,7 +17,11 @@ function timeAgo($datetime) {
 
 try {
     // Data untuk slider
-    $querySlider = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan FROM berita ORDER BY RAND() LIMIT 7";
+    $querySlider = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan 
+                    FROM berita 
+                    WHERE visibilitas = 'public' 
+                    ORDER BY RAND() 
+                    LIMIT 7";
     $resultSlider = $conn->query($querySlider);
     $sliderData = [];
     
@@ -34,7 +38,11 @@ try {
     }
 
     // Data berita terkini
-    $queryTerkini = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan FROM berita ORDER BY tanggal_diterbitkan DESC LIMIT 6";
+    $queryTerkini = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan 
+                     FROM berita 
+                     WHERE visibilitas = 'public' 
+                     ORDER BY tanggal_diterbitkan DESC 
+                     LIMIT 6";
     $resultTerkini = $conn->query($queryTerkini);
     $beritaTerkini = [];
     
@@ -51,7 +59,11 @@ try {
     }
 
     // Data berita populer
-    $queryPopuler = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan FROM berita ORDER BY RAND() LIMIT 3";
+    $queryPopuler = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan 
+                     FROM berita 
+                     WHERE visibilitas = 'public' 
+                     ORDER BY RAND() 
+                     LIMIT 3";
     $resultPopuler = $conn->query($queryPopuler);
     $beritaPopuler = [];
     
@@ -68,7 +80,11 @@ try {
     }
 
     // Data berita baru
-    $queryBaru = "SELECT id, judul, tanggal_diterbitkan FROM berita ORDER BY tanggal_diterbitkan DESC LIMIT 6";
+    $queryBaru = "SELECT id, judul, tanggal_diterbitkan 
+                  FROM berita 
+                  WHERE visibilitas = 'public' 
+                  ORDER BY tanggal_diterbitkan DESC 
+                  LIMIT 6";
     $resultBaru = $conn->query($queryBaru);
     $beritaBaru = [];
     
@@ -82,6 +98,7 @@ try {
     // Query untuk news cards (3 berita di sebelah kiri slider)
     $queryNewsCards = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan 
                       FROM berita 
+                      WHERE visibilitas = 'public' 
                       ORDER BY RAND() 
                       LIMIT 3";
     $resultNewsCards = $conn->query($queryNewsCards);
@@ -109,6 +126,7 @@ try {
     $queryRandomCategory = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan 
                            FROM berita 
                            WHERE kategori = '$randomCategory' 
+                           AND visibilitas = 'public' 
                            ORDER BY RAND() 
                            LIMIT 10";
     $resultRandomCategory = $conn->query($queryRandomCategory);
@@ -135,6 +153,7 @@ try {
     $queryRandomExtra = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan 
                          FROM berita 
                          WHERE kategori = '$randomCategory2' 
+                         AND visibilitas = 'public' 
                          ORDER BY RAND() 
                          LIMIT 2";
     $resultRandomExtra = $conn->query($queryRandomExtra);
@@ -155,6 +174,7 @@ try {
     // Query untuk Berita Lainnya (4 berita acak dari semua kategori)
     $queryBeritaLainnya = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan 
                            FROM berita 
+                           WHERE visibilitas = 'public' 
                            ORDER BY RAND() 
                            LIMIT 4";
     $resultBeritaLainnya = $conn->query($queryBeritaLainnya);
@@ -176,6 +196,7 @@ try {
     $queryBaruBaruIni = "SELECT id, judul, tanggal_diterbitkan 
                          FROM berita 
                          WHERE kategori = '$randomCategory' 
+                         AND visibilitas = 'public' 
                          ORDER BY tanggal_diterbitkan DESC 
                          LIMIT 8";
     $resultBaruBaruIni = $conn->query($queryBaruBaruIni);

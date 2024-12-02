@@ -1,81 +1,97 @@
 <?php
-session_start(); // Pastikan sesi dimulai
+session_start();
+include '../connection/config.php';
 
-include '../connection/config.php'; // Pastikan path ini sesuai dengan struktur folder Anda
+// Tambahkan error logging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('error_log', '../error.log');
 
 // Ambil ID dari URL
 $id = isset($_GET['id']) ? $_GET['id'] : null;
+$user_id = $_SESSION['user_id'] ?? null;
 
-// Tangani permintaan komentar
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
-    $teks_komentar = $_POST['comment'];
-    $randomId = generateRandomId();
-    $tanggal_komentar = date('Y-m-d H:i:s');
-    $user_id = $_SESSION['user_id'] ?? null;
+// Fungsi untuk memanggil API menggunakan cURL
+function callAPI($url) {
+    try {
+        $ch = curl_init();
+        if (!$ch) {
+            throw new Exception("Couldn't initialize cURL");
+        }
 
-    if ($user_id && $id) {
-        $query = "INSERT INTO komentar (id, user_id, berita_id, teks_komentar, tanggal_komentar) VALUES (?, ?, ?, ?, ?)";
-        $stmt = $conn->prepare($query);
-        $stmt->bind_param('sssss', $randomId, $user_id, $id, $teks_komentar, $tanggal_komentar);
-        $stmt->execute();
-
-        echo json_encode(['success' => true]);
-    } else {
-        echo json_encode(['success' => false, 'message' => 'User ID atau ID berita tidak valid.']);
+        curl_setopt_array($ch, [
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => false,
+            CURLOPT_TIMEOUT => 30
+        ]);
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        
+        if (curl_errno($ch)) {
+            throw new Exception(curl_error($ch));
+        }
+        
+        // Debug: Log raw response
+        error_log("Raw API Response: " . $response);
+        
+        curl_close($ch);
+        
+        if ($httpCode !== 200) {
+            $error = json_decode($response, true);
+            throw new Exception($error['error'] ?? 'HTTP Error: ' . $httpCode);
+        }
+        
+        $decodedResponse = json_decode($response, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            error_log("JSON Error: " . json_last_error_msg());
+            throw new Exception('Invalid JSON response: ' . json_last_error_msg());
+        }
+        
+        return $decodedResponse;
+    } catch (Exception $e) {
+        error_log("API Call Error: " . $e->getMessage());
+        error_log("URL attempted: " . $url);
+        throw $e;
     }
-    exit;
 }
 
-// Hapus komentar jika ada permintaan
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_comment_id'])) {
-    $commentId = $_POST['delete_comment_id'];
-    $user_id = $_SESSION['user_id'] ?? null;
-
-    if ($user_id) {
-        $query = "DELETE FROM komentar WHERE id = ? AND user_id = ?";
-        $stmt = $conn->prepare($query);
-        $stmt->bind_param('ss', $commentId, $user_id);
-        $stmt->execute();
-
-        echo json_encode(['success' => true]);
-    } else {
-        echo json_encode(['success' => false, 'message' => 'Pengguna belum login.']);
+try {
+    if (!$id) {
+        throw new Exception("ID berita tidak ditemukan");
     }
-    exit;
-}
 
-// Pastikan $id valid sebelum melanjutkan
-if (!$id) {
-    echo "ID berita tidak valid.";
-    exit;
-}
+    // Debug: Print host dan path
+    error_log("HTTP_HOST: " . $_SERVER['HTTP_HOST']);
+    error_log("DOCUMENT_ROOT: " . $_SERVER['DOCUMENT_ROOT']);
+    
+    // Ubah cara membangun URL API
+    $baseUrl = sprintf(
+        "%s://%s",
+        isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 'https' : 'http',
+        $_SERVER['HTTP_HOST']
+    );
+    
+    $apiUrl = $baseUrl . "/api/berita/detail_berita.php?action=detail&id=" . $id;
+    error_log("API URL: " . $apiUrl);
+    
+    $data = callAPI($apiUrl);
+    
+    if (!$data || isset($data['error'])) {
+        throw new Exception($data['error'] ?? "Data tidak ditemukan");
+    }
 
-// Fungsi untuk menghitung waktu yang lalu
-function timeAgo($datetimeString) {
-    $now = new DateTime();
-    $posted = new DateTime($datetimeString);
-    $interval = $now->diff($posted);
+    // Extract data
+    $berita = $data['berita'];
+    $reaksi = $data['reaksi'];
+    $userReaction = $data['userReaction'];
+    $isBookmarked = $data['isBookmarked'];
+    $tags = $data['tags'];
+    $komentar = $data['komentar'];
 
-    if ($interval->y > 0) return $interval->y . " tahun yang lalu";
-    if ($interval->m > 0) return $interval->m . " bulan yang lalu";
-    if ($interval->d > 0) return $interval->d . " hari yang lalu";
-    if ($interval->h > 0) return $interval->h . " jam yang lalu";
-    if ($interval->i > 0) return $interval->i . " menit yang lalu";
-    return "baru saja";
-}
-
-// Query untuk mendapatkan detail berita dan nama penulis
-$query = "SELECT b.judul, b.konten_artikel, b.tanggal_diterbitkan, b.kategori, u.nama_lengkap, u.nama_pengguna, u.profile_pic 
-          FROM berita b 
-          JOIN user u ON b.user_id = u.uid 
-          WHERE b.id = ?";
-$stmt = $conn->prepare($query);
-$stmt->bind_param('s', $id);
-$stmt->execute();
-$result = $stmt->get_result();
-$berita = $result->fetch_assoc();
-
-if ($berita) {
+    // Ekstrak data berita
     $judul = $berita['judul'];
     $konten = $berita['konten_artikel'];
     $tanggalDiterbitkan = $berita['tanggal_diterbitkan'];
@@ -86,231 +102,28 @@ if ($berita) {
 
     // Ekstrak URL gambar pertama dari konten artikel
     preg_match('/<img.*?src=["\'](.*?)["\'].*?>/i', $konten, $matches);
-    $gambarPertama = $matches[1] ?? ''; // Ambil URL gambar pertama jika ada
-    $konten = preg_replace('/<img.*?>/i', '', $konten, 1); // Hapus hanya gambar pertama
-} else {
-    echo "Berita tidak ditemukan.";
-    exit;
+    $gambarPertama = $matches[1] ?? '';
+    $konten = preg_replace('/<img.*?>/i', '', $konten, 1);
+
+    // Hitung jumlah komentar
+    $commentCount = count($komentar);
+
+    // Ekstrak data dengan nilai default
+    $topNews = $data['topNews'] ?? [];
+    $recentNews = $data['recentNews'] ?? [];
+    $relatedNews = $data['relatedNews'] ?? [];
+    $randomNews = $data['randomNews'] ?? [];
+
+    // Debug data
+    error_log("Extracted data - Top News: " . print_r($topNews, true));
+    error_log("Extracted data - Recent News: " . print_r($recentNews, true));
+    error_log("Extracted data - Related News: " . print_r($relatedNews, true));
+
+    // Sisanya tetap sama seperti sebelumnya...
+} catch (Exception $e) {
+    error_log("Error in news-detail.php: " . $e->getMessage());
+    die("Error: " . $e->getMessage());
 }
-
-// Query untuk mendapatkan berita teratas secara acak
-$topNewsQuery = "SELECT id, judul, tanggal_diterbitkan FROM berita ORDER BY RAND() LIMIT 6";
-$topNewsResult = $conn->query($topNewsQuery);
-
-if (!$topNewsResult) {
-    die("Query gagal: " . $conn->error);
-}
-
-// Ambil ID dan kategori dari berita saat ini
-$kategori = '';
-
-// Dapatkan kategori berita saat ini
-if ($id) {
-    $query = "SELECT kategori FROM berita WHERE id = ?";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param('s', $id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $currentNews = $result->fetch_assoc();
-    $kategori = $currentNews['kategori'];
-}
-
-// Query untuk mendapatkan berita terbaru dari kategori yang sama
-$recentNewsQuery = "SELECT id, judul, tanggal_diterbitkan FROM berita WHERE kategori = ? AND id != ? ORDER BY tanggal_diterbitkan DESC LIMIT 4";
-$stmt = $conn->prepare($recentNewsQuery);
-$stmt->bind_param('ss', $kategori, $id);
-$stmt->execute();
-$recentNewsResult = $stmt->get_result();
-
-if (!$recentNewsResult) {
-    die("Query gagal: " . $conn->error);
-}
-
-// Query untuk mendapatkan berita acak dari kategori yang sama
-$sameTopicNewsQuery = "SELECT id, judul, konten_artikel FROM berita WHERE kategori = ? AND id != ? ORDER BY RAND() LIMIT 3";
-$stmt = $conn->prepare($sameTopicNewsQuery);
-$stmt->bind_param('ss', $kategori, $id);
-$stmt->execute();
-$sameTopicNewsResult = $stmt->get_result();
-
-if (!$sameTopicNewsResult) {
-    die("Query gagal: " . $conn->error);
-}
-
-// Query untuk mendapatkan berita acak
-$randomNewsQuery = "SELECT id, judul, konten_artikel, tanggal_diterbitkan, kategori FROM berita ORDER BY RAND() LIMIT 4";
-$randomNewsResult = $conn->query($randomNewsQuery);
-
-if (!$randomNewsResult) {
-    die("Query gagal: " . $conn->error);
-}
-
-// Ambil data pengguna dari database
-$user_id = $_SESSION['user_id'] ?? null;
-$namaPengguna = '';
-$profilePic = '';
-$userReaction = null;
-
-if ($user_id) {
-    $stmt = $conn->prepare("SELECT nama_pengguna, profile_pic FROM user WHERE uid = ?");
-    if ($stmt) {
-        $stmt->bind_param("s", $user_id);
-        $stmt->execute();
-        $stmt->bind_result($namaPengguna, $profilePic);
-        $stmt->fetch();
-        $stmt->close();
-    } else {
-        die("Query gagal: " . $conn->error);
-    }
-
-    // Cek reaksi pengguna saat ini
-    $stmt = $conn->prepare("SELECT jenis_reaksi FROM reaksi WHERE user_id = ? AND berita_id = ?");
-    $stmt->bind_param('ss', $user_id, $id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    if ($result->num_rows > 0) {
-        $userReaction = $result->fetch_assoc()['jenis_reaksi'];
-    }
-}
-
-// Fungsi untuk menghasilkan ID acak
-function generateRandomId($length = 12) {
-    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    $charactersLength = strlen($characters);
-    $randomString = '';
-    for ($i = 0; $i < $length; $i++) {
-        $randomString .= $characters[rand(0, $charactersLength - 1)];
-    }
-    return $randomString;
-}
-
-// Fungsi untuk mengelola reaksi
-function toggleReaction($conn, $user_id, $berita_id, $jenis_reaksi) {
-    // Cek apakah reaksi sudah ada
-    $query = "SELECT * FROM reaksi WHERE user_id = ? AND berita_id = ?";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param('ss', $user_id, $berita_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $existingReaction = $result->fetch_assoc();
-
-    if ($existingReaction) {
-        // Jika reaksi sudah ada, hapus atau ubah jenis reaksi
-        if ($existingReaction['jenis_reaksi'] === $jenis_reaksi) {
-            // Hapus reaksi jika jenisnya sama
-            $query = "DELETE FROM reaksi WHERE user_id = ? AND berita_id = ?";
-            $stmt = $conn->prepare($query);
-            $stmt->bind_param('ss', $user_id, $berita_id);
-            $stmt->execute();
-        } else {
-            // Ubah jenis reaksi
-            $query = "UPDATE reaksi SET jenis_reaksi = ?, tanggal_reaksi = NOW() WHERE user_id = ? AND berita_id = ?";
-            $stmt = $conn->prepare($query);
-            $stmt->bind_param('sss', $jenis_reaksi, $user_id, $berita_id);
-            $stmt->execute();
-        }
-    } else {
-        // Tambahkan reaksi baru dengan ID acak
-        $randomId = generateRandomId();
-        $query = "INSERT INTO reaksi (id, user_id, berita_id, jenis_reaksi, tanggal_reaksi) VALUES (?, ?, ?, ?, NOW())";
-        $stmt = $conn->prepare($query);
-        $stmt->bind_param('ssss', $randomId, $user_id, $berita_id, $jenis_reaksi);
-        $stmt->execute();
-    }
-}
-
-// Fungsi untuk mengelola bookmark
-function toggleBookmark($conn, $user_id, $berita_id) {
-    // Cek apakah bookmark sudah ada
-    $query = "SELECT * FROM bookmark WHERE user_id = ? AND berita_id = ?";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param('ss', $user_id, $berita_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $existingBookmark = $result->fetch_assoc();
-
-    if ($existingBookmark) {
-        // Hapus bookmark jika sudah ada
-        $query = "DELETE FROM bookmark WHERE user_id = ? AND berita_id = ?";
-        $stmt = $conn->prepare($query);
-        $stmt->bind_param('ss', $user_id, $berita_id);
-        $stmt->execute();
-    } else {
-        // Tambahkan bookmark baru dengan ID acak dan tanggal bookmark
-        $randomId = generateRandomId();
-        $tanggal_bookmark = date('Y-m-d H:i:s');
-        $query = "INSERT INTO bookmark (id, user_id, berita_id, tanggal_bookmark) VALUES (?, ?, ?, ?)";
-        $stmt = $conn->prepare($query);
-        $stmt->bind_param('ssss', $randomId, $user_id, $berita_id, $tanggal_bookmark);
-        $stmt->execute();
-    }
-}
-
-// Tangani permintaan reaksi
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reaction'])) {
-    $jenis_reaksi = $_POST['reaction'];
-    toggleReaction($conn, $user_id, $id, $jenis_reaksi);
-    // Refresh halaman untuk memperbarui tampilan
-    header("Location: news-detail.php?id=$id");
-    exit;
-}
-
-// Tangani permintaan bookmark
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bookmark'])) {
-    toggleBookmark($conn, $user_id, $id);
-    // Refresh halaman untuk memperbarui tampilan
-    header("Location: news-detail.php?id=$id");
-    exit;
-}
-
-// Hitung jumlah like dan dislike
-$likeQuery = "SELECT COUNT(*) as like_count FROM reaksi WHERE berita_id = ? AND jenis_reaksi = 'Suka'";
-$stmt = $conn->prepare($likeQuery);
-$stmt->bind_param('s', $id);
-$stmt->execute();
-$likeResult = $stmt->get_result();
-$likeCount = $likeResult->fetch_assoc()['like_count'] ?? 0;
-
-$dislikeQuery = "SELECT COUNT(*) as dislike_count FROM reaksi WHERE berita_id = ? AND jenis_reaksi = 'Tidak Suka'";
-$stmt = $conn->prepare($dislikeQuery);
-$stmt->bind_param('s', $id);
-$stmt->execute();
-$dislikeResult = $stmt->get_result();
-$dislikeCount = $dislikeResult->fetch_assoc()['dislike_count'] ?? 0;
-
-// Cek status bookmark pengguna saat ini
-$isBookmarked = false;
-if ($user_id) {
-    $stmt = $conn->prepare("SELECT * FROM bookmark WHERE user_id = ? AND berita_id = ?");
-    $stmt->bind_param('ss', $user_id, $id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $isBookmarked = $result->num_rows > 0;
-}
-
-// Query untuk mendapatkan tag berdasarkan berita_id
-$tagQuery = "SELECT nama_tag FROM tag WHERE berita_id = ?";
-$stmt = $conn->prepare($tagQuery);
-$stmt->bind_param('s', $id);
-$stmt->execute();
-$tagResult = $stmt->get_result();
-
-$tags = [];
-while ($tag = $tagResult->fetch_assoc()) {
-    $tags[] = $tag['nama_tag'];
-}
-
-// Ambil komentar dari database
-$commentQuery = "SELECT k.id, k.teks_komentar, k.tanggal_komentar, u.nama_pengguna, u.profile_pic, k.user_id 
-                 FROM komentar k 
-                 JOIN user u ON k.user_id = u.uid 
-                 WHERE k.berita_id = ? 
-                 ORDER BY k.tanggal_komentar DESC";
-$stmt = $conn->prepare($commentQuery);
-$stmt->bind_param('s', $id);
-$stmt->execute();
-$commentResult = $stmt->get_result();
-$commentCount = $commentResult->num_rows;
 ?>
 
 <?php include '../header & footer/header.php'; ?>
@@ -339,29 +152,36 @@ $commentCount = $commentResult->num_rows;
 
                 <!-- Box Like, Dislike, Share, Bookmark, Report -->
                 <div class="flex space-x-4 mt-4">
-                    <form method="post" action="">
-                        <input type="hidden" name="reaction" value="Suka">
-                        <button type="submit" class="flex items-center border border-blue-500 text-gray-500 px-4 py-2 rounded <?= $userReaction === 'Suka' ? 'text-blue-500' : '' ?>">
-                            <i class="fas fa-thumbs-up"></i> <?= $likeCount ?>
-                        </button>
-                    </form>
-                    <form method="post" action="">
-                        <input type="hidden" name="reaction" value="Tidak Suka">
-                        <button type="submit" class="flex items-center border border-blue-500 text-gray-500 px-4 py-2 rounded <?= $userReaction === 'Tidak Suka' ? 'text-blue-500' : '' ?>">
-                            <i class="fas fa-thumbs-down"></i> <?= $dislikeCount ?>
-                        </button>
-                    </form>
-                    <button id="shareButton" class="flex items-center border border-blue-500 text-gray-500 px-4 py-2 rounded">
+                    <!-- Like Button -->
+                    <button onclick="handleReaction('Suka')" 
+                            class="flex items-center border border-blue-500 px-4 py-2 rounded <?= $data['userReaction'] === 'Suka' ? 'text-blue-500' : 'text-gray-500' ?>">
+                        <i class="fas fa-thumbs-up mr-2"></i>
+                        <span id="likeCount"><?= $data['reaksi']['like_count'] ?? 0 ?></span>
+                    </button>
+
+                    <!-- Dislike Button -->
+                    <button onclick="handleReaction('Tidak Suka')" 
+                            class="flex items-center border border-blue-500 px-4 py-2 rounded <?= $data['userReaction'] === 'Tidak Suka' ? 'text-blue-500' : 'text-gray-500' ?>">
+                        <i class="fas fa-thumbs-down mr-2"></i>
+                        <span id="dislikeCount"><?= $data['reaksi']['dislike_count'] ?? 0 ?></span>
+                    </button>
+
+                    <!-- Share Button -->
+                    <button onclick="handleShare()" 
+                            class="flex items-center border border-blue-500 text-gray-500 px-4 py-2 rounded">
                         <i class="fa-solid fa-share-nodes"></i>
                     </button>
-                    <form method="post" action="">
-                        <input type="hidden" name="bookmark" value="toggle">
-                        <button type="submit" class="flex items-center border border-blue-500 text-gray-500 px-4 py-3 rounded <?= $isBookmarked ? 'text-blue-500' : '' ?>">
-                            <i class="fas fa-bookmark"></i>
-                        </button>
-                    </form>
-                    <button id="reportButton" class="flex items-center border border-blue-500 text-gray-500 px-4 py-2 rounded">
-                        <i class="fas fa-flag"></i> 
+
+                    <!-- Bookmark Button -->
+                    <button onclick="handleBookmark()" 
+                            class="flex items-center border border-blue-500 px-4 py-2 rounded <?= $data['isBookmarked'] ? 'text-blue-500' : 'text-gray-500' ?>">
+                        <i class="fas fa-bookmark"></i>
+                    </button>
+
+                    <!-- Report Button -->
+                    <button onclick="showReportModal()" 
+                            class="flex items-center border border-blue-500 text-gray-500 px-4 py-2 rounded">
+                        <i class="fas fa-flag"></i>
                     </button>
                 </div>
 
@@ -387,31 +207,36 @@ $commentCount = $commentResult->num_rows;
                         </button>
                     </div>
                     <div id="commentsContainer" class="border border-gray-300 rounded-lg p-4 overflow-y-auto text-left relative" style="height: 24rem;">
-                        <?php if ($commentResult->num_rows === 0): ?>
+                        <?php if (empty($komentar)): ?>
                             <div id="noComments" class="flex flex-col items-center justify-center h-full">
                                 <i class="fas fa-comments text-4xl text-gray-300 mb-2"></i>
                                 <p class="text-gray-500">Belum ada komentar. Jadilah yang pertama untuk memberikan komentar!</p>
                             </div>
                         <?php endif; ?>
-                        <?php while ($comment = $commentResult->fetch_assoc()): ?>
+                        
+                        <?php foreach ($komentar as $comment): ?>
                             <div class="mb-4 user-comment group" data-comment-id="<?= $comment['id'] ?>">
                                 <div class="flex items-start">
-                                    <img src="data:image/jpeg;base64,<?= base64_encode($comment['profile_pic']) ?>" alt="Profile Picture" class="w-10 h-10 rounded-full mr-2 flex-shrink-0">
+                                    <img src="data:image/jpeg;base64,<?= base64_encode($comment['profile_pic']) ?>" 
+                                         alt="Profile Picture" 
+                                         class="w-10 h-10 rounded-full mr-2 flex-shrink-0">
                                     <div class="flex-1">
                                         <div class="flex items-center space-x-2">
                                             <span class="font-semibold"><?= htmlspecialchars($comment['nama_pengguna']) ?></span>
-                                            <span class="text-gray-500 text-sm"><?= timeAgo($comment['tanggal_komentar']) ?></span>
+                                            <span class="text-gray-500 text-sm"><?= timeAgo(strtotime($comment['tanggal_komentar'])) ?></span>
                                             <?php if ($comment['user_id'] === $user_id): ?>
                                                 <button class="options-button text-gray-500 hover:text-gray-700 hidden group-hover:inline-flex">
                                                     <i class="fas fa-ellipsis-h text-xs"></i>
                                                 </button>
                                             <?php endif; ?>
                                         </div>
-                                        <p class="mt-1 break-words max-w-full comment-text"><?= htmlspecialchars($comment['teks_komentar']) ?></p>
+                                        <p class="mt-1 break-words max-w-full comment-text">
+                                            <?= htmlspecialchars($comment['teks_komentar']) ?>
+                                        </p>
                                     </div>
                                 </div>
                             </div>
-                        <?php endwhile; ?>
+                        <?php endforeach; ?>
                     </div>
                 </div>
             </div>
@@ -419,46 +244,71 @@ $commentCount = $commentResult->num_rows;
 
         <!-- Berita Teratas Hari Ini dan Label -->
         <div class="w-full lg:w-1/3 lg:pl-4 mt-16 lg:mt-20">
-            <div class="mb-4">
-                <span class="inline-block bg-[#FFC300] text-white px-6 py-1 rounded-t-md">Berita Teratas Hari Ini</span>
+            <!-- Berita Teratas Hari Ini -->
+            <div class="mb-4 ml-[15px]">
+                <span class="inline-block bg-[#FFC300] text-white px-6 py-1 rounded-t-md">
+                    Berita Teratas Hari Ini
+                </span>
                 <div class="border-b-4 border-[#FFC300] mt-0"></div>
             </div>
-            <ul class="pl-4">
-                <?php $i = 1; ?>
-                <?php while ($topNews = $topNewsResult->fetch_assoc()): ?>
-                    <li class="mb-4">
-                        <div class="flex items-center">
-                            <span class="text-[#CAD2FF] font-semibold italic text-5xl mr-4"><?= $i ?></span>
-                            <div>
-                                <span class="text-gray-400 text-sm"><?= date('d F Y', strtotime($topNews['tanggal_diterbitkan'])) ?></span>
-                                <a href="news-detail.php?id=<?= $topNews['id'] ?>">
-                                    <h3 class="text-lg font-bold mt-1"><?= htmlspecialchars($topNews['judul']) ?></h3>
-                                </a>
-                                <div class="border-b border-gray-300 mt-2"></div>
+            <ul class="pl-0">
+                <?php if (!empty($data['beritaTeratas'])): ?>
+                    <?php $i = 1; ?>
+                    <?php foreach ($data['beritaTeratas'] as $beritaTop): ?>
+                        <li class="mb-4 w-full">
+                            <div class="flex items-start w-full">
+                                <div class="min-w-[60px] flex justify-end">
+                                    <span class="text-[#CAD2FF] font-semibold italic text-5xl"><?= $i ?></span>
+                                </div>
+                                <div class="flex-grow ml-4 w-full pr-0">
+                                    <span class="text-gray-400 text-sm block">
+                                        <?= date('d F Y', strtotime($beritaTop['tanggal_diterbitkan'])) ?>
+                                    </span>
+                                    <a href="news-detail.php?id=<?= $beritaTop['id'] ?>">
+                                        <h3 class="text-lg font-bold mt-1 hover:text-blue-600">
+                                            <?= htmlspecialchars($beritaTop['judul']) ?>
+                                        </h3>
+                                    </a>
+                                    <div class="border-b border-gray-300 mt-2 w-full"></div>
+                                </div>
                             </div>
-                        </div>
+                        </li>
+                        <?php $i++; ?>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <li class="text-gray-500 text-center py-4">
+                        Tidak ada berita teratas saat ini.
                     </li>
-                    <?php $i++; ?>
-                <?php endwhile; ?>
+                <?php endif; ?>
             </ul>
             
             <!-- Baru Baru Ini -->
             <div class="mt-8 lg:ml-4">
-                <span class="inline-block bg-[#FFC300] text-white px-6 py-1 rounded-t-md">Baru Baru Ini</span>
+                <span class="inline-block bg-[#FFC300] text-white px-6 py-1 rounded-t-md">
+                    Baru Baru Ini
+                </span>
                 <div class="border-b-4 border-[#FFC300] mt-0 mb-4"></div>
-                <ul class="pl-4">
-                    <?php while ($recentNews = $recentNewsResult->fetch_assoc()): ?>
-                        <li class="mb-4">
-                            <div>
-                                <span class="text-gray-400 text-sm"><?= date('d F Y', strtotime($recentNews['tanggal_diterbitkan'])) ?></span>
-                                <a href="news-detail.php?id=<?= $recentNews['id'] ?>">
-                                    <h3 class="text-lg font-bold mt-1"><?= htmlspecialchars($recentNews['judul']) ?></h3>
+                <div>
+                    <?php if (!empty($data['beritaBaru'])): ?>
+                        <?php foreach ($data['beritaBaru'] as $beritaBaru): ?>
+                            <div class="mb-4">
+                                <span class="text-gray-400 text-sm">
+                                    <?= date('d F Y', strtotime($beritaBaru['tanggal_diterbitkan'])) ?>
+                                </span>
+                                <a href="news-detail.php?id=<?= $beritaBaru['id'] ?>">
+                                    <h3 class="text-lg font-bold mt-1 hover:text-blue-600">
+                                        <?= htmlspecialchars($beritaBaru['judul']) ?>
+                                    </h3>
                                 </a>
-                                <div class="border-b border-gray-300 mt-2"></div>
+                                <div class="border-b border-gray-300 mt-2 w-full"></div>
                             </div>
-                        </li>
-                    <?php endwhile; ?>
-                </ul>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <div class="text-gray-500 text-center py-4">
+                            Tidak ada berita terbaru saat ini.
+                        </div>
+                    <?php endif; ?>
+                </div>
             </div>
 
             <!-- Berita dengan Topik yang Sama -->
@@ -466,21 +316,25 @@ $commentCount = $commentResult->num_rows;
                 <span class="inline-block bg-[#FF3232] text-white px-6 py-1 rounded-t-md">Berita dengan Topik yang Sama</span>
                 <div class="border-b-4 border-[#FF3232] mt-0 mb-4"></div>
                 <div class="flex flex-col gap-4">
-                    <?php while ($sameTopicNews = $sameTopicNewsResult->fetch_assoc()): ?>
-                        <?php
-                        // Ekstrak URL gambar pertama dari konten artikel
-                        preg_match('/<img.*?src=["\'](.*?)["\'].*?>/i', $sameTopicNews['konten_artikel'], $matches);
-                        $gambar = $matches[1] ?? 'https://via.placeholder.com/600x330'; // Gunakan placeholder jika tidak ada gambar
-                        ?>
-                        <div class="relative overflow-hidden rounded-lg">
-                            <a href="news-detail.php?id=<?= $sameTopicNews['id'] ?>">
-                                <img src="<?= htmlspecialchars($gambar) ?>" class="w-full h-auto object-cover rounded-lg">
-                                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
-                                    <h3 class="text-white text-lg font-bold"><?= htmlspecialchars($sameTopicNews['judul']) ?></h3>
-                                </div>
-                            </a>
-                        </div>
-                    <?php endwhile; ?>
+                    <?php if (!empty($relatedNews)): ?>
+                        <?php foreach ($relatedNews as $news): ?>
+                            <?php
+                            // Ekstrak URL gambar pertama dari konten artikel
+                            preg_match('/<img.*?src=["\'](.*?)["\'].*?>/i', $news['konten_artikel'], $matches);
+                            $gambar = $matches[1] ?? 'https://via.placeholder.com/600x330';
+                            ?>
+                            <div class="relative overflow-hidden rounded-lg">
+                                <a href="news-detail.php?id=<?= $news['id'] ?>">
+                                    <img src="<?= htmlspecialchars($gambar) ?>" class="w-full h-auto object-cover rounded-lg">
+                                    <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
+                                        <h3 class="text-white text-lg font-bold"><?= htmlspecialchars($news['judul']) ?></h3>
+                                    </div>
+                                </a>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <div class="text-gray-500">Tidak ada berita terkait saat ini.</div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -492,76 +346,359 @@ $commentCount = $commentResult->num_rows;
     <div class="mt-8">
         <span class="inline-block bg-[#45C630] text-white px-6 py-1 rounded-t-md">Berita Lainnya</span>
         <div class="border-b-4 border-[#45C630] mt-0 mb-4"></div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <?php while ($news = $randomNewsResult->fetch_assoc()): ?>
-                <?php
-                // Ekstrak URL gambar pertama dari konten artikel
-                preg_match('/<img.*?src=["\'](.*?)["\'].*?>/i', $news['konten_artikel'], $matches);
-                $gambar = $matches[1] ?? 'https://via.placeholder.com/600x330'; // Gunakan placeholder jika tidak ada gambar
-
-                // Ambil deskripsi singkat dari konten_artikel dan hapus &nbsp;
-                $description = strip_tags($news['konten_artikel']);
-                $description = str_replace('&nbsp;', ' ', $description);
-                $description = substr($description, 0, 150) . '...'; // Potong deskripsi
-                ?>
-                <div class="relative">
-                    <a href="news-detail.php?id=<?= $news['id'] ?>">
-                        <img src="<?= htmlspecialchars($gambar) ?>" class="w-full h-96 object-cover rounded-lg">
-                    </a>
-                    <div class="p-4">
-                        <span class="text-red-500 font-bold"><?= htmlspecialchars($news['kategori']) ?></span> 
-                        <span class="text-gray-500">| <?= date('d F Y', strtotime($news['tanggal_diterbitkan'])) ?></span>
-                        <a href="news-detail.php?id=<?= $news['id'] ?>">
-                            <h3 class="text-lg font-bold mt-1"><?= htmlspecialchars($news['judul']) ?></h3>
+        
+        <!-- Grid container untuk 4 berita -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <?php if (!empty($data['beritaLainnya'])): ?>
+                <?php foreach ($data['beritaLainnya'] as $berita): ?>
+                    <?php
+                    // Ekstrak URL gambar pertama dari konten artikel
+                    preg_match('/<img.*?src=["\'](.*?)["\'].*?>/i', $berita['konten_artikel'], $matches);
+                    $gambar = $matches[1] ?? 'https://via.placeholder.com/600x350';
+                    ?>
+                    <div class="w-full">
+                        <a href="news-detail.php?id=<?= $berita['id'] ?>">
+                            <img src="<?= htmlspecialchars($gambar) ?>" 
+                                 class="w-full h-96 object-cover rounded-lg">
                         </a>
-                        <p class="text-gray-700 mt-2"><?= htmlspecialchars($description) ?></p>
+                        <div class="p-4" style="padding-left: 0; padding-right: 0;">
+                            <span class="text-red-500 font-bold"><?= htmlspecialchars($berita['kategori']) ?></span>
+                            <span class="text-gray-500"> | <?= date('d F Y', strtotime($berita['tanggal_diterbitkan'])) ?></span>
+                            <a href="news-detail.php?id=<?= $berita['id'] ?>">
+                                <h3 class="text-lg font-bold mt-1 hover:text-blue-600"><?= htmlspecialchars($berita['judul']) ?></h3>
+                            </a>
+                            <p class="text-gray-700 mt-2">
+                                <?= substr(strip_tags($berita['konten_artikel']), 0, 150) ?>...
+                            </p>
+                        </div>
                     </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="col-span-2 text-center text-gray-500 py-8">
+                    Tidak ada berita lainnya saat ini.
                 </div>
-            <?php endwhile; ?>
+            <?php endif; ?>
         </div>
     </div>
 </div>
 
-<!-- Modal untuk Report -->
-<div id="reportModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
-    <div class="bg-white p-6 rounded-lg shadow-lg transform scale-95 transition-transform duration-300">
-        <h2 class="text-lg font-bold mb-4">Laporkan Konten</h2>
-        <form id="reportForm">
-            <textarea id="reportReason" class="w-full border border-gray-300 rounded-lg p-2 mb-4" placeholder="Jelaskan alasan laporan Anda..."></textarea>
-            <div class="flex justify-end">
-                <button type="button" id="cancelReport" class="bg-gray-300 text-gray-700 px-4 py-2 rounded mr-2">Batal</button>
-                <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded">Kirim Laporan</button>
+<!-- Modal Laporan Utama -->
+<div id="reportModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div class="flex items-center justify-between p-4 border-b">
+                <h3 class="text-xl font-semibold text-gray-900">Laporkan Artikel</h3>
+                <button onclick="closeReportModal()" class="text-gray-400 hover:text-gray-500">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
-        </form>
+
+            <div class="p-4 space-y-4">
+                <!-- Radio buttons dengan dropdown -->
+                <div class="space-y-3">
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="radio" name="reportReason" value="sexual" class="form-radio text-blue-500">
+                            <span>Konten seksual</span>
+                        </label>
+                        <div class="hidden ml-7 mt-2" id="sexual-options">
+                            <select class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 text-sm">
+                                <option value="">Pilih alasan spesifik</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="radio" name="reportReason" value="violence" class="form-radio text-blue-500">
+                            <span>Konten kekerasan atau menjijikkan</span>
+                        </label>
+                        <div class="hidden ml-7 mt-2" id="violence-options">
+                            <select class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 text-sm">
+                                <option value="">Pilih alasan spesifik</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="radio" name="reportReason" value="harassment" class="form-radio text-blue-500">
+                            <span>Konten kebencian atau pelecehan</span>
+                        </label>
+                        <div class="hidden ml-7 mt-2" id="harassment-options">
+                            <select class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 text-sm">
+                                <option value="">Pilih alasan spesifik</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="radio" name="reportReason" value="dangerous" class="form-radio text-blue-500">
+                            <span>Tindakan berbahaya</span>
+                        </label>
+                        <div class="hidden ml-7 mt-2" id="dangerous-options">
+                            <select class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 text-sm">
+                                <option value="">Pilih alasan spesifik</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="radio" name="reportReason" value="spam" class="form-radio text-blue-500">
+                            <span>Spam atau misinformasi</span>
+                        </label>
+                        <div class="hidden ml-7 mt-2" id="spam-options">
+                            <select class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 text-sm">
+                                <option value="">Pilih alasan spesifik</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="radio" name="reportReason" value="legal" class="form-radio text-blue-500">
+                            <span>Masalah hukum</span>
+                        </label>
+                        <div class="hidden ml-7 mt-2" id="legal-options">
+                            <select class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 text-sm">
+                                <option value="">Pilih alasan spesifik</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="radio" name="reportReason" value="text" class="form-radio text-blue-500">
+                            <span>Teks bermasalah</span>
+                        </label>
+                        <div class="hidden ml-7 mt-2" id="text-options">
+                            <select class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 text-sm">
+                                <option value="">Pilih alasan spesifik</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tombol Berikutnya -->
+                <div class="flex justify-end">
+                    <button id="nextButton" 
+                            class="px-4 py-2 bg-gray-300 text-gray-500 rounded-lg transition-colors duration-200"
+                            disabled>
+                        Berikutnya
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
-<!-- Tambahkan elemen modal konfirmasi hapus -->
-<div id="deleteModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
-    <div class="bg-white p-6 rounded-lg shadow-lg transform scale-95 transition-transform duration-300">
-        <h2 class="text-lg font-bold mb-4">Hapus Komentar</h2>
-        <p>Apakah Anda yakin ingin menghapus komentar ini?</p>
-        <div class="flex justify-end mt-4">
-            <button type="button" id="cancelDelete" class="bg-gray-300 text-gray-700 px-4 py-2 rounded mr-2">Batal</button>
-            <button type="button" id="confirmDelete" class="bg-red-500 text-white px-4 py-2 rounded">Hapus</button>
+<!-- Modal Detail Tambahan -->
+<div id="additionalDetailModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div class="flex items-center justify-between p-4 border-b">
+                <h3 class="text-xl font-semibold text-gray-900">Laporan Tambahan (Opsional)</h3>
+                <button onclick="closeAdditionalDetailModal()" class="text-gray-400 hover:text-gray-500">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="p-4">
+                <div class="relative">
+                    <textarea id="additionalDetail" 
+                              class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 resize-none"
+                              rows="6"
+                              maxlength="500"
+                              placeholder="Berikan detail tambahan"></textarea>
+                    <div class="absolute bottom-2 right-2 text-sm text-gray-500">
+                        <span id="charCount">0</span>/500
+                    </div>
+                </div>
+
+                <div class="flex justify-end mt-4">
+                    <button onclick="submitReport()" 
+                            class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                        Laporkan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Konfirmasi -->
+<div id="confirmationModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6 text-center">
+            <img src="https://img.icons8.com/color/96/000000/checked--v1.png" 
+                 class="mx-auto mb-4" 
+                 alt="Success">
+            <h3 class="text-xl font-semibold mb-2">Terima kasih sudah melaporkan artikel ini</h3>
+            <p class="text-gray-600 mb-4">
+                Laporan Anda akan kami tinjau sesegera mungkin. Jika diperlukan, tindakan lebih lanjut akan diambil sesuai dengan kebijakan kami.
+            </p>
+            <button onclick="closeAllModals()" 
+                    class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                Tutup
+            </button>
         </div>
     </div>
 </div>
 
 <script>
-    function timeAgo(date) {
-        const seconds = Math.floor((new Date() - date) / 1000);
-        let interval = Math.floor(seconds / 31536000);
+const reportReasons = {
+    sexual: ['Konten dewasa', 'Eksploitasi seksual', 'Nuditas'],
+    violence: ['Kekerasan grafis', 'Konten menjijikkan', 'Kekejaman'],
+    harassment: ['Bullying', 'Pelecehan', 'Ujaran kebencian'],
+    dangerous: ['Membahayakan anak', 'Aktivitas berbahaya', 'Menghasut kekerasan'],
+    spam: ['Informasi palsu', 'Spam', 'Penipuan'],
+    legal: ['Pelanggaran hak cipta', 'Pencemaran nama baik', 'Masalah hukum lainnya'],
+    text: ['Konten tidak pantas', 'Bahasa kasar', 'Provokasi']
+};
 
+let currentOpenOptions = null;
+
+document.querySelectorAll('input[name="reportReason"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        // Sembunyikan opsi yang sebelumnya terbuka
+        if (currentOpenOptions) {
+            currentOpenOptions.classList.add('hidden');
+        }
+
+        // Tampilkan opsi untuk radio button yang dipilih
+        const optionsDiv = document.getElementById(`${this.value}-options`);
+        const select = optionsDiv.querySelector('select');
+        
+        // Reset dan isi ulang opsi dropdown
+        select.innerHTML = '<option value="">Pilih alasan spesifik</option>';
+        reportReasons[this.value].forEach(option => {
+            const optionElement = document.createElement('option');
+            optionElement.value = option;
+            optionElement.textContent = option;
+            select.appendChild(optionElement);
+        });
+
+        // Tampilkan dropdown
+        optionsDiv.classList.remove('hidden');
+        currentOpenOptions = optionsDiv;
+
+        // Reset tombol Berikutnya
+        const nextButton = document.getElementById('nextButton');
+        nextButton.classList.add('bg-gray-300', 'text-gray-500');
+        nextButton.classList.remove('bg-blue-500', 'text-white', 'hover:bg-blue-600');
+        nextButton.disabled = true;
+    });
+});
+
+// Event listener untuk semua dropdown
+document.querySelectorAll('select').forEach(select => {
+    select.addEventListener('change', function() {
+        const nextButton = document.getElementById('nextButton');
+        if (this.value) {
+            nextButton.classList.remove('bg-gray-300', 'text-gray-500');
+            nextButton.classList.add('bg-blue-500', 'text-white', 'hover:bg-blue-600');
+            nextButton.disabled = false;
+        } else {
+            nextButton.classList.add('bg-gray-300', 'text-gray-500');
+            nextButton.classList.remove('bg-blue-500', 'text-white', 'hover:bg-blue-600');
+            nextButton.disabled = true;
+        }
+    });
+});
+
+document.getElementById('nextButton').addEventListener('click', function() {
+    document.getElementById('reportModal').classList.add('hidden');
+    document.getElementById('additionalDetailModal').classList.remove('hidden');
+});
+
+document.getElementById('additionalDetail').addEventListener('input', function() {
+    document.getElementById('charCount').textContent = this.value.length;
+});
+
+function submitReport() {
+    document.getElementById('additionalDetailModal').classList.add('hidden');
+    document.getElementById('confirmationModal').classList.remove('hidden');
+    
+    // Setelah beberapa detik, tutup modal konfirmasi
+    setTimeout(() => {
+        closeAllModals();
+        // Reset form setelah submit
+        resetReportForm();
+    }, 3000); // Tutup setelah 3 detik
+}
+
+function closeReportModal() {
+    document.getElementById('reportModal').classList.add('hidden');
+}
+
+function closeAdditionalDetailModal() {
+    document.getElementById('additionalDetailModal').classList.add('hidden');
+}
+
+function closeAllModals() {
+    const modals = [
+        'reportModal',
+        'additionalDetailModal',
+        'confirmationModal'
+    ];
+    
+    modals.forEach(modalId => {
+        document.getElementById(modalId).classList.add('hidden');
+    });
+    
+    // Reset form saat menutup semua modal
+    resetReportForm();
+}
+
+// Modifikasi event listener untuk modal
+document.addEventListener('click', function(event) {
+    const reportModal = document.getElementById('reportModal');
+    const additionalDetailModal = document.getElementById('additionalDetailModal');
+    const confirmationModal = document.getElementById('confirmationModal');
+    
+    const modals = [
+        {element: reportModal, contentClass: 'bg-white'},
+        {element: additionalDetailModal, contentClass: 'bg-white'},
+        {element: confirmationModal, contentClass: 'bg-white'}
+    ];
+    
+    modals.forEach(modal => {
+        if (event.target === modal.element) {
+            // Klik terjadi pada overlay (di luar konten modal)
+            modal.element.classList.add('hidden');
+        }
+        
+        // Periksa apakah klik terjadi pada konten modal
+        const isClickInsideContent = event.target.closest(`.${modal.contentClass}`);
+        if (!isClickInsideContent && modal.element.contains(event.target)) {
+            // Klik terjadi di luar konten modal tapi masih dalam modal overlay
+            modal.element.classList.add('hidden');
+        }
+    });
+});
+</script>
+
+<script>
+    function timeAgo(timestamp) {
+        const seconds = Math.floor((new Date() - timestamp * 1000) / 1000);
+        
+        let interval = Math.floor(seconds / 31536000);
         if (interval > 1) return interval + " tahun yang lalu";
+        
         interval = Math.floor(seconds / 2592000);
         if (interval > 1) return interval + " bulan yang lalu";
+        
         interval = Math.floor(seconds / 86400);
         if (interval > 1) return interval + " hari yang lalu";
+        
         interval = Math.floor(seconds / 3600);
         if (interval > 1) return interval + " jam yang lalu";
+        
         interval = Math.floor(seconds / 60);
         if (interval > 1) return interval + " menit yang lalu";
+        
         return "baru saja";
     }
 
@@ -807,6 +944,106 @@ $commentCount = $commentResult->num_rows;
             alert('Silakan masukkan alasan laporan.');
         }
     });
+
+    async function handleReaction(type) {
+        <?php if (!isset($_SESSION['user_id'])): ?>
+            alert('Silakan login terlebih dahulu untuk memberikan reaksi.');
+            return;
+        <?php endif; ?>
+
+        try {
+            const response = await fetch('<?= $baseUrl ?>/api/berita/detail_berita.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `action=detail&id=<?= $id ?>&reaction=${type}`
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                // Refresh halaman untuk memperbarui tampilan
+                location.reload();
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    async function handleBookmark() {
+        <?php if (!isset($_SESSION['user_id'])): ?>
+            alert('Silakan login terlebih dahulu untuk menambahkan bookmark.');
+            return;
+        <?php endif; ?>
+
+        try {
+            const response = await fetch('<?= $baseUrl ?>/api/berita/detail_berita.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `action=detail&id=<?= $id ?>&bookmark=toggle`
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                // Refresh halaman untuk memperbarui tampilan
+                location.reload();
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    function handleShare() {
+        const url = window.location.href;
+        navigator.clipboard.writeText(url)
+            .then(() => {
+                alert('Link berhasil disalin!');
+            })
+            .catch(err => {
+                console.error('Gagal menyalin link:', err);
+                alert('Gagal menyalin link');
+            });
+    }
+
+    function resetReportForm() {
+        // Reset radio buttons
+        document.querySelectorAll('input[name="reportReason"]').forEach(radio => {
+            radio.checked = false;
+        });
+
+        // Sembunyikan semua dropdown
+        document.querySelectorAll('[id$="-options"]').forEach(dropdown => {
+            dropdown.classList.add('hidden');
+        });
+
+        // Reset dropdown selections
+        document.querySelectorAll('select').forEach(select => {
+            select.value = '';
+        });
+
+        // Reset textarea di modal detail tambahan
+        document.getElementById('additionalDetail').value = '';
+        document.getElementById('charCount').textContent = '0';
+
+        // Reset tombol Berikutnya
+        const nextButton = document.getElementById('nextButton');
+        nextButton.classList.add('bg-gray-300', 'text-gray-500');
+        nextButton.classList.remove('bg-blue-500', 'text-white', 'hover:bg-blue-600');
+        nextButton.disabled = true;
+    }
+
+    function showReportModal() {
+        <?php if (!isset($_SESSION['user_id'])): ?>
+            alert('Silakan login terlebih dahulu untuk melaporkan konten.');
+            return;
+        <?php endif; ?>
+        
+        // Reset form sebelum menampilkan modal
+        resetReportForm();
+        document.getElementById('reportModal').classList.remove('hidden');
+    }
 </script>
 
 <?php include '../header & footer/footer.php'; ?>
