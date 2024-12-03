@@ -6,6 +6,8 @@ include '../connection/config.php'; // Pastikan path ini benar
 $profile_pic = $nama_lengkap = $nama_pengguna = $kredensial = '';
 $role = 'pembaca'; // Inisialisasi role dengan nilai default
 
+$profile_pic = $_SESSION['profile_pic'] ?? ''; // Ambil foto profil dari session
+
 // Ambil data pengguna dari database
 $user_id = $_SESSION['user_id'] ?? null;
 if ($user_id) {
@@ -127,7 +129,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 <!-- Username -->
                 <div class="flex items-center pb-2">
                     <i class="fas fa-user-tag text-gray-500 text-xl"></i>
-                    <div class="flex-1 ml-10">
+                    <div class="flex-1 ml-8">
                         <div>
                             <p class="text-gray-600">Username</p>
                             <p class="font-semibold" id="usernameText" contenteditable="false"><?php echo htmlspecialchars($nama_pengguna); ?></p>
@@ -139,7 +141,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 <!-- Posisi -->
                 <div class="flex items-center pb-2">
                     <i class="fas fa-briefcase text-gray-500 text-xl"></i>
-                    <div class="flex-1 ml-10">
+                    <div class="flex-1 ml-9">
                         <div>
                             <p class="text-gray-600">Posisi</p>
                             <p class="font-semibold" id="posisiText"><?php echo htmlspecialchars($role ?? 'pembaca'); ?></p>
@@ -151,7 +153,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 <!-- Kredensial -->
                 <div class="flex items-center pb-2">
                     <i class="fas fa-info-circle text-gray-500 text-xl"></i>
-                    <div class="flex-1 ml-10">
+                    <div class="flex-1 ml-9">
                         <div>
                             <p class="text-gray-600">Kredensial</p>
                             <p class="font-semibold" id="infoLainnyaText" contenteditable="false">

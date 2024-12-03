@@ -1,9 +1,4 @@
 <?php
-// error_reporting(E_ALL);
-// ini_set('display_errors', 0);
-// ini_set('log_errors', 0);
-// ini_set('error_log', '../../error.log');
-
 session_start();
 header('Content-Type: application/json; charset=utf-8');
 
@@ -252,6 +247,7 @@ class BeritaDetail {
     }
 
     public function toggleReaction($userId, $jenisReaksi) {
+        error_log("toggleReaction called with userId: $userId, jenisReaksi: $jenisReaksi");
         $query = "SELECT * FROM reaksi WHERE user_id = ? AND berita_id = ?";
         $stmt = $this->conn->prepare($query);
         $stmt->bind_param('ss', $userId, $this->id);
@@ -274,7 +270,12 @@ class BeritaDetail {
             $stmt = $this->conn->prepare($query);
             $stmt->bind_param('ssss', $randomId, $userId, $this->id, $jenisReaksi);
         }
-        return $stmt->execute();
+        $stmt->execute();
+
+        // Get updated counts
+        $reaksi = $this->getReaksi();
+        error_log("Updated reaksi: " . json_encode($reaksi));
+        return $reaksi;
     }
 
     public function toggleBookmark($userId) {
@@ -297,8 +298,23 @@ class BeritaDetail {
         return $stmt->execute();
     }
 
+    public function addComment($userId, $commentText) {
+        $commentId = $this->generateRandomId();
+        $query = "INSERT INTO komentar (id, user_id, berita_id, teks_komentar, tanggal_komentar) VALUES (?, ?, ?, ?, NOW())";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param('ssss', $commentId, $userId, $this->id, $commentText);
+        
+        if ($stmt->execute()) {
+            error_log("Comment added successfully: " . $commentId);
+            return $commentId;
+        } else {
+            error_log("Failed to add comment: " . $stmt->error);
+        }
+        return false;
+    }
+
     private function generateRandomId($length = 12) {
-        return bin2hex(random_bytes($length));
+        return bin2hex(random_bytes($length / 2));
     }
 }
 
@@ -336,12 +352,38 @@ if (!$detailBerita) {
     exit;
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
+    $teks_komentar = $_POST['comment'];
+    $randomId = generateRandomId();
+    $timestamp = round(microtime(true) * 1000); // Timestamp dalam milidetik
+    $user_id = $_SESSION['user_id'] ?? null;
+
+    if ($user_id && $id) {
+        $query = "INSERT INTO komentar (id, user_id, berita_id, teks_komentar, tanggal_komentar) VALUES (?, ?, ?, ?, FROM_UNIXTIME(? / 1000))";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param('ssssi', $randomId, $user_id, $id, $teks_komentar, $timestamp);
+        $stmt->execute();
+
+        // Ambil profile_pic dari user
+        $stmt = $conn->prepare("SELECT profile_pic FROM user WHERE uid = ?");
+        $stmt->bind_param('s', $user_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $user = $result->fetch_assoc();
+
+        echo json_encode(['success' => true, 'commentId' => $randomId, 'profilePic' => base64_encode($user['profile_pic']), 'timestamp' => $timestamp]);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'User ID atau ID berita tidak valid.']);
+    }
+    exit;
+}
+
 switch ($action) {
     case 'detail':
         // Handle reactions
         if (isset($_POST['reaction']) && isset($_SESSION['user_id'])) {
-            $success = $beritaDetail->toggleReaction($_SESSION['user_id'], $_POST['reaction']);
-            echo json_encode(['success' => $success]);
+            $reaksi = $beritaDetail->toggleReaction($_SESSION['user_id'], $_POST['reaction']);
+            echo json_encode(['success' => true, 'reaksi' => $reaksi]);
             exit;
         }
         
@@ -355,7 +397,11 @@ switch ($action) {
         // Handle comments
         if (isset($_POST['comment']) && isset($_SESSION['user_id'])) {
             $commentId = $beritaDetail->addComment($_SESSION['user_id'], $_POST['comment']);
-            echo json_encode(['success' => true, 'commentId' => $commentId]);
+            if ($commentId) {
+                echo json_encode(['success' => true, 'commentId' => $commentId]);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Gagal menambahkan komentar.']);
+            }
             exit;
         }
         

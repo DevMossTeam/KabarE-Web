@@ -2,14 +2,58 @@
 session_start();
 include '../connection/config.php';
 
-// Tambahkan error logging
-// error_reporting(E_ALL);
-// ini_set('display_errors', 1);
-// ini_set('error_log', '../error.log');
+$id = isset($_GET['id']) ? $_GET['id'] : null;
+$user_id = $_SESSION['user_id'] ?? null;
+
+if ($id && $user_id) {
+    $query = "UPDATE berita SET view_count = COALESCE(view_count, 0) + 1 WHERE id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param('s', $id);
+    if ($stmt->execute()) {
+        error_log("View count updated for berita ID: $id");
+    } else {
+        error_log("Failed to update view count: " . $stmt->error);
+    }
+}
+
+// Ambil ID dari URL
+$id = isset($_GET['id']) ? $_GET['id'] : null;
+
+// Tangani permintaan komentar
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
+    $teks_komentar = $_POST['comment'];
+    $randomId = generateRandomId();
+    $timestamp = round(microtime(true) * 1000); // Timestamp dalam milidetik
+    $user_id = $_SESSION['user_id'] ?? null;
+
+    if ($user_id && $id) {
+        $query = "INSERT INTO komentar (id, user_id, berita_id, teks_komentar, tanggal_komentar) VALUES (?, ?, ?, ?, FROM_UNIXTIME(? / 1000))";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param('ssssi', $randomId, $user_id, $id, $teks_komentar, $timestamp);
+        $stmt->execute();
+
+        // Ambil profile_pic dari user
+        $stmt = $conn->prepare("SELECT profile_pic FROM user WHERE uid = ?");
+        $stmt->bind_param('s', $user_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $user = $result->fetch_assoc();
+
+        echo json_encode(['success' => true, 'commentId' => $randomId, 'profilePic' => base64_encode($user['profile_pic']), 'timestamp' => $timestamp]);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'User ID atau ID berita tidak valid.']);
+    }
+    exit;
+}
+
+// Fungsi untuk menghasilkan ID acak
+function generateRandomId($length = 12) {
+    return bin2hex(random_bytes($length / 2));
+}
 
 // Definisikan fungsi timeAgo di sini, sebelum digunakan
 function timeAgo($timestamp) {
-    $time_ago = time() - $timestamp;
+    $time_ago = time() - strtotime($timestamp);
     $periods = array(
         31536000 => 'tahun',
         2592000 => 'bulan',
@@ -29,17 +73,12 @@ function timeAgo($timestamp) {
         }
     }
 
-    $output = $time_ago . ' ' . $period;
-    if ($time_ago != 1) {
-        // Tidak perlu menambahkan 's' untuk Bahasa Indonesia
+    if ($time_ago < 60) {
+        return 'baru saja';
     }
 
-    return $output . ' yang lalu';
+    return $time_ago . ' ' . $period . ' yang lalu';
 }
-
-// Ambil ID dari URL
-$id = isset($_GET['id']) ? $_GET['id'] : null;
-$user_id = $_SESSION['user_id'] ?? null;
 
 // Fungsi untuk memanggil API menggunakan cURL
 function callAPI($url) {
@@ -253,7 +292,9 @@ try {
                                     <div class="flex-1">
                                         <div class="flex items-center space-x-2">
                                             <span class="font-semibold"><?= htmlspecialchars($comment['nama_pengguna']) ?></span>
-                                            <span class="text-gray-500 text-sm"><?= timeAgo(strtotime($comment['tanggal_komentar'])) ?></span>
+                                            <span class="text-gray-500 text-sm comment-date" data-timestamp="<?= date('Y-m-d\TH:i:s', strtotime($comment['tanggal_komentar'])) ?>">
+                                                <?= timeAgo($comment['tanggal_komentar']) ?>
+                                            </span>
                                             <?php if ($comment['user_id'] === $user_id): ?>
                                                 <button class="options-button text-gray-500 hover:text-gray-700 hidden group-hover:inline-flex">
                                                     <i class="fas fa-ellipsis-h text-xs"></i>
@@ -547,7 +588,12 @@ try {
                     </div>
                 </div>
 
-                <div class="flex justify-end mt-4">
+                <div class="flex justify-end mt-4 space-x-2">
+                    <!-- Tombol Kembali -->
+                    <button onclick="backToReportOptions()" 
+                            class="px-4 py-2 bg-gray-300 text-gray-500 rounded-lg hover:bg-gray-400">
+                        Kembali
+                    </button>
                     <button onclick="submitReport()" 
                             class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
                         Laporkan
@@ -708,11 +754,136 @@ document.addEventListener('click', function(event) {
         }
     });
 });
+
+function showReportModal() {
+    <?php if (!isset($_SESSION['user_id'])): ?>
+        alert('Silakan login terlebih dahulu untuk melaporkan konten.');
+        return;
+    <?php endif; ?>
+    
+    // Reset form sebelum menampilkan modal
+    resetReportForm();
+    document.getElementById('reportModal').classList.remove('hidden');
+}
+
+function resetReportForm() {
+    // Reset radio buttons
+    document.querySelectorAll('input[name="reportReason"]').forEach(radio => {
+        radio.checked = false;
+    });
+
+    // Sembunyikan semua dropdown
+    document.querySelectorAll('[id$="-options"]').forEach(dropdown => {
+        dropdown.classList.add('hidden');
+    });
+
+    // Reset dropdown selections
+    document.querySelectorAll('select').forEach(select => {
+        select.value = '';
+    });
+
+    // Reset textarea di modal detail tambahan
+    document.getElementById('additionalDetail').value = '';
+    document.getElementById('charCount').textContent = '0';
+
+    // Reset tombol Berikutnya
+    const nextButton = document.getElementById('nextButton');
+    nextButton.classList.add('bg-gray-300', 'text-gray-500');
+    nextButton.classList.remove('bg-blue-500', 'text-white', 'hover:bg-blue-600');
+    nextButton.disabled = true;
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).classList.add('hidden');
+}
+
+// Tambahkan event listener untuk menutup modal saat menekan tombol Esc
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeModal('reportModal');
+    }
+});
+
+function backToReportOptions() {
+    document.getElementById('additionalDetailModal').classList.add('hidden');
+    document.getElementById('reportModal').classList.remove('hidden');
+}
+
+function addComment() {
+    const commentInput = document.getElementById('commentInput');
+    const commentText = commentInput.value.trim();
+    if (commentText) {
+        fetch('news-detail.php?id=<?= $id ?>', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                comment: commentText
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const userName = '<?= htmlspecialchars($namaPengguna) ?>';
+                const profilePic = `data:image/jpeg;base64,${data.profilePic}`;
+                const commentDate = new Date(data.timestamp);
+
+                const commentHtml = `
+                    <div class="mb-4 user-comment opacity-0 transition-opacity duration-500 group" data-comment-id="${data.commentId}">
+                        <div class="flex items-start">
+                            <img src="${profilePic}" alt="Profile Picture" class="w-10 h-10 rounded-full mr-2 flex-shrink-0">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2">
+                                    <span class="font-semibold">${userName}</span>
+                                    <span class="text-gray-500 text-sm comment-date" data-timestamp="${commentDate.getTime()}">${timeAgo(commentDate)}</span>
+                                    <button class="options-button hidden group-hover:inline-flex text-gray-500 hover:text-gray-700">
+                                        <i class="fas fa-ellipsis-h text-xs"></i>
+                                    </button>
+                                </div>
+                                <p class="mt-1 break-words max-w-full comment-text">${commentText}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                commentsContainer.insertAdjacentHTML('afterbegin', commentHtml);
+                const newComment = commentsContainer.firstElementChild;
+                setTimeout(() => newComment.classList.remove('opacity-0'), 10);
+                commentInput.value = '';
+                updateCommentCount();
+
+                // Hide the "no comments" message
+                document.getElementById('noComments').classList.add('hidden');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+}
+
+document.getElementById('sendCommentButton').addEventListener('click', addComment);
+
+document.getElementById('commentInput').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        addComment();
+    }
+});
+
+function updateCommentCount() {
+    const commentCount = document.getElementById('commentCount');
+    const comments = document.querySelectorAll('.user-comment');
+    commentCount.textContent = `Komentar (${comments.length})`;
+}
+
+updateCommentCount();
 </script>
 
 <script>
     function timeAgo($timestamp) {
-        $time_ago = time() - $timestamp;
+        $time_ago = time() - strtotime($timestamp);
         $periods = array(
             31536000 => 'tahun',
             2592000 => 'bulan',
@@ -732,12 +903,11 @@ document.addEventListener('click', function(event) {
             }
         }
 
-        $output = $time_ago . ' ' . $period;
-        if ($time_ago != 1) {
-            // Tidak perlu menambahkan 's' untuk Bahasa Indonesia
+        if ($time_ago < 60) {
+            return 'baru saja';
         }
 
-        return $output . ' yang lalu';
+        return $time_ago . ' ' . $period . ' yang lalu';
     }
 
     function updateCommentCount() {
@@ -813,70 +983,6 @@ document.addEventListener('click', function(event) {
             }
         });
     }
-
-    function addComment() {
-        const commentInput = document.getElementById('commentInput');
-        const commentText = commentInput.value.trim();
-        if (commentText) {
-            fetch('news-detail.php?id=<?= $id ?>', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: new URLSearchParams({
-                    comment: commentText
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const userName = '<?= htmlspecialchars($namaPengguna) ?>';
-                    const profilePic = 'data:image/jpeg;base64,<?= base64_encode($profilePic) ?>';
-                    const commentDate = new Date();
-
-                    const commentHtml = `
-                        <div class="mb-4 user-comment opacity-0 transition-opacity duration-500 group" data-comment-id="${data.commentId}">
-                            <div class="flex items-start">
-                                <img src="${profilePic}" alt="Profile Picture" class="w-10 h-10 rounded-full mr-2 flex-shrink-0 object-cover">
-                                <div class="flex-1">
-                                    <div class="flex items-center space-x-2">
-                                        <span class="font-semibold">${userName}</span>
-                                        <span class="text-gray-500 text-sm">${timeAgo(commentDate)}</span>
-                                        <button class="options-button hidden group-hover:inline-flex text-gray-500 hover:text-gray-700">
-                                            <i class="fas fa-ellipsis-h text-xs"></i>
-                                        </button>
-                                    </div>
-                                    <p class="mt-1 break-words max-w-full comment-text">${commentText}</p>
-                                    <button class="read-more text-blue-500 hover:underline text-sm hidden">Baca Selengkapnya</button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-
-                    commentsContainer.insertAdjacentHTML('afterbegin', commentHtml);
-                    const newComment = commentsContainer.firstElementChild;
-                    setTimeout(() => newComment.classList.remove('opacity-0'), 10);
-                    commentInput.value = '';
-                    updateCommentCount();
-                    handleReadMore(newComment.querySelector('.comment-text'), newComment.querySelector('.read-more'));
-
-                    // Hide the "no comments" message
-                    document.getElementById('noComments').classList.add('hidden');
-                } else {
-                    alert(data.message || 'Gagal menambahkan komentar.');
-                }
-            });
-        }
-    }
-
-    document.getElementById('sendCommentButton').addEventListener('click', addComment);
-
-    document.getElementById('commentInput').addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            addComment();
-        }
-    });
 
     let commentToDelete = null;
 
@@ -990,18 +1096,22 @@ document.addEventListener('click', function(event) {
         <?php endif; ?>
 
         try {
-            const response = await fetch('<?= $baseUrl ?>/api/berita/detail_berita.php', {
+            const response = await fetch('<?= $baseUrl ?>/api/berita/detail_berita.php?action=detail', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: `action=detail&id=<?= $id ?>&reaction=${type}`
+                body: `id=<?= $id ?>&reaction=${type}`
             });
 
             const data = await response.json();
+            console.log("Server response:", data); // Log respons dari server
             if (data.success) {
-                // Refresh halaman untuk memperbarui tampilan
-                location.reload();
+                // Update like and dislike counts
+                document.getElementById('likeCount').textContent = data.reaksi.like_count;
+                document.getElementById('dislikeCount').textContent = data.reaksi.dislike_count;
+            } else {
+                alert('Gagal mengubah reaksi.');
             }
         } catch (error) {
             console.error('Error:', error);
@@ -1082,6 +1192,39 @@ document.addEventListener('click', function(event) {
         resetReportForm();
         document.getElementById('reportModal').classList.remove('hidden');
     }
+</script>
+
+<script>
+    function timeAgo(date) {
+        const seconds = Math.floor((new Date() - date) / 1000);
+        let interval = Math.floor(seconds / 31536000);
+
+        if (interval >= 1) return interval + " tahun yang lalu";
+        interval = Math.floor(seconds / 2592000);
+        if (interval >= 1) return interval + " bulan yang lalu";
+        interval = Math.floor(seconds / 86400);
+        if (interval >= 1) return interval + " hari yang lalu";
+        interval = Math.floor(seconds / 3600);
+        if (interval >= 1) return interval + " jam yang lalu";
+        interval = Math.floor(seconds / 60);
+        if (interval >= 1) return interval + " menit yang lalu";
+        return "baru saja";
+    }
+
+    function updateTimeAgo() {
+        const commentDates = document.querySelectorAll('.comment-date');
+        commentDates.forEach(dateElement => {
+            const commentDate = new Date(dateElement.getAttribute('data-timestamp'));
+            dateElement.textContent = timeAgo(commentDate);
+        });
+    }
+
+    // Panggil updateTimeAgo setiap menit
+    setInterval(updateTimeAgo, 60000);
+
+    document.addEventListener('DOMContentLoaded', function() {
+        updateTimeAgo();
+    });
 </script>
 
 <?php include '../header & footer/footer.php'; ?>

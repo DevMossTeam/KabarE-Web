@@ -93,7 +93,7 @@
                     <span id="randomCategoryText" class="text-red-500 font-bold"></span>
                     <span id="randomCategoryTime" class="text-gray-500"></span>
                     <a id="randomCategoryTitleLink" href="#">
-                        <h3 id="randomCategoryTitle" class="text-lg font-bold mt-1"></h3>
+                        <h3 id="randomCategoryTitle" class="text-lg font-bold mt-1 hover:text-blue-600">${mainNews.judul}</h3>
                     </a>
                     <p id="randomCategoryDescription" class="text-gray-700 mt-2"></p>
                 </div>
@@ -105,7 +105,12 @@
                 </div>
                 <div>
                     <ul id="randomCategoryList">
-                        <!-- Akan diisi oleh JavaScript -->
+                        ${listNews.map(news => `
+                            <li class="mb-2 border-b border-gray-300 pb-2">
+                                <span class="text-gray-400 text-sm block">${news.timeAgo}</span>
+                                <a href="category/news-detail.php?id=${news.id}" class="text-black font-bold hover:text-blue-600">${news.judul}</a>
+                            </li>
+                        `).join('')}
                     </ul>
                 </div>
             </div>
@@ -220,7 +225,7 @@ function updateBeritaTerkini(beritaTerkini) {
         <a href="category/news-detail.php?id=${berita.id}" class="flex flex-col md:flex-row items-start">
             <img src="${berita.firstImage || 'https://via.placeholder.com/200x150'}" class="w-full md:w-1/3 h-32 md:h-40 object-cover rounded-lg">
             <div class="ml-4">
-                <h3 class="text-md font-bold text-white">${berita.judul}</h3>
+                <h3 class="text-md font-bold text-white hover:text-blue-600">${berita.judul}</h3>
                 <p class="text-gray-300 text-sm">${berita.konten_artikel.replace(/<[^>]*>/g, '').substring(0, 100)}...</p>
             </div>
         </a>
@@ -234,7 +239,7 @@ function updateBeritaPopuler(beritaPopuler) {
         <div class="flex mb-6 items-start">
             <div class="flex-grow">
                 <a href="category/news-detail.php?id=${berita.id}">
-                    <h3 class="text-lg font-bold mt-1">${berita.judul}</h3>
+                    <h3 class="text-lg font-bold mt-1 hover:text-blue-600">${berita.judul}</h3>
                 </a>
                 <p class="text-gray-500 mt-1">${berita.konten_artikel.replace(/<[^>]*>/g, '').substring(0, 300)}...</p>
             </div>
@@ -255,7 +260,7 @@ function updateBeritaBaru(beritaBaru) {
                 <div class="flex-grow">
                     <span class="text-gray-400 text-sm">${berita.timeAgo}</span>
                     <a href="category/news-detail.php?id=${berita.id}">
-                        <h3 class="text-lg font-bold mt-1">${berita.judul}</h3>
+                        <h3 class="text-lg font-bold mt-1 hover:text-blue-600">${berita.judul}</h3>
                     </a>
                     <div class="border-b border-gray-300 mt-2 w-full"></div>
                 </div>
@@ -310,7 +315,7 @@ function updateNewsCards(newsCardsData) {
                 <img src="${news.firstImage || 'https://via.placeholder.com/200x150'}" class="w-full h-full object-cover">
             </div>
             <div class="flex flex-col justify-start md:ml-4">
-                <h3 class="text-md font-bold mt-1">${news.judul}</h3>
+                <h3 class="text-md font-bold mt-1 hover:text-blue-600">${news.judul}</h3>
                 <p class="text-gray-500 mt-1 text-xs">${news.konten_artikel.replace(/<[^>]*>/g, '').substring(0, 100)}...</p>
                 <span class="text-sm mt-1">
                     <span class="text-red-500 font-bold">${news.kategori}</span>
@@ -351,7 +356,7 @@ function updateRandomCategory(randomCategoryData) {
     listContainer.innerHTML = listNews.map(news => `
         <li class="mb-2 border-b border-gray-300 pb-2">
             <span class="text-gray-400 text-sm block">${news.timeAgo}</span>
-            <a href="category/news-detail.php?id=${news.id}" class="text-black hover:underline font-bold">${news.judul}</a>
+            <a href="category/news-detail.php?id=${news.id}" class="text-black font-bold hover:text-blue-600">${news.judul}</a>
         </li>
     `).join('');
 }
@@ -374,7 +379,7 @@ function updateRandomExtra(randomExtraData) {
                 <span class="text-red-500 font-bold">${news.kategori}</span>
                 <span class="text-gray-500"> | ${news.timeAgo}</span>
                 <a href="category/news-detail.php?id=${news.id}">
-                    <h3 class="text-lg font-bold mt-1">${news.judul}</h3>
+                    <h3 class="text-lg font-bold mt-1 hover:text-blue-600">${news.judul}</h3>
                 </a>
                 <p class="text-gray-700 mt-2">${stripHtml(news.konten_artikel).substring(0, 150)}...</p>
             </div>
