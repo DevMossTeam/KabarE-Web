@@ -1,9 +1,14 @@
-<?php include '../../../header & footer/header.php'; ?>
-<?php include '../../../header & footer/category_header.php'; ?>
-<?php renderCategoryHeader(categoryName: 'Download'); ?>
+<?php 
+
+include '../../../header & footer/header.php';
+include '../../../header & footer/category_header.php';
+renderCategoryHeader(categoryName: 'Download');
+
+?>
 
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,6 +18,7 @@
     <script src="slider.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body>
 
     <div class="slider">

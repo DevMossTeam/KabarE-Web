@@ -1,13 +1,17 @@
-<?php include '../header.php'; ?>
-<?php include '../category_header.php'; ?>
-<?php renderCategoryHeader(categoryName: 'Kebijakan Privasi'); ?>
+<?php
+
+include '../header.php';
+include '../category_header.php';
+renderCategoryHeader(categoryName: 'Kebijakan Privasi');
+
+?>
 
 <main class="container mx-auto my-8 flex-grow">
     <div class="p-4 max-w-6xl mx-auto text-left">
         <h1 class="text-2xl font-bold mb-4">Kebijakan Privasi Aplikasi KabarE</h1>
         <p>Terakhir Diperbarui: [Tanggal]</p>
         <p>Kami di KabarE, yang dikelola oleh UKPM Explant Politeknik Negeri Jember, berkomitmen untuk melindungi privasi dan keamanan data pengguna kami. Kebijakan Privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, dan melindungi informasi pribadi Anda saat menggunakan aplikasi KabarE.</p>
-        
+
         <h2 class="text-xl font-semibold mt-4">1. Informasi yang Kami Kumpulkan</h2>
         <ul class="list-disc ml-6">
             <li>Informasi Pribadi: Nama, alamat email, dan informasi lain yang mungkin Anda berikan saat mendaftar atau berinteraksi dengan layanan kami.</li>

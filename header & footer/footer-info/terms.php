@@ -1,13 +1,17 @@
-<?php include '../header.php'; ?>
-<?php include '../category_header.php'; ?>
-<?php renderCategoryHeader(categoryName: 'Syarat dan Ketentuan'); ?>
+<?php
+
+include '../header.php';
+include '../category_header.php';
+renderCategoryHeader(categoryName: 'Syarat dan Ketentuan');
+
+?>
 
 <main class="container mx-auto my-8 flex-grow">
     <div class="p-4 max-w-6xl mx-auto text-left">
         <h1 class="text-2xl font-bold mb-4">Syarat dan Ketentuan Penggunaan Aplikasi KabarE</h1>
         <p>Terakhir Diperbarui: [Tanggal]</p>
         <p>Dengan mengakses dan menggunakan aplikasi KabarE, Anda setuju untuk terikat dengan syarat dan ketentuan berikut. Jika Anda tidak setuju dengan syarat dan ketentuan ini, harap tidak menggunakan aplikasi ini.</p>
-        
+
         <h2 class="text-xl font-semibold mt-4">1. Penggunaan Aplikasi</h2>
         <ul class="list-disc ml-6">
             <li>Aplikasi ini disediakan untuk penggunaan pribadi dan non-komersial. Anda tidak diperbolehkan untuk mendistribusikan, memodifikasi, atau menjual konten dari aplikasi ini tanpa izin tertulis dari kami.</li>

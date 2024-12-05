@@ -19,7 +19,7 @@
                                 <a href="/header & footer/footer-info/download/download.php" class="text-white no-underline text-sm">DOWNLOAD SEKARANG</a> <!-- Ubah warna teks dan hilangkan garis bawah -->
                                 <div class="flex items-center mt-2">
                                     <i class="fas fa-map-marker-alt mr-2"></i>
-                                    <p class="text-xs">Jl. Medan Merdeka Barat No.4-5, Jakarta Pusat.</p>
+                                    <p class="text-xs">Jl.Mastrip, Krajan Timur, Sumbersari, Kabupaten Jember</p>
                                 </div>
                                 <div class="flex items-center mt-2">
                                     <i class="fas fa-phone mr-2"></i>
@@ -27,7 +27,7 @@
                                 </div>
                                 <div class="flex items-center mt-2">
                                     <i class="fas fa-envelope mr-2"></i>
-                                    <p class="text-xs">Pemberitaan: beritapro3@rri.go.id</p>
+                                    <p class="text-xs">Pemberitaan: ukpmexplant@journalist.com</p>
                                 </div>
                             </div>
                             <div class="text-right space-y-2 lg:space-y-0 lg:space-x-4 w-full lg:w-auto mb-4 lg:mb-0 ml-auto lg:ml-0 mt-8">
@@ -35,6 +35,7 @@
                                 <a href="/header & footer/footer-info/privacy.php" class="nav-link block text-base">Kebijakan Privasi</a>
                                 <a href="/header & footer/footer-info/media-guidelines.php" class="nav-link block text-base">Pedoman Media Siber</a>
                                 <a href="/header & footer/footer-info/about-us.php" class="nav-link block text-base">Tentang Kami</a>
+                                <a href="/header & footer/footer-info/contact-us.php" class="nav-link block text-base">Hubungi Kami</a>
                             </div>
                         </div>
                     </div>

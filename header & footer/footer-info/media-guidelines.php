@@ -1,14 +1,18 @@
-<?php include '../header.php'; ?>
-<?php include '../category_header.php'; ?>
-<?php renderCategoryHeader(categoryName: 'Pedoman Media Siber'); ?>
+<?php
+
+include '../header.php';
+include '../category_header.php';
+renderCategoryHeader(categoryName: 'Pedoman Media Siber');
+
+?>
 
 <main class="container mx-auto my-8 flex-grow">
     <div class="p-4 max-w-6xl mx-auto text-left">
         <h1 class="text-2xl font-bold mb-4">Pedoman Media Siber Aplikasi KabarE</h1>
-        
+
         <h2 class="text-xl font-semibold mt-4">1. Prinsip Dasar</h2>
         <p>KabarE berkomitmen untuk memberikan informasi yang akurat, terpercaya, dan berimbang kepada pengguna. Kami menghormati hak publik untuk mendapatkan informasi yang benar dan bertanggung jawab, serta menjunjung tinggi kode etik jurnalistik dalam setiap proses pemberitaan.</p>
-        
+
         <h2 class="text-xl font-semibold mt-4">2. Kode Etik dan Standar Pemberitaan</h2>
         <ul class="list-disc ml-6">
             <li><strong>Akurasi dan Kejujuran:</strong> Semua berita yang dipublikasikan harus berdasarkan fakta yang dapat diverifikasi dan diperoleh dari sumber yang sah. Setiap kesalahan akan diperbaiki secepat mungkin untuk memastikan akurasi.</li>
@@ -59,4 +63,3 @@
 </main>
 
 <?php include '../footer.php'; ?>
-

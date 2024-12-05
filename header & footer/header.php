@@ -29,6 +29,7 @@ $allowed_pages = [
     'terms.php',
     'test.php',
     'news-detail.php',
+    'contact-us.php',
     'download.php'
 ];
 $current_page = basename($_SERVER['PHP_SELF']);
