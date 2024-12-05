@@ -183,9 +183,9 @@ $isPenulis = ($role === 'penulis');
                 <a href="/category/kampus.php" class="nav-link text-white hover:text-blue-300 px-1 md:px-2">Kampus</a>
                 <a href="/category/prestasi.php" class="nav-link text-white hover:text-blue-300 px-1 md:px-2">Prestasi</a>
                 <a href="/category/politik.php" class="nav-link text-white hover:text-blue-300 px-1 md:px-2">Politik</a>
-                <a href="/category/kesehatan.php" class="nav-link text-white hover:text-blue-300 px-1 md:px-2">Kesehatan</a>
-                <a href="/category/olahraga.php" class="nav-link text-white hover:text-blue-300 px-1 md:px-2">Olahraga</a>
-                <a href="/category/ekonomi.php" class="nav-link text-white hover:text-blue-300 px-1 md:px-2">Ekonomi</a>
+                <a href="/category/kesehatan.php" class="nav-link text-white hover:text-blue-300 px-1 sm:px-2 hidden md:inline">Kesehatan</a>
+                <a href="/category/olahraga.php" class="nav-link text-white hover:text-blue-300 px-1 sm:px-2 hidden md:inline">Olahraga</a>
+                <a href="/category/ekonomi.php" class="nav-link text-white hover:text-blue-300 px-1 sm:px-2 hidden md:inline">Ekonomi</a>
                 <a href="/category/bisnis.php" class="nav-link text-white hover:text-blue-300 px-1 md:px-2 hidden lg:inline">Bisnis</a>
                 <a href="/category/ukm.php" class="nav-link text-white hover:text-blue-300 px-1 md:px-2 hidden lg:inline">UKM</a>
                 <div class="relative">
@@ -196,6 +196,9 @@ $isPenulis = ($role === 'penulis');
                         <a href="/category/other_category/berita_lainnya.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Berita Lainnya</a>
                         <a href="/category/bisnis.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-200 md:block lg:hidden">Bisnis</a>
                         <a href="/category/ukm.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-200 md:block lg:hidden">UKM</a>
+                        <a href="/category/bisnis.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-200 sm:block md:hidden lg:hidden">Ekonomi</a>
+                        <a href="/category/ukm.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-200 sm:block md:hidden lg:hidden">Olahraga</a>
+                        <a href="/category/bisnis.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-200 sm:block md:hidden lg:hidden">Kesehatan</a>
                     </div>
                 </div>
             </div>
