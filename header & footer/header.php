@@ -120,16 +120,85 @@ $isPenulis = ($role === 'penulis');
                         </div>
                     </form>
 
-                    <!-- Ikon Notifikasi -->
-                    <div class="relative z-30">
-                        <button id="notificationButton" class="text-gray-500 hover:text-[#4A99FF] focus:outline-none">
-                            <i class="fas fa-bell text-xl"></i>
-                        </button>
-                        <div id="notificationMenu"
-                            class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-30">
-                            <div class="block px-4 py-2 text-gray-800">Tidak ada notifikasi baru</div>
-                        </div>
-                    </div>
+                   <!-- Ikon Notifikasi -->
+<div class="relative">
+  <!-- Notification Button -->
+  <button id="notificationButton" class="text-gray-500 hover:text-blue-500 focus:outline-none relative">
+    <i class="fas fa-bell text-xl"></i>
+    <span id="notificationDot" class="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>
+  </button>
+
+  <!-- Notification Menu -->
+  <div id="notificationMenu" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg z-30">
+    <div class="max-h-96 overflow-y-auto">
+      <ul id="notifications" class="divide-y divide-gray-200">
+        <!-- Notification 1 -->
+        <li class="relative flex items-start p-4 hover:bg-gray-100 group">
+          <div class="relative">
+            <img src="https://img.icons8.com/color/48/000000/facebook-like.png" alt="Like Icon" class="w-10 h-10 mr-4">
+          </div>
+          <div class="flex-grow">
+            <div class="font-bold text-black">Wah, Ada yang menyukai artikelmu</div>
+            <div class="text-sm text-gray-600">Pengguna “Chiquita” menyukai artikelmu</div>
+          </div>
+          <div class="ml-6 relative"> <!-- Adjusted margin here -->
+            <button class="text-gray-400 hover:text-gray-600 notification-menu">
+              <i class="fas fa-ellipsis-h"></i>
+            </button>
+            <!-- Dropdown Menu -->
+            <div class="hidden absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg z-40">
+              <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 delete-notification">
+                Hapus Notifikasi
+              </button>
+            </div>
+          </div>
+        </li>
+        <!-- Notification 2 -->
+        <li class="relative flex items-start p-4 hover:bg-gray-100 group">
+          <div class="relative">
+            <img src="https://img.icons8.com/color/48/000000/thumbs-down.png" alt="Dislike Icon" class="w-10 h-10 mr-4">
+          </div>
+          <div class="flex-grow">
+            <div class="font-bold text-black">Sayang Sekali, Ada yang tidak menyukai artikelmu</div>
+            <div class="text-sm text-gray-600">Pengguna “Chiquita” tidak menyukai artikelmu</div>
+          </div>
+          <div class="ml-6 relative"> <!-- Adjusted margin here -->
+            <button class="text-gray-400 hover:text-gray-600 notification-menu">
+              <i class="fas fa-ellipsis-h"></i>
+            </button>
+            <div class="hidden absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg z-40">
+              <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 delete-notification">
+                Hapus Notifikasi
+              </button>
+            </div>
+          </div>
+        </li>
+        <!-- Notification 3 -->
+        <li class="relative flex items-start p-4 hover:bg-gray-100 group">
+          <div class="relative">
+            <img src="https://img.icons8.com/color/48/000000/comments.png" alt="Comment Icon" class="w-10 h-10 mr-4">
+          </div>
+          <div class="flex-grow">
+            <div class="font-bold text-black">Ada Tanggapan Pengguna Lain!</div>
+            <div class="text-sm text-gray-600">Pengguna “Chiquita” memberikan sebuah komentar di artikelmu</div>
+          </div>
+          <div class="ml-6 relative"> <!-- Adjusted margin here -->
+            <button class="text-gray-400 hover:text-gray-600 notification-menu">
+              <i class="fas fa-ellipsis-h"></i>
+            </button>
+            <div class="hidden absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg z-40">
+              <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 delete-notification">
+                Hapus Notifikasi
+              </button>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <!-- Empty State -->
+    <div id="noNotifications" class="hidden px-4 py-2 text-gray-800">Tidak ada notifikasi baru</div>
+  </div>
+</div>
 
                     <?php if ($isPenulis): ?>
                         <!-- Tampilkan tombol hanya jika pengguna adalah penulis -->
@@ -287,8 +356,7 @@ $isPenulis = ($role === 'penulis');
         const otherCategoryMenu = document.getElementById('otherCategoryMenu');
         const profileButton = document.getElementById('profileButton');
         const profileMenu = document.getElementById('profileMenu');
-        const notificationButton = document.getElementById('notificationButton');
-        const notificationMenu = document.getElementById('notificationMenu');
+
         const scrollHeader = document.getElementById('scrollHeader');
         const otherCategoryButtonScroll = document.getElementById('otherCategoryButtonScroll');
         const otherCategoryMenuScroll = document.getElementById('otherCategoryMenuScroll');
@@ -305,10 +373,6 @@ $isPenulis = ($role === 'penulis');
         profileButton.addEventListener('click', () => {
             profileMenu.classList.toggle('hidden');
             profileMenu.classList.toggle('scale-100');
-        });
-
-        notificationButton.addEventListener('click', () => {
-            notificationMenu.classList.toggle('hidden');
         });
 
         otherCategoryButtonScroll.addEventListener('click', () => {
@@ -352,9 +416,7 @@ $isPenulis = ($role === 'penulis');
                 profileMenu.classList.add('hidden');
                 profileMenu.classList.remove('scale-100');
             }
-            if (!notificationButton.contains(e.target) && !notificationMenu.contains(e.target)) {
-                notificationMenu.classList.add('hidden');
-            }
+
             if (!otherCategoryButtonScroll.contains(e.target) && !otherCategoryMenuScroll.contains(e.target)) {
                 otherCategoryMenuScroll.classList.add('hidden');
             }
@@ -371,6 +433,58 @@ $isPenulis = ($role === 'penulis');
         function loadContent(url) {
             location.href = '/profile/' + url; // Pastikan '/profile/' adalah jalur yang benar
         }
+
+        // Toggle notification menu
+        document.getElementById("notificationButton").addEventListener("click", function(e) {
+            const menu = document.getElementById("notificationMenu");
+            const dot = document.getElementById("notificationDot");
+            menu.classList.toggle("hidden");
+
+            // Hilangkan titik merah jika menu dibuka
+            if (!menu.classList.contains("hidden")) {
+                dot.classList.add("hidden");
+            }
+
+            e.stopPropagation(); // Mencegah event bubbling
+        });
+
+        // Toggle dropdown menu di setiap notifikasi
+        document.querySelectorAll(".notification-menu").forEach((button) => {
+            button.addEventListener("click", function(e) {
+                const dropdown = button.nextElementSibling;
+                dropdown.classList.toggle("hidden");
+                e.stopPropagation(); // Mencegah menutup menu utama
+            });
+        });
+
+        // Hapus notifikasi
+        document.querySelectorAll(".delete-notification").forEach((deleteButton) => {
+            deleteButton.addEventListener("click", function(e) {
+                const notification = deleteButton.closest("li");
+                notification.remove();
+
+                // Periksa apakah notifikasi kosong
+                const notifications = document.getElementById("notifications");
+                if (notifications.children.length === 0) {
+                    document.getElementById("noNotifications").classList.remove("hidden");
+                }
+
+                // Pastikan dropdown notifikasi tetap terbuka
+                const menu = document.getElementById("notificationMenu");
+                menu.classList.remove("hidden");
+
+                e.stopPropagation(); // Mencegah menutup menu utama
+            });
+        });
+
+
+        // Tutup menu utama jika klik di luar
+        document.addEventListener("click", function() {
+            const menu = document.getElementById("notificationMenu");
+            if (!menu.classList.contains("hidden")) {
+                menu.classList.add("hidden");
+            }
+        });
 
         // Update current date
         function updateCurrentDate() {
