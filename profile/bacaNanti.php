@@ -6,17 +6,36 @@ include '../connection/config.php'; // Pastikan jalur relatif ini benar
 
 $user_id = $_SESSION['user_id'] ?? null;
 $articles = [];
+$sortOrder = ($_GET['sort'] ?? 'terbaru') === 'terlama' ? 'ASC' : 'DESC'; // Tentukan urutan
+$searchQuery = $_GET['search'] ?? ''; // Ambil query pencarian dari URL
 
-if ($user_id) {
-    $stmt = $conn->prepare("
-        SELECT b.id AS berita_id, b.judul, b.konten_artikel, bm.tanggal_bookmark
-        FROM bookmark bm
-        JOIN berita b ON bm.berita_id = b.id
-        WHERE bm.user_id = ?
-        ORDER BY bm.tanggal_bookmark DESC
-        LIMIT 20
-    ");
-    $stmt->bind_param("s", $user_id);
+// SQL Query untuk mencari artikel berdasarkan judul dan urutan
+$query = "
+    SELECT b.id AS berita_id, b.judul, b.konten_artikel, bm.tanggal_bookmark
+    FROM bookmark bm
+    JOIN berita b ON bm.berita_id = b.id
+    WHERE bm.user_id = ?
+";
+
+// Tambahkan kondisi pencarian jika ada query pencarian
+if (!empty($searchQuery)) {
+    $query .= " AND b.judul LIKE ?";
+}
+
+$query .= " ORDER BY bm.tanggal_bookmark $sortOrder LIMIT 20";
+
+// Persiapkan statement SQL
+$stmt = $conn->prepare($query);
+
+if ($stmt) {
+    if (!empty($searchQuery)) {
+        // Bind parameter pencarian
+        $searchParam = "%" . $searchQuery . "%";
+        $stmt->bind_param("ss", $user_id, $searchParam);
+    } else {
+        $stmt->bind_param("s", $user_id);
+    }
+
     $stmt->execute();
     $result = $stmt->get_result();
     while ($row = $result->fetch_assoc()) {

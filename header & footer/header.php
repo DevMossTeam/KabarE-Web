@@ -120,86 +120,85 @@ $isPenulis = ($role === 'penulis');
                         </div>
                     </form>
 
-                   <!-- Ikon Notifikasi -->
-<div class="relative">
-  <!-- Notification Button -->
-  <button id="notificationButton" class="text-gray-500 hover:text-blue-500 focus:outline-none relative">
-    <i class="fas fa-bell text-xl"></i>
-    <span id="notificationDot" class="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>
-  </button>
+                    <!-- Ikon Notifikasi -->
+                    <div class="relative">
+                        <!-- Notification Button -->
+                        <button id="notificationButton" class="text-gray-500 hover:text-blue-500 focus:outline-none relative">
+                            <i class="fas fa-bell text-xl"></i>
+                            <span id="notificationDot" class="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>
+                        </button>
 
-  <!-- Notification Menu -->
-  <div id="notificationMenu" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg z-30">
-    <div class="max-h-96 overflow-y-auto">
-      <ul id="notifications" class="divide-y divide-gray-200">
-        <!-- Notification 1 -->
-        <li class="relative flex items-start p-4 hover:bg-gray-100 group">
-          <div class="relative">
-            <img src="https://img.icons8.com/color/48/000000/facebook-like.png" alt="Like Icon" class="w-10 h-10 mr-4">
-          </div>
-          <div class="flex-grow">
-            <div class="font-bold text-black">Wah, Ada yang menyukai artikelmu</div>
-            <div class="text-sm text-gray-600">Pengguna “Chiquita” menyukai artikelmu</div>
-          </div>
-          <div class="ml-6 relative"> <!-- Adjusted margin here -->
-            <button class="text-gray-400 hover:text-gray-600 notification-menu">
-              <i class="fas fa-ellipsis-h"></i>
-            </button>
-            <!-- Dropdown Menu -->
-            <div class="hidden absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg z-40">
-              <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 delete-notification">
-                Hapus Notifikasi
-              </button>
-            </div>
-          </div>
-        </li>
-        <!-- Notification 2 -->
-        <li class="relative flex items-start p-4 hover:bg-gray-100 group">
-          <div class="relative">
-            <img src="https://img.icons8.com/color/48/000000/thumbs-down.png" alt="Dislike Icon" class="w-10 h-10 mr-4">
-          </div>
-          <div class="flex-grow">
-            <div class="font-bold text-black">Sayang Sekali, Ada yang tidak menyukai artikelmu</div>
-            <div class="text-sm text-gray-600">Pengguna “Chiquita” tidak menyukai artikelmu</div>
-          </div>
-          <div class="ml-6 relative"> <!-- Adjusted margin here -->
-            <button class="text-gray-400 hover:text-gray-600 notification-menu">
-              <i class="fas fa-ellipsis-h"></i>
-            </button>
-            <div class="hidden absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg z-40">
-              <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 delete-notification">
-                Hapus Notifikasi
-              </button>
-            </div>
-          </div>
-        </li>
-        <!-- Notification 3 -->
-        <li class="relative flex items-start p-4 hover:bg-gray-100 group">
-          <div class="relative">
-            <img src="https://img.icons8.com/color/48/000000/comments.png" alt="Comment Icon" class="w-10 h-10 mr-4">
-          </div>
-          <div class="flex-grow">
-            <div class="font-bold text-black">Ada Tanggapan Pengguna Lain!</div>
-            <div class="text-sm text-gray-600">Pengguna “Chiquita” memberikan sebuah komentar di artikelmu</div>
-          </div>
-          <div class="ml-6 relative"> <!-- Adjusted margin here -->
-            <button class="text-gray-400 hover:text-gray-600 notification-menu">
-              <i class="fas fa-ellipsis-h"></i>
-            </button>
-            <div class="hidden absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg z-40">
-              <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 delete-notification">
-                Hapus Notifikasi
-              </button>
-            </div>
-          </div>
-        </li>
-      </ul>
-    </div>
-    <!-- Empty State -->
-    <div id="noNotifications" class="hidden px-4 py-2 text-gray-800">Tidak ada notifikasi baru</div>
-  </div>
-</div>
-
+                        <!-- Notification Menu -->
+                        <div id="notificationMenu" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg z-30">
+                            <div class="max-h-96 overflow-y-auto">
+                                <ul id="notifications" class="divide-y divide-gray-200">
+                                    <!-- Notification 1 -->
+                                    <li class="relative flex items-start p-4 hover:bg-gray-100 group">
+                                        <div class="relative">
+                                            <img src="https://img.icons8.com/color/48/000000/facebook-like.png" alt="Like Icon" class="w-10 h-10 mr-4">
+                                        </div>
+                                        <div class="flex-grow">
+                                            <div class="font-bold text-black">Wah, Ada yang menyukai artikelmu</div>
+                                            <div class="text-sm text-gray-600">Pengguna “Chiquita” menyukai artikelmu</div>
+                                        </div>
+                                        <div class="ml-6 relative"> <!-- Adjusted margin here -->
+                                            <button class="text-gray-400 hover:text-gray-600 notification-menu">
+                                                <i class="fas fa-ellipsis-h"></i>
+                                            </button>
+                                            <!-- Dropdown Menu -->
+                                            <div class="hidden absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg z-40">
+                                                <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 delete-notification">
+                                                    Hapus Notifikasi
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <!-- Notification 2 -->
+                                    <li class="relative flex items-start p-4 hover:bg-gray-100 group">
+                                        <div class="relative">
+                                            <img src="https://img.icons8.com/color/48/000000/thumbs-down.png" alt="Dislike Icon" class="w-10 h-10 mr-4">
+                                        </div>
+                                        <div class="flex-grow">
+                                            <div class="font-bold text-black">Sayang Sekali, Ada yang tidak menyukai artikelmu</div>
+                                            <div class="text-sm text-gray-600">Pengguna “Chiquita” tidak menyukai artikelmu</div>
+                                        </div>
+                                        <div class="ml-6 relative"> <!-- Adjusted margin here -->
+                                            <button class="text-gray-400 hover:text-gray-600 notification-menu">
+                                                <i class="fas fa-ellipsis-h"></i>
+                                            </button>
+                                            <div class="hidden absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg z-40">
+                                                <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 delete-notification">
+                                                    Hapus Notifikasi
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <!-- Notification 3 -->
+                                    <li class="relative flex items-start p-4 hover:bg-gray-100 group">
+                                        <div class="relative">
+                                            <img src="https://img.icons8.com/color/48/000000/comments.png" alt="Comment Icon" class="w-10 h-10 mr-4">
+                                        </div>
+                                        <div class="flex-grow">
+                                            <div class="font-bold text-black">Ada Tanggapan Pengguna Lain!</div>
+                                            <div class="text-sm text-gray-600">Pengguna “Chiquita” memberikan sebuah komentar di artikelmu</div>
+                                        </div>
+                                        <div class="ml-6 relative"> <!-- Adjusted margin here -->
+                                            <button class="text-gray-400 hover:text-gray-600 notification-menu">
+                                                <i class="fas fa-ellipsis-h"></i>
+                                            </button>
+                                            <div class="hidden absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg z-40">
+                                                <button class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 delete-notification">
+                                                    Hapus Notifikasi
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <!-- Empty State -->
+                            <div id="noNotifications" class="hidden px-4 py-2 text-gray-800">Tidak ada notifikasi baru</div>
+                        </div>
+                    </div>
                     <?php if ($isPenulis): ?>
                         <!-- Tampilkan tombol hanya jika pengguna adalah penulis -->
                         <div class="relative z-30">
