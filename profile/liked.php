@@ -11,25 +11,30 @@ $sortOrder = ($_GET['sort'] ?? 'terbaru') === 'terlama' ? 'ASC' : 'DESC'; // Ten
 $searchQuery = $_GET['search'] ?? ''; // Ambil query pencarian dari URL
 
 // Proses hapus reaksi (bukan artikel) jika ada
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reaction_id'])) {
+// Proses hapus reaksi jika ada request melalui AJAX
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reaction_id'], $_POST['berita_id'])) {
     $reactionId = $_POST['reaction_id'];
     $beritaId = $_POST['berita_id'];
 
-    // Pastikan reaction_id adalah string yang valid (misalnya, tidak kosong)
-    if (!empty($reactionId)) {
-        // Hapus data reaksi dari tabel reaksi hanya untuk berita_id yang sesuai
+    $response = ['success' => false, 'message' => 'Gagal menghapus artikel.'];
+
+    // Pastikan reaction_id dan berita_id tidak kosong
+    if (!empty($reactionId) && !empty($beritaId)) {
         $deleteQuery = "DELETE FROM reaksi WHERE id = ? AND berita_id = ?";
         $deleteStmt = $conn->prepare($deleteQuery);
         if ($deleteStmt) {
-            // Gunakan 's' untuk string karena reaction_id dan berita_id adalah string
-            $deleteStmt->bind_param("ss", $reactionId, $beritaId); // Pastikan 's' untuk string
-            $deleteStmt->execute();
+            $deleteStmt->bind_param("ss", $reactionId, $beritaId);
+            if ($deleteStmt->execute()) {
+                $response['success'] = true;
+                $response['message'] = 'Artikel yang disukai berhasil dihapus.';
+            }
             $deleteStmt->close();
         }
     }
 
-    // Redirect setelah penghapusan untuk merefresh halaman liked.php
-    header('Location: liked.php');
+    // Kembalikan response JSON untuk AJAX
+    header('Content-Type: application/json');
+    echo json_encode($response);
     exit();
 }
 
@@ -69,7 +74,8 @@ if ($stmt) {
 }
 
 // Fungsi untuk mengambil gambar pertama dari artikel
-function get_first_image($content) {
+function get_first_image($content)
+{
     preg_match('/<img.+src=[\'"](?P<src>.+?)[\'"].*>/i', $content, $image);
     return $image['src'] ?? 'https://via.placeholder.com/400x200';
 }
@@ -133,35 +139,110 @@ function get_first_image($content) {
     <?php endif; ?>
 </div>
 
+<!-- Modal HTML untuk Pesan Penghapusan Artikel -->
+<div id="successModal" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center hidden">
+    <div class="bg-white rounded-lg shadow-lg max-w-sm w-full p-6">
+        <div class="flex items-center">
+            <img src="https://img.icons8.com/ios-filled/50/4CAF50/ok.png" alt="Success Icon" class="mr-4 w-8 h-8">
+            <p id="modalMessage" class="text-lg font-semibold">Artikel berhasil dihapus!</p>
+        </div>
+        <div class="mt-4 flex justify-end">
+            <button id="closeModal" class="text-blue-500 hover:text-blue-700">Tutup</button>
+        </div>
+    </div>
+</div>
+
 <!-- JavaScript untuk Menangani Dropdown -->
 <script>
     document.querySelectorAll('.open-dropdown-btn').forEach(button => {
-        button.addEventListener('click', function(event) {
-            event.stopPropagation(); // Mencegah klik di tombol untuk menyebar ke window
-            
+        button.addEventListener('click', function (event) {
+            event.stopPropagation();
+
             const reactionId = this.getAttribute('data-id');
-            const beritaId = this.getAttribute('data-berita-id'); // Ambil berita_id
-            console.log("reaction_id:", reactionId, "berita_id:", beritaId); // Menampilkan reaction_id dan berita_id di console
+            const beritaId = this.getAttribute('data-berita-id');
+            const dropdownMenu = this.nextElementSibling;
 
-            const dropdownMenu = this.nextElementSibling; // Dropdown menu adalah elemen setelah tombol
-            const isOpen = !dropdownMenu.classList.contains('hidden'); // Cek apakah dropdown sedang terbuka
-            
-            // Menutup semua dropdown terlebih dahulu
-            document.querySelectorAll('.dropdown-menu').forEach(menu => {
-                menu.classList.add('hidden');
+            document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.add('hidden'));
+            dropdownMenu.classList.toggle('hidden');
+
+            // Tambahkan event listener untuk tombol hapus
+            dropdownMenu.querySelector('button[type="submit"]').addEventListener('click', function (e) {
+                e.preventDefault();
+
+                // Kirim AJAX request untuk menghapus artikel
+                fetch('liked.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({
+                        reaction_id: reactionId,
+                        berita_id: beritaId
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Tampilkan modal dengan pesan
+                            showModal(data.message);
+
+                            // Hapus elemen artikel dari DOM
+                            const articleElement = button.closest('.flex.items-start');
+                            const nextSibling = articleElement?.nextElementSibling;
+
+                            // Hapus artikel
+                            articleElement.remove();
+
+                            // Hapus garis bawah jika ada
+                            if (nextSibling && nextSibling.classList.contains('border-b')) {
+                                nextSibling.remove();
+                            }
+
+                            // Tampilkan pesan jika semua artikel terhapus
+                            if (!document.querySelector('.flex.items-start')) {
+                                document.querySelector('.container').innerHTML = `
+                                    <div class="text-center mt-12">
+                                        <i class="fas fa-folder text-6xl text-gray-400"></i>
+                                        <p class="font-bold text-xl mt-4">Kamu belum memiliki artikel yang disukai</p>
+                                        <p class="text-sm text-gray-500 mt-2">Cari artikelnya lalu klik icon <i class="fas fa-thumbs-up text-gray-400"></i></p>
+                                        <a href="/index.php" class="mt-4 inline-block bg-blue-500 text-white py-2 px-4 rounded">Lihat Artikel Hari Ini</a>
+                                    </div>`;
+                            }
+                        } else {
+                            alert(data.message);
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
             });
-
-            // Jika dropdown belum terbuka, tampilkan dropdown yang diklik
-            if (!isOpen) {
-                dropdownMenu.classList.remove('hidden');
-            }
         });
     });
 
-    // Menutup dropdown jika klik di luar dropdown atau tombol titik tiga
+    // Fungsi untuk menampilkan modal
+    function showModal(message) {
+        const modal = document.getElementById('successModal');
+        const modalMessage = document.getElementById('modalMessage');
+        modalMessage.textContent = message;
+        modal.classList.remove('hidden');
+
+        // Menutup modal otomatis setelah 3 detik
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 3000);
+    }
+
+    // Menutup modal ketika tombol tutup diklik
+    document.getElementById('closeModal').addEventListener('click', function() {
+        document.getElementById('successModal').classList.add('hidden');
+    });
+
+    // Menutup modal ketika klik di luar modal
     window.addEventListener('click', function(event) {
-        if (!event.target.closest('.open-dropdown-btn')) {
-            document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.add('hidden'));
+        const modal = document.getElementById('successModal');
+        if (event.target === modal) {
+            modal.classList.add('hidden');
         }
+    });
+
+    // Tutup dropdown saat klik di luar
+    window.addEventListener('click', function () {
+        document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.add('hidden'));
     });
 </script>
