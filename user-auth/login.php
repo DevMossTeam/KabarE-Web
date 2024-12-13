@@ -15,10 +15,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $password = $_POST['password'] ?? null;
 
     if ($input && $password) {
+        // Tentukan query berdasarkan tipe input (email atau username)
         if (filter_var($input, FILTER_VALIDATE_EMAIL)) {
-            $stmt = $conn->prepare("SELECT uid, email, nama_pengguna, password, profile_pic FROM user WHERE email = ?");
+            $stmt = $conn->prepare("SELECT uid, email, nama_pengguna, password, profile_pic, role FROM user WHERE email = ?");
         } else {
-            $stmt = $conn->prepare("SELECT uid, email, nama_pengguna, password, profile_pic FROM user WHERE nama_pengguna = ?");
+            $stmt = $conn->prepare("SELECT uid, email, nama_pengguna, password, profile_pic, role FROM user WHERE nama_pengguna = ?");
         }
 
         if ($stmt) {
@@ -28,35 +29,40 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             $loginSuccess = false;
             $userExists = false;
+
             while ($user = $result->fetch_assoc()) {
                 $userExists = true;
                 if (password_verify($password, $user['password'])) {
                     $_SESSION['user_id'] = $user['uid'];
                     $_SESSION['email'] = $user['email'];
                     $_SESSION['profile_pic'] = $user['profile_pic'] ?: 'default-profile.png';
+                    $_SESSION['role'] = $user['role'];
                     setcookie('user_id', $user['uid'], time() + (86400 * 30), "/");
                     setcookie('email', $user['email'], time() + (86400 * 30), "/");
+
                     $loginSuccess = true;
                     $_SESSION['errorCount'] = 0; // Reset error count on success
-                    break;
+
+                    // Redirect berdasarkan role
+                    if ($user['role'] === 'admin') {
+                        header("Location: ../dashboard_admin/home/index.php");
+                    } else {
+                        header("Location: /index.php");
+                    }
+                    exit();
                 }
             }
 
-            if ($loginSuccess) {
-                header("Location: /index.php");
-                exit();
-            } else {
+            if (!$loginSuccess) {
                 $_SESSION['errorCount'] = ++$errorCount; // Increment error count
                 if (!$userExists) {
                     $_SESSION['usernameError'] = "Username atau email yang Anda masukkan salah. Silakan coba lagi.";
                 } else {
                     $_SESSION['passwordError'] = "Password yang Anda masukkan salah. Silakan coba lagi.";
                 }
-                if (!$userExists && !$loginSuccess) {
-                    $_SESSION['usernameError'] = "Username atau email dan password yang Anda masukkan salah. Silakan coba lagi.";
-                }
+
                 if ($_SESSION['errorCount'] >= 5) {
-                    $_SESSION['usernameError'] = "Anda terlalu sering salah memasukkan username atau password. Silakan coba lagi nanti atau ulang password Anda.";
+                    $_SESSION['usernameError'] = "Anda terlalu sering salah memasukkan username atau password. Silakan coba lagi nanti atau reset password Anda.";
                 }
             }
 
@@ -78,6 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     exit();
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
