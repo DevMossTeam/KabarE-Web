@@ -1,3 +1,7 @@
+<?php
+
+?>
+ 
  <!-- sidebar -->
  <aside id="sidebar-multi-level-sidebar" class="fixed top-[80px] left-0 z-50 w-64 h-full transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
         <div class="h-full px-3 py-4 overflow-y-auto bg-blue-50 dark:bg-[#1C2434]">
