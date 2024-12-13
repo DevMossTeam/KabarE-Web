@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modal Example</title>
+    <title>Test</title>
+    <link rel="shortcut icon" href="../../assets/web-icon/Ic-main-KabarE.svg" type="KabarE">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css" rel="stylesheet">
     <style>
         /* Custom styles for modal and overlay */
