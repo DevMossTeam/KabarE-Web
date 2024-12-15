@@ -4,6 +4,55 @@ session_start(); // Pastikan sesi dimulai
 include '../connection/config.php'; // Pastikan path ini sesuai dengan struktur folder Anda
 include '../header & footer/header.php';
 include '../api/berita/detail_berita.php';
+
+$userRole = ''; // Variabel untuk menyimpan role
+$canInteract = false; // Flag untuk mengizinkan interaksi
+
+if ($user_id) {
+    $stmt = $conn->prepare("SELECT nama_pengguna, profile_pic, role FROM user WHERE uid = ?");
+    if ($stmt) {
+        $stmt->bind_param("s", $user_id);
+        $stmt->execute();
+        $stmt->bind_result($namaPengguna, $profilePic, $userRole);
+        $stmt->fetch();
+        $stmt->close();
+
+        // Cek apakah role adalah Pembaca atau Penulis
+        if ($userRole === 'Pembaca' || $userRole === 'Penulis') {
+            $canInteract = true;
+        }
+    }
+}
+// Contoh untuk handling reaction
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reaction'])) {
+    // Cek ulang otorisasi di sisi server
+    if (!$canInteract) {
+        $_SESSION['error_message'] = 'Anda tidak memiliki izin untuk melakukan interaksi.';
+        header("Location: news-detail.php?id=$id");
+        exit;
+    }
+
+    // Lanjutkan proses normal
+    $jenis_reaksi = $_POST['reaction'];
+    toggleReaction($conn, $user_id, $id, $jenis_reaksi);
+    header("Location: news-detail.php?id=$id");
+    exit;
+}
+
+// Contoh untuk handling bookmark
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bookmark'])) {
+    // Cek ulang otorisasi di sisi server
+    if (!$canInteract) {
+        $_SESSION['error_message'] = 'Anda tidak memiliki izin untuk melakukan interaksi.';
+        header("Location: news-detail.php?id=$id");
+        exit;
+    }
+
+    // Lanjutkan proses normal
+    toggleBookmark($conn, $user_id, $id);
+    header("Location: news-detail.php?id=$id");
+    exit;
+}
 ?>
 
 <!-- Tambahkan link Font Awesome -->
@@ -32,44 +81,64 @@ include '../api/berita/detail_berita.php';
                 <!-- Box Like, Dislike, Share, Bookmark -->
                 <div class="flex space-x-4 mt-4">
                     <!-- Button Like -->
-                    <form method="post" action="">
+                    <form method="post" action=""
+                        class="<?= !$canInteract ? 'cursor-not-allowed opacity-50 pointer-events-none' : '' ?>">
                         <input type="hidden" name="reaction" value="Suka">
                         <button type="submit"
+                            <?= !$canInteract ? 'disabled' : '' ?>
                             class="flex items-center border border-blue-500 px-4 py-2 rounded 
-            <?= $userReaction === 'Suka' ? 'text-blue-500 bg-blue-100' : 'text-gray-500 hover:text-blue-500 hover:bg-blue-50' ?> transition-colors">
+            <?= $userReaction === 'Suka' ? 'text-blue-500 bg-blue-100' : 'text-gray-500 hover:text-blue-500 hover:bg-blue-50' ?> 
+            transition-colors
+            <?= !$canInteract ? 'opacity-50 cursor-not-allowed' : '' ?>">
                             <i class="fas fa-thumbs-up"></i>
                             <span class="ml-2"><?= $likeCount ?></span>
                         </button>
                     </form>
+
                     <!-- Button Dislike -->
-                    <form method="post" action="">
+                    <form method="post" action=""
+                        class="<?= !$canInteract ? 'cursor-not-allowed opacity-50 pointer-events-none' : '' ?>">
                         <input type="hidden" name="reaction" value="Tidak Suka">
                         <button type="submit"
+                            <?= !$canInteract ? 'disabled' : '' ?>
                             class="flex items-center border border-blue-500 px-4 py-2 rounded 
-            <?= $userReaction === 'Tidak Suka' ? 'text-blue-500 bg-blue-100' : 'text-gray-500 hover:text-blue-500 hover:bg-blue-50' ?> transition-colors">
+            <?= $userReaction === 'Tidak Suka' ? 'text-blue-500 bg-blue-100' : 'text-gray-500 hover:text-blue-500 hover:bg-blue-50' ?> 
+            transition-colors
+            <?= !$canInteract ? 'opacity-50 cursor-not-allowed' : '' ?>">
                             <i class="fas fa-thumbs-down"></i>
                             <span class="ml-2"><?= $dislikeCount ?></span>
                         </button>
                     </form>
+
                     <!-- Button Share -->
                     <button id="shareButton"
+                        <?= !$canInteract ? 'disabled' : '' ?>
                         class="flex items-center border border-blue-500 text-gray-500 px-4 py-2 rounded 
-        hover:text-blue-500 hover:bg-blue-50 transition-colors">
+        hover:text-blue-500 hover:bg-blue-50 transition-colors
+        <?= !$canInteract ? 'opacity-50 cursor-not-allowed pointer-events-none' : '' ?>">
                         <i class="fa-solid fa-share-nodes"></i>
                     </button>
+
                     <!-- Button Bookmark -->
-                    <form method="post" action="">
+                    <form method="post" action=""
+                        class="<?= !$canInteract ? 'cursor-not-allowed opacity-50 pointer-events-none' : '' ?>">
                         <input type="hidden" name="bookmark" value="toggle">
                         <button type="submit"
+                            <?= !$canInteract ? 'disabled' : '' ?>
                             class="flex items-center border border-blue-500 px-4 py-3 rounded 
-            <?= $isBookmarked ? 'text-blue-500 bg-blue-100' : 'text-gray-500 hover:text-blue-500 hover:bg-blue-50' ?> transition-colors">
+            <?= $isBookmarked ? 'text-blue-500 bg-blue-100' : 'text-gray-500 hover:text-blue-500 hover:bg-blue-50' ?> 
+            transition-colors
+            <?= !$canInteract ? 'opacity-50 cursor-not-allowed' : '' ?>">
                             <i class="fas fa-bookmark"></i>
                         </button>
                     </form>
+
                     <!-- Button Report -->
                     <button id="reportButton" onclick="showcode()"
+                        <?= !$canInteract ? 'disabled' : '' ?>
                         class="flex items-center border border-blue-500 text-gray-500 px-4 py-2 rounded 
-        hover:text-red-500 hover:bg-red-50 transition-colors">
+        hover:text-red-500 hover:bg-red-50 transition-colors
+        <?= !$canInteract ? 'opacity-50 cursor-not-allowed pointer-events-none' : '' ?>">
                         <i class="fas fa-flag"></i>
                     </button>
                 </div>
@@ -312,6 +381,22 @@ include '../api/berita/detail_berita.php';
 
 
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const disabledButtons = document.querySelectorAll('button[disabled], form.pointer-events-none button');
+
+        disabledButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Akses Ditolak',
+                    text: 'Anda harus memiliki role Pembaca atau Penulis untuk melakukan interaksi.',
+                    confirmButtonText: 'Mengerti'
+                });
+            });
+        });
+    });
+
     function timeAgo(date) {
         const seconds = Math.floor((new Date() - date) / 1000);
         let interval = Math.floor(seconds / 31536000);
@@ -536,155 +621,153 @@ include '../api/berita/detail_berita.php';
         updateCommentCount();
     });
 
-    document.addEventListener('DOMContentLoaded', function () {
-    const reportButton = document.getElementById('reportButton');
-    const reportModal = document.getElementById('reportModal');
-    const nextButton = document.getElementById('nextButton');
-    const additionalReportModal = document.getElementById('additionalReportModal');
-    const thankYouModal = document.getElementById('thankYouModal');
-    const closeThankYouModalButton = document.getElementById('closeThankYouModal');
-    const backButton = document.getElementById('backButton'); // Tombol Kembali
+    document.addEventListener('DOMContentLoaded', function() {
+        const reportButton = document.getElementById('reportButton');
+        const reportModal = document.getElementById('reportModal');
+        const nextButton = document.getElementById('nextButton');
+        const additionalReportModal = document.getElementById('additionalReportModal');
+        const thankYouModal = document.getElementById('thankYouModal');
+        const closeThankYouModalButton = document.getElementById('closeThankYouModal');
+        const backButton = document.getElementById('backButton'); // Tombol Kembali
 
-    // Opsi tambahan untuk setiap alasan pelaporan
-    const reasonsWithOptions = {
-        "Konten seksual": ["Pornografi", "Eksploitasi anak", "Pelecehan seksual"],
-        "Konten kekerasan atau menjijikkan": ["Kekerasan fisik", "Kekerasan verbal", "Kekerasan psikologis"],
-        "Konten kebencian atau pelecehan": ["Pelecehan rasial", "Pelecehan agama", "Pelecehan seksual"],
-        "Tindakan berbahaya": ["Penggunaan narkoba", "Penyalahgunaan senjata", "Tindakan berbahaya lainnya"],
-        "Spam atau misinformasi": ["Berita palsu", "Iklan tidak sah", "Penipuan"],
-        "Masalah hukum": ["Pelanggaran hak cipta", "Pelanggaran privasi", "Masalah hukum lainnya"],
-        "Teks bermasalah": ["Kata-kata kasar", "Teks diskriminatif", "Teks mengandung kekerasan"]
-    };
+        // Opsi tambahan untuk setiap alasan pelaporan
+        const reasonsWithOptions = {
+            "Konten seksual": ["Pornografi", "Eksploitasi anak", "Pelecehan seksual"],
+            "Konten kekerasan atau menjijikkan": ["Kekerasan fisik", "Kekerasan verbal", "Kekerasan psikologis"],
+            "Konten kebencian atau pelecehan": ["Pelecehan rasial", "Pelecehan agama", "Pelecehan seksual"],
+            "Tindakan berbahaya": ["Penggunaan narkoba", "Penyalahgunaan senjata", "Tindakan berbahaya lainnya"],
+            "Spam atau misinformasi": ["Berita palsu", "Iklan tidak sah", "Penipuan"],
+            "Masalah hukum": ["Pelanggaran hak cipta", "Pelanggaran privasi", "Masalah hukum lainnya"],
+            "Teks bermasalah": ["Kata-kata kasar", "Teks diskriminatif", "Teks mengandung kekerasan"]
+        };
 
-    // Event listener untuk membuka modal
-    reportButton.addEventListener('click', function () {
-        reportModal.classList.remove('hidden');
-    });
+        // Event listener untuk membuka modal
+        reportButton.addEventListener('click', function() {
+            reportModal.classList.remove('hidden');
+        });
 
-    // Event listener untuk radio button
-    document.querySelectorAll('input[name="reportReason"]').forEach(radio => {
-        radio.addEventListener('change', function () {
-            const selectedReason = radio.value;
-            const label = radio.closest('label');
+        // Event listener untuk radio button
+        document.querySelectorAll('input[name="reportReason"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const selectedReason = radio.value;
+                const label = radio.closest('label');
 
-            // Hapus elemen tambahan yang sebelumnya ada
+                // Hapus elemen tambahan yang sebelumnya ada
+                const previousAdditionalContainer = document.querySelector('.additional-container');
+                if (previousAdditionalContainer) {
+                    previousAdditionalContainer.remove();
+                }
+
+                // Tampilkan dropdown tepat di bawah radio button yang dipilih
+                if (reasonsWithOptions[selectedReason]) {
+                    const additionalContainer = document.createElement('div');
+                    additionalContainer.classList.add('additional-container', 'mt-2');
+
+                    // Buat dropdown pilihan tambahan
+                    const additionalSelect = document.createElement('select');
+                    additionalSelect.classList.add('form-select', 'w-full', 'border', 'border-gray-300', 'rounded', 'p-2');
+                    additionalContainer.appendChild(additionalSelect);
+
+                    // Tambahkan opsi default "Pilih masalah"
+                    const defaultOption = document.createElement('option');
+                    defaultOption.value = "";
+                    defaultOption.textContent = "Pilih masalah";
+                    defaultOption.disabled = true;
+                    defaultOption.selected = true;
+                    additionalSelect.appendChild(defaultOption);
+
+                    // Tambahkan opsi lain ke dropdown
+                    reasonsWithOptions[selectedReason].forEach(option => {
+                        const opt = document.createElement('option');
+                        opt.value = option;
+                        opt.textContent = option;
+                        additionalSelect.appendChild(opt);
+                    });
+
+                    // Masukkan dropdown tepat di bawah label radio button
+                    label.appendChild(additionalContainer);
+
+                    // Event listener untuk mengaktifkan tombol berikutnya
+                    additionalSelect.addEventListener('change', function() {
+                        if (additionalSelect.value) {
+                            nextButton.classList.remove('bg-gray-300');
+                            nextButton.classList.add('bg-blue-500', 'text-white');
+                            nextButton.disabled = false;
+                        }
+                    });
+                }
+
+                // Reset tombol "Berikutnya" (tidak bisa diklik)
+                nextButton.classList.add('bg-gray-300');
+                nextButton.classList.remove('bg-blue-500', 'text-white');
+                nextButton.disabled = true;
+            });
+        });
+
+        // Button transitions between modals
+        nextButton.addEventListener('click', function() {
+            reportModal.classList.add('hidden');
+            additionalReportModal.classList.remove('hidden');
+        });
+
+        document.getElementById('submitReportButton').addEventListener('click', function() {
+            additionalReportModal.classList.add('hidden');
+            thankYouModal.classList.remove('hidden');
+        });
+
+        // Tombol Kembali untuk modal "Laporan Tambahan Opsional"
+        backButton.addEventListener('click', function() {
+            additionalReportModal.classList.add('hidden');
+            reportModal.classList.remove('hidden');
+        });
+
+        // Tombol tutup untuk modal "Terima Kasih"
+        closeThankYouModalButton.addEventListener('click', function() {
+            thankYouModal.classList.add('hidden');
+
+            // Reset pilihan radio button dan dropdown saat modal "Terima Kasih" ditutup
+            document.querySelectorAll('input[name="reportReason"]').forEach(radio => {
+                radio.checked = false; // Menghapus pilihan radio button
+            });
+
+            // Menghapus dropdown jika ada
             const previousAdditionalContainer = document.querySelector('.additional-container');
             if (previousAdditionalContainer) {
                 previousAdditionalContainer.remove();
             }
 
-            // Tampilkan dropdown tepat di bawah radio button yang dipilih
-            if (reasonsWithOptions[selectedReason]) {
-                const additionalContainer = document.createElement('div');
-                additionalContainer.classList.add('additional-container', 'mt-2');
-
-                // Buat dropdown pilihan tambahan
-                const additionalSelect = document.createElement('select');
-                additionalSelect.classList.add('form-select', 'w-full', 'border', 'border-gray-300', 'rounded', 'p-2');
-                additionalContainer.appendChild(additionalSelect);
-
-                // Tambahkan opsi default "Pilih masalah"
-                const defaultOption = document.createElement('option');
-                defaultOption.value = "";
-                defaultOption.textContent = "Pilih masalah";
-                defaultOption.disabled = true;
-                defaultOption.selected = true;
-                additionalSelect.appendChild(defaultOption);
-
-                // Tambahkan opsi lain ke dropdown
-                reasonsWithOptions[selectedReason].forEach(option => {
-                    const opt = document.createElement('option');
-                    opt.value = option;
-                    opt.textContent = option;
-                    additionalSelect.appendChild(opt);
-                });
-
-                // Masukkan dropdown tepat di bawah label radio button
-                label.appendChild(additionalContainer);
-
-                // Event listener untuk mengaktifkan tombol berikutnya
-                additionalSelect.addEventListener('change', function () {
-                    if (additionalSelect.value) {
-                        nextButton.classList.remove('bg-gray-300');
-                        nextButton.classList.add('bg-blue-500', 'text-white');
-                        nextButton.disabled = false;
-                    }
-                });
-            }
-
-            // Reset tombol "Berikutnya" (tidak bisa diklik)
+            // Reset tombol "Berikutnya"
             nextButton.classList.add('bg-gray-300');
             nextButton.classList.remove('bg-blue-500', 'text-white');
             nextButton.disabled = true;
         });
-    });
 
-    // Button transitions between modals
-    nextButton.addEventListener('click', function () {
-        reportModal.classList.add('hidden');
-        additionalReportModal.classList.remove('hidden');
-    });
-
-    document.getElementById('submitReportButton').addEventListener('click', function () {
-        additionalReportModal.classList.add('hidden');
-        thankYouModal.classList.remove('hidden');
-    });
-
-    // Tombol Kembali untuk modal "Laporan Tambahan Opsional"
-    backButton.addEventListener('click', function () {
-        additionalReportModal.classList.add('hidden');
-        reportModal.classList.remove('hidden');
-    });
-
-    // Tombol tutup untuk modal "Terima Kasih"
-    closeThankYouModalButton.addEventListener('click', function () {
-        thankYouModal.classList.add('hidden');
-
-        // Reset pilihan radio button dan dropdown saat modal "Terima Kasih" ditutup
-        document.querySelectorAll('input[name="reportReason"]').forEach(radio => {
-            radio.checked = false; // Menghapus pilihan radio button
-        });
-
-        // Menghapus dropdown jika ada
-        const previousAdditionalContainer = document.querySelector('.additional-container');
-        if (previousAdditionalContainer) {
-            previousAdditionalContainer.remove();
+        // Menutup modal jika klik di luar modal
+        function closeModalOnOutsideClick(modal) {
+            window.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.classList.add('hidden');
+                    // Reset pilihan radio button dan dropdown
+                    if (modal === thankYouModal) {
+                        document.querySelectorAll('input[name="reportReason"]').forEach(radio => {
+                            radio.checked = false;
+                        });
+                        const previousAdditionalContainer = document.querySelector('.additional-container');
+                        if (previousAdditionalContainer) {
+                            previousAdditionalContainer.remove();
+                        }
+                        nextButton.classList.add('bg-gray-300');
+                        nextButton.classList.remove('bg-blue-500', 'text-white');
+                        nextButton.disabled = true;
+                    }
+                }
+            });
         }
 
-        // Reset tombol "Berikutnya"
-        nextButton.classList.add('bg-gray-300');
-        nextButton.classList.remove('bg-blue-500', 'text-white');
-        nextButton.disabled = true;
+        // Menambahkan event listener untuk modal "Laporkan Artikel" dan "Terima Kasih"
+        closeModalOnOutsideClick(reportModal);
+        closeModalOnOutsideClick(thankYouModal);
     });
-
-    // Menutup modal jika klik di luar modal
-    function closeModalOnOutsideClick(modal) {
-        window.addEventListener('click', function (e) {
-            if (e.target === modal) {
-                modal.classList.add('hidden');
-                // Reset pilihan radio button dan dropdown
-                if (modal === thankYouModal) {
-                    document.querySelectorAll('input[name="reportReason"]').forEach(radio => {
-                        radio.checked = false;
-                    });
-                    const previousAdditionalContainer = document.querySelector('.additional-container');
-                    if (previousAdditionalContainer) {
-                        previousAdditionalContainer.remove();
-                    }
-                    nextButton.classList.add('bg-gray-300');
-                    nextButton.classList.remove('bg-blue-500', 'text-white');
-                    nextButton.disabled = true;
-                }
-            }
-        });
-    }
-
-    // Menambahkan event listener untuk modal "Laporkan Artikel" dan "Terima Kasih"
-    closeModalOnOutsideClick(reportModal);
-    closeModalOnOutsideClick(thankYouModal);
-});
-
-
 </script>
 
 <?php include '../header & footer/footer.php'; ?>
