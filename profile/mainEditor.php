@@ -53,7 +53,7 @@ $page = $_GET['page'] ?? 'liked';
     <!-- Main Content -->
     <div class="w-5/6 ml-12 mt-4">
         <h2 class="text-4xl font-semibold mt-4 mb-2 ml-4">
-            <?= htmlspecialchars($userData['nama_lengkap'] ?? 'Nama Pengguna') ?> <span class="text-4xl text-gray-600">(<?= htmlspecialchars($userData['role'] ?? 'pembaca') ?>)</span>
+            <?= htmlspecialchars($userData['nama_lengkap'] ?? 'Nama Pengguna') ?> <span class="text-4xl text-gray-600">(<?= htmlspecialchars($userData['role'] ?? 'Pembaca') ?>)</span>
         </h2>
 
         <div class="relative flex items-center mt-4 border-b ml-4">

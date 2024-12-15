@@ -4,7 +4,7 @@ include '../connection/config.php'; // Pastikan path ini benar
 
 // Inisialisasi variabel
 $profile_pic = $nama_lengkap = $nama_pengguna = $kredensial = '';
-$role = 'pembaca'; // Inisialisasi role dengan nilai default
+$role = 'Pembaca'; // Inisialisasi role dengan nilai default
 
 $profile_pic = $_SESSION['profile_pic'] ?? ''; // Ambil foto profil dari session
 

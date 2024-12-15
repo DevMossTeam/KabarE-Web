@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $_SESSION['errorCount'] = 0; // Reset error count on success
 
                     // Redirect berdasarkan role
-                    if ($user['role'] === 'admin') {
+                    if ($user['role'] === 'Admin') {
                         header("Location: ../dashboard_admin/home/index.php");
                     } else {
                         header("Location: /index.php");
