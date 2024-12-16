@@ -42,7 +42,7 @@
                 </div>
             <hr class="my-4 border-t border-gray-300 w-full">
             <div class="w-full flex justify-between items-center mt-4 md:mt-0 px-4 lg:px-8">
-                <p class="text-sm">Unit Kegiatan Mahasiswa Penyiaran Berita Mahasiswa Politeknik Negeri Jember. © 2024, Copyright KabarU.co.id</p>
+                <p class="text-sm">Unit Kegiatan Mahasiswa Penyiaran Berita Mahasiswa Politeknik Negeri Jember. © 2024, Copyright KabarE</p>
                 <div class="flex">
                     <a href="https://www.facebook.com/ukmexplant" target="_blank" class="text-white mx-2">
                         <i class="fab fa-facebook-f text-2xl"></i> <!-- Perbesar icon -->
