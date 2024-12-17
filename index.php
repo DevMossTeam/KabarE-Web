@@ -1,4 +1,11 @@
 <?php
+session_start(); // Pastikan sesi dimulai
+
+// Cek apakah pengguna sudah login dan memiliki peran 'Admin'
+if (isset($_SESSION['role']) && $_SESSION['role'] === 'Admin') {
+    header('Location: user-auth/login.php'); // Arahkan ke halaman login
+    exit(); // Pastikan untuk menghentikan eksekusi skrip setelah pengalihan
+}
 function timeAgo($datetime) {
     $now = new DateTime();
     $posted = new DateTime($datetime);
