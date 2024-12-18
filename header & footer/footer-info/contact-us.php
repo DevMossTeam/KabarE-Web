@@ -2,8 +2,7 @@
 
 include '../header.php';
 include '../category_header.php';
-renderCategoryHeader'Hubungi Kami'); 
-
+renderCategoryHeader('Hubungi Kami');
 ?>
 
 <div class="min-h-screen bg-gray-100 flex items-center justify-center">
