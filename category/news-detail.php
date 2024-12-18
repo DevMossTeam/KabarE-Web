@@ -195,30 +195,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bookmark'])) {
             </div>
         </div>
 
-        <!-- Berita Teratas Hari Ini dan Label -->
-        <div class="w-full lg:w-1/3 lg:pl-4 mt-16 lg:mt-20">
-            <div class="mb-4">
-                <span class="inline-block bg-[#FFC300] text-white px-6 py-1 rounded-t-md">Berita Teratas Hari Ini</span>
-                <div class="border-b-4 border-[#FFC300] mt-0"></div>
-            </div>
-            <ul class="pl-4">
-                <?php $i = 1; ?>
-                <?php while ($topNews = $topNewsResult->fetch_assoc()): ?>
-                    <li class="mb-4">
-                        <div class="flex items-center">
-                            <span class="text-[#CAD2FF] font-semibold italic text-5xl mr-4"><?= $i ?></span>
-                            <div>
-                                <span class="text-gray-400 text-sm"><?= date('d F Y', strtotime($topNews['tanggal_diterbitkan'])) ?></span>
-                                <a href="news-detail.php?id=<?= $topNews['id'] ?>">
-                                    <h3 class="text-lg font-bold mt-1"><?= htmlspecialchars($topNews['judul']) ?></h3>
-                                </a>
-                                <div class="border-b border-gray-300 mt-2"></div>
+            <!-- Berita Teratas Hari Ini dan Label -->
+            <div class="w-full lg:w-1/3 lg:pl-4 mt-16 lg:mt-20">
+                <div class="mb-4">
+                    <span class="inline-block bg-[#FFC300] text-white px-6 py-1 rounded-t-md">Berita Teratas Hari Ini</span>
+                    <div class="border-b-4 border-[#FFC300] mt-0"></div>
+                </div>
+                <ul class="pl-4">
+                    <?php $i = 1; ?>
+                    <?php while ($topNews = $topNewsResult->fetch_assoc()): ?>
+                        <li class="mb-4">
+                            <div class="flex items-center">
+                                <span class="text-[#CAD2FF] font-semibold italic text-5xl mr-4"><?= $i ?></span>
+                                <div>
+                                    <span class="text-gray-400 text-sm"><?= date('d F Y', strtotime($topNews['tanggal_diterbitkan'])) ?></span>
+                                    <a href="news-detail.php?id=<?= $topNews['id'] ?>">
+                                        <h3 class="text-lg font-bold mt-1"><?= htmlspecialchars($topNews['judul']) ?></h3>
+                                    </a>
+                                    <div class="border-b border-gray-300 mt-2"></div>
+                                </div>
                             </div>
-                        </div>
-                    </li>
-                    <?php $i++; ?>
-                <?php endwhile; ?>
-            </ul>
+                        </li>
+                        <?php $i++; ?>
+                    <?php endwhile; ?>
+                </ul>
 
             <!-- Baru Baru Ini -->
             <div class="mt-8 lg:ml-4">
