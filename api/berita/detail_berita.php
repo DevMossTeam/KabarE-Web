@@ -92,13 +92,34 @@ if ($berita) {
     exit;
 }
 
-// Query untuk mendapatkan berita teratas secara acak
-$topNewsQuery = "SELECT id, judul, tanggal_diterbitkan FROM berita ORDER BY RAND() LIMIT 6";
-$topNewsResult = $conn->query($topNewsQuery);
+// Ambil ID dan kategori dari berita saat ini
+$kategori = '';
 
-if (!$topNewsResult) {
-    die("Query gagal: " . $conn->error);
+// Dapatkan kategori berita saat ini
+if ($id) {
+    $query = "SELECT kategori FROM berita WHERE id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param('s', $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $currentNews = $result->fetch_assoc();
+    $kategori = $currentNews['kategori'];
 }
+
+// Query untuk mendapatkan berita teratas dari kategori yang sama berdasarkan jumlah reaksi 'Suka' dan view_count
+$topNewsQuery = "
+    SELECT b.id, b.judul, b.tanggal_diterbitkan, COUNT(r.jenis_reaksi) AS like_count
+    FROM berita b
+    LEFT JOIN reaksi r ON b.id = r.berita_id AND r.jenis_reaksi = 'Suka'
+    WHERE b.kategori = ?
+    GROUP BY b.id
+    ORDER BY like_count DESC, b.view_count DESC
+    LIMIT 6
+";
+$stmt = $conn->prepare($topNewsQuery);
+$stmt->bind_param('s', $kategori); // Gunakan kategori yang sama
+$stmt->execute();
+$topNewsResult = $stmt->get_result();
 
 // Ambil ID dan kategori dari berita saat ini
 $kategori = '';
