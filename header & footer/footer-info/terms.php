@@ -2,7 +2,7 @@
 
 include '../header.php';
 include '../category_header.php';
-renderCategoryHeader(categoryName: 'Syarat dan Ketentuan');
+renderCategoryHeader('Syarat dan Ketentuan');
 
 ?>
 

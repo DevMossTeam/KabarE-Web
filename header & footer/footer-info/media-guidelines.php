@@ -2,7 +2,7 @@
 
 include '../header.php';
 include '../category_header.php';
-renderCategoryHeader(categoryName: 'Pedoman Media Siber');
+renderCategoryHeader('Pedoman Media Siber');
 
 ?>
 

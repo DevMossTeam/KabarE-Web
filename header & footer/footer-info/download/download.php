@@ -2,7 +2,7 @@
 
 include '../../../header & footer/header.php';
 include '../../../header & footer/category_header.php';
-renderCategoryHeader(categoryName: 'Download');
+renderCategoryHeader('Download');
 
 ?>
 
