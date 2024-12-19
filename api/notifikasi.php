@@ -50,13 +50,31 @@ class NotifAPI {
         }
     }
 
-    public function fetchNotifByUser($to_user) {
+    public function fetchNotifByUser($penerima_user_id) {
         try {
-            $stmt = $this->conn->prepare("SELECT * FROM notifikasi WHERE to_user = :to_user");
-            $stmt->bindParam(':to_user', $to_user, PDO::PARAM_STR);
+            // Prepare SQL query with the necessary joins
+            $stmt = $this->conn->prepare(
+                "SELECT notifikasi.*, 
+                    user.nama_pengguna AS dikirim_dari_user, 
+                    user_receiver.nama_pengguna AS nama_penerima_user,
+                    komentar.teks_komentar
+                FROM notifikasi
+                JOIN user ON notifikasi.dari_user_id = user.uid
+                JOIN user AS user_receiver ON notifikasi.penerima_notif_user_id = user_receiver.uid
+                LEFT JOIN komentar ON notifikasi.komen_id = komentar.id
+                WHERE notifikasi.penerima_notif_user_id = :penerima_user_id"
+            );
+            
+            // Bind the parameter (make sure the correct type is passed)
+            $stmt->bindParam(':penerima_user_id', $penerima_user_id, PDO::PARAM_STR);
+            
+            // Execute the query
             $stmt->execute();
+            
+            // Fetch the results
             $notifs = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
+            // Check if notifications are found
             if ($notifs) {
                 echo json_encode(['data' => $notifs, 'message' => 'Notifications fetched successfully']);
             } else {
@@ -65,21 +83,22 @@ class NotifAPI {
         } catch (PDOException $e) {
             echo json_encode(['error' => $e->getMessage()]);
         }
-    }    
+    }     
 
     // Insert a new notification
     public function insertNotif($data) {
-        if (isset($data['tipe_notif'], $data['dari_user_id'], $data['to_user'])) {
+        if (isset($data['tipe_notif'], $data['penerima_notif_user_id'], $data['dari_user_id'])) {
             try {
                 $stmt = $this->conn->prepare("
-                    INSERT INTO notifikasi (tipe_notif, dari_user_id, komen_id, to_user) 
-                    VALUES (:tipe_notif, :dari_user_id, :komen_id, :to_user)
+                    INSERT INTO notifikasi (tipe_notif, penerima_notif_user_id, komen_id, dari_user_id) 
+                    VALUES (:tipe_notif, :penerima_notif_user_id, :komen_id, :dari_user_id)
                 ");
-                $komen_id = $data['komen_id'] ?? null; // Optional field
+                $komen_id = isset($data['komen_id']) ? $data['komen_id'] : null; // Optional field
                 $stmt->bindParam(':tipe_notif', $data['tipe_notif']);
-                $stmt->bindParam(':dari_user_id', $data['dari_user_id']);
+                $stmt->bindParam(':penerima_notif_user_id', $data['penerima_notif_user_id']);
                 $stmt->bindParam(':komen_id', $komen_id);
-                $stmt->bindParam(':to_user', $data['to_user']);
+                $stmt->bindParam(':dari_user_id', $data['dari_user_id']);
+                
                 if ($stmt->execute()) {
                     $last_id = $this->conn->lastInsertId();
                     $this->fetchNotif($last_id); // Return the inserted notification
@@ -90,15 +109,15 @@ class NotifAPI {
                 echo json_encode(['error' => $e->getMessage()]);
             }
         } else {
-            echo json_encode(['message' => 'Invalid input']);
+            echo json_encode(['message' => 'Invalid input, missing required fields']);
         }
     }
 
     // Update an existing notification
     public function updateNotif($id, $data) {
-        if (isset($data['tipe_notif'], $data['dari_user_id'], $data['to_user'])) {
+        if (isset($data['tipe_notif'], $data['penerima_notif_user_id'], $data['dari_user_id'])) {
             try {
-                $query = "UPDATE notifikasi SET tipe_notif = :tipe_notif, dari_user_id = :dari_user_id, to_user = :to_user";
+                $query = "UPDATE notifikasi SET tipe_notif = :tipe_notif, penerima_notif_user_id = :penerima_notif_user_id, dari_user_id = :dari_user_id";
                 if (isset($data['komen_id'])) {
                     $query .= ", komen_id = :komen_id";
                 }
@@ -106,8 +125,8 @@ class NotifAPI {
 
                 $stmt = $this->conn->prepare($query);
                 $stmt->bindParam(':tipe_notif', $data['tipe_notif']);
+                $stmt->bindParam(':penerima_notif_user_id', $data['penerima_notif_user_id']);
                 $stmt->bindParam(':dari_user_id', $data['dari_user_id']);
-                $stmt->bindParam(':to_user', $data['to_user']);
                 if (isset($data['komen_id'])) {
                     $stmt->bindParam(':komen_id', $data['komen_id']);
                 }
@@ -122,7 +141,7 @@ class NotifAPI {
                 echo json_encode(['error' => $e->getMessage()]);
             }
         } else {
-            echo json_encode(['message' => 'Invalid input']);
+            echo json_encode(['message' => 'Invalid input, missing required fields']);
         }
     }
 
@@ -151,8 +170,13 @@ $request_method = $_SERVER['REQUEST_METHOD'];
 switch ($request_method) {
     case 'GET':
         if (isset($_GET['id'])) {
+            // Fetch single notification by ID
             $notifAPI->fetchNotif($_GET['id']);
+        } elseif (isset($_GET['penerima_user_id'])) {
+            // Fetch notifications by penerima_user_id
+            $notifAPI->fetchNotifByUser($_GET['penerima_user_id']);
         } else {
+            // Fetch all notifications
             $notifAPI->fetchNotifs();
         }
         break;
@@ -180,4 +204,3 @@ switch ($request_method) {
         echo json_encode(['message' => 'Invalid request method']);
         break;
 }
-?>
