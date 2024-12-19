@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="shortcut icon" href="../../assets/web-icon/Ic-main-KabarE.svg" type="KabarE">
-    <title>Pengguna</title>
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+    <title>Pagination Example</title>
 </head>
 
 <body class="bg-[#ECEFF5]">
@@ -17,55 +17,123 @@
     ?>
     <div class="p-4 sm:ml-64 mt-14">
         <div class="p-4 dark:border-gray-700">
-            <div class="container mx-auto mt-5">
+            <div class="container mx-auto">
                 <!-- Breadcrumb -->
                 <nav class="flex mb-5" aria-label="Breadcrumb">
-                            <ol class="inline-flex items-center space-x-1 text-sm font-medium md:space-x-2">
-                                <li class="inline-flex items-center">
-                                    <a href="#" class="inline-flex items-center text-gray-700 hover:text-primary-600">
-                                        <svg class="w-5 h-5 mr-2.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
-                                        </svg>
-                                        Home
-                                    </a>
-                                </li>
-                                <!-- <li>
-                                    <div class="flex items-center">
-                                        <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        <a href="#" class="ml-1 text-gray-700 hover:text-primary-600 md:ml-2">Berita</a>
-                                    </div>
-                                </li> -->
-                                <li>
-                                    <div class="flex items-center">
-                                        <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        <span class="ml-1 text-gray-400 md:ml-2" aria-current="page">User</span>
-                                    </div>
-                                </li>
-                            </ol>
+                    <ol class="inline-flex items-center space-x-1 text-sm font-medium md:space-x-2">
+                        <li class="inline-flex items-center">
+                            <a href="#" class="inline-flex items-center text-gray-700 hover:text-primary-600">
+                                <svg class="w-5 h-5 mr-2.5" fill="currentColor" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z">
+                                    </path>
+                                </svg>
+                                Home
+                            </a>
+                        </li>
+                        <li>
+                            <div class="flex items-center">
+                                <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                <a href="#" class="ml-1 text-gray-700 hover:text-primary-600 md:ml-2">Pengguna</a>
+                            </div>
+                        </li>
+                    </ol>
                 </nav>
 
                 <!-- Table Container -->
                 <div class="bg-white shadow-md rounded-lg p-6 border border-gray-200">
-                    <div class="mb-4">
-                        <h1 class="text-xl font-semibold text-gray-900 sm:text-2xl">Daftar User</h1>
+                    <div class="mb-4 flex items-center justify-between">
+                        <div class="flex items-center">
+                            <svg class="flex-shrink-0 w-6 h-6 text-black transition duration-75" aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                                <path
+                                    d="M14 2a3.963 3.963 0 0 0-1.4.267 6.439 6.439 0 0 1-1.331 6.638A4 4 0 1 0 14 2Zm1 9h-1.264A6.957 6.957 0 0 1 15 15v2a2.97 2.97 0 0 1-.184 1H19a1 1 0 0 0 1-1v-1a5.006 5.006 0 0 0-5-5ZM6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z" />
+                            </svg>
+                            <h1 class="text-xl font-semibold text-gray-900 sm:text-2xl ml-4">Daftar Pengguna</h1>
+                            <!-- Popover Container -->
+                            <div class="relative group">
+                                <button type="button" class="w-6 h-6 text-gray-400 hover:text-gray-500">
+                                    <svg class="w-5 h-5 ml-2.5 mt-1 ml-1" aria-hidden="true"
+                                        xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                        <path
+                                            d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+                                    </svg>
+                                    <span class="sr-only">Show inbox</span>
+                                </button>
+
+                                <!-- Popover (named 'inbox') -->
+                                <div
+                                    class="absolute z-10 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-opacity duration-300 text-sm text-gray-500 bg-white border border-gray-200 rounded-lg shadow-sm w-72 top-full mt-2 left-0">
+                                    <div class="p-3 space-y-2">
+                                        <h3 class="font-semibold text-gray-900">Kotak Masuk</h3>
+                                        <p>Di dalam kotak masuk Anda, terdapat berbagai pesan terbaru, termasuk pesan
+                                            Masukan, laporan berita beserta keterangan, dan laporan komentar dengan
+                                            rincian
+                                            terkait dari pengguna. Anda dapat menghapus komentar yang dilaporkan dan
+                                            meninjau berita yang dilaporkan sebelum mengambil tindakan.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" id="createUser" data-drawer-placement="right" onclick="resetForm()"
+                            class="modal_user_toggle inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 ">
+                            <svg class="w-5 h-5 mr-2 -ml-1" fill="currentColor" viewBox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd"
+                                    d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            Tambah User
+                        </button>
                     </div>
 
                     <!-- Filter Input -->
                     <div class="flex items-center justify-between mb-4">
-                            <input 
-                                type="text" 
-                                placeholder="Search Name"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-96 p-2.5" 
-                                id="search-input"
-                            />
-                        <button id="openDrawerBtn" class="openDrawerBtn bg-blue-600 text-white rounded-lg px-4 py-2 text-sm font-semibold hover:bg-blue-700 focus:ring-2 focus:ring-blue-500">
-                                + Tambah Pengguna
-                        </button>
+                        <input type="text" placeholder="Search Name"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-96 p-1.5"
+                            id="search-input" />
+
+                        <!-- Filter Role -->
+                        <div class="relative inline-block text-left">
+                            <button id="dropdownHoverButton" data-dropdown-toggle="dropdownHover"
+                                data-dropdown-trigger="hover"
+                                class="bg-white border focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center"
+                                type="button">
+                                Filter
+                                <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                    fill="none" viewBox="0 0 10 6">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                        stroke-width="2" d="m1 1 4 4 4-4" />
+                                </svg>
+                            </button>
+
+                            <!-- Dropdown menu -->
+                            <div id="dropdownHover"
+                                class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44">
+                                <ul class="py-2 text-sm text-gray-700" aria-labelledby="dropdownHoverButton">
+                                    <li>
+                                        <a href="#" class="block px-4 py-2 hover:bg-gray-100">Semua</a>
+                                    </li>
+                                    <li>
+                                        <a href="#" class="block px-4 py-2 hover:bg-gray-100">penulis</a>
+                                    </li>
+                                    <li>
+                                        <a href="#" class="block px-4 py-2 hover:bg-gray-100">pembaca</a>
+                                    </li>
+                                    <li>
+                                        <a href="#" class="block px-4 py-2 hover:bg-gray-100">admin</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
+
                     <div class="mb-4 alert-dynamic">
                     </div>
 
@@ -77,19 +145,20 @@
                                     <table class="min-w-full divide-y divide-gray-200 table-fixed">
                                         <thead class="bg-gray-100 text-sm">
                                             <tr>
-                                                <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase ">
+                                                <th scope="col"
+                                                    class="p-4 text-xs font-medium text-left text-gray-500 uppercase ">
                                                     Id
                                                 </th>
-                                                <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase">
-                                                    User
+                                                <th scope="col"
+                                                    class="p-4 text-xs font-medium text-left text-gray-500 uppercase">
+                                                    Pengguna
                                                 </th>
-                                                <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase">
+                                                <th scope="col"
+                                                    class="p-4 text-xs font-medium text-left text-gray-500 uppercase">
                                                     Role
                                                 </th>
-                                                <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase">
-                                                    Terakhir Login
-                                                </th>
-                                                <th scope="col" class="p-4 text-xs font-medium text-center text-gray-500 uppercase">
+                                                <th scope="col"
+                                                    class="p-4 text-xs font-medium text-center text-gray-500 uppercase">
                                                     Aksi
                                                 </th>
                                             </tr>
@@ -121,53 +190,133 @@
             </div>
         </div>
     </div>
-   
-   
-    <!-- Add Pengguna Drawer -->
-            <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden"></div>
-        
-            <div id="drawer-create-product-default" class="fixed top-0 right-0 z-40 w-full h-screen max-w-xs p-4 overflow-y-auto transition-transform transform translate-x-full bg-white" tabindex="-1" aria-labelledby="drawer-label" aria-hidden="true">
-                <!-- Modal Header -->
-                <div class="flex justify-between items-center border-b pb-3">
-                    <h3 class="text-lg font-semibold">Add New Pengguna</h3>
-                    <button class="close-drawer-btn text-gray-500 hover:text-gray-900">
-                        <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                        </svg>
-                    </button>
-                </div>
-                <!-- <button type="button" class="close-drawer-btn text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 absolute top-2.5 right-2.5 inline-flex items-center">
-                    <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+
+    <!-- Main modal Form -->
+    <div
+        class="modal_roleUserUbahStatus hidden fixed top-0 left-0 right-0 bottom-0 z-50 flex justify-center items-center bg-black bg-opacity-50">
+        <!-- Modal content wrapper -->
+        <form id="penggunaForm" action="#" method="POST"
+            class="bg-white rounded-lg shadow-lg max-w-2xl w-full p-4 relative">
+            <!-- Modal header -->
+            <div class="flex items-center justify-between pb-4 border-b">
+                <h3 class="text-lg font-semibold text-gray-900"><span class="edit_pengguna_text"></span> Form Pengguna
+                </h3>
+                <button type="button" class="modal_roleUserUbahStatus-close text-gray-500 hover:text-gray-900">
+                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
-                    <span class="sr-only">Close menu</span>
-                </button> -->
-                <form id="penggunaForm" action="#">
-                    <div class="space-y-4">
-                        <input type="hidden" id="editPenggunaId" name="editPenggunaId">
-                        <div>
-                            <label for="name" class="block mb-2 text-sm font-medium text-gray-900">Nama User</label>
-                            <input type="text" name="nama_pengguna" id="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="Nama Pengguna" required>
-                        </div>
-
-                        <div class="flex justify-end pt-4 space-x-2">
-                            <button type="submit" class="text-white w-full justify-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
-                                Simpan
-                            </button>
-                            <!-- Cancel Button -->
-                            <button type="button" class="close-drawer-btn inline-flex w-full justify-center text-gray-500 items-center bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-primary-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10">
-                                <svg aria-hidden="true" class="w-5 h-5 -ml-1 sm:mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                </svg>
-                                Cancel
-                            </button>
-                        </div>
-                    </div>
-                </form>
+                </button>
             </div>
-    </div>
+            <!-- Modal body -->
+            <div class="py-4">
+                <!-- Profile Picture Upload Section -->
+                <div class="flex justify-center mb-4 relative group">
+                    <div class="w-24 h-24 overflow-hidden rounded-full border-2 border-gray-300 relative group">
+                        <!-- Profile Image (will show the base64 image if available, otherwise show the default) -->
+                        <img id="profile-img"
+                            src="https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3407.jpg?w=360"
+                            alt="Profile Picture" class="w-full h-full object-cover">
 
-     <!--script -->
+                        <!-- Upload Text (will appear on hover) -->
+                        <div
+                            class="absolute inset-0 flex justify-center items-center bg-black bg-opacity-50 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            Upload
+                        </div>
+
+                        <!-- File Input (hidden, visible on hover) -->
+                        <input type="file" id="profile_pic" name="profile_pic"
+                            class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                            onchange="handleImageUpload(event)">
+                    </div>
+
+                    <!-- JavaScript to handle image upload -->
+                    <script>
+                        function handleImageUpload(event) {
+                            const file = event.target.files[0]; // Get the uploaded file
+                            const reader = new FileReader();
+
+                            reader.onloadend = function () {
+                                const profileImg = document.getElementById('profile-img');
+                                profileImg.src = reader.result; // Update the <img> src with Base64 data
+                                console.log("Base64 Image:", reader.result); // Log the Base64 string
+                            };
+
+                            if (file) {
+                                reader.readAsDataURL(file); // Convert file to Base64
+                            } else {
+                                console.warn("No file selected");
+                            }
+                        }
+                    </script>
+                </div>
+
+                <!-- Two-column layout for other fields -->
+                <div class="grid grid-cols-2 gap-4">
+                    <!-- Nama Pengguna -->
+                    <div class="mb-4">
+                        <label for="nama_pengguna" class="block mb-2 text-sm font-medium text-gray-900">Nama
+                            Pengguna <span class="text-red-500">*</span></label>
+                        <input type="text" id="nama_pengguna" name="nama_pengguna"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                            placeholder="Isi Nama Pengguna" required>
+                    </div>
+                    <!-- Nama Lengkap -->
+                    <div class="mb-4">
+                        <label for="nama_lengkap" class="block mb-2 text-sm font-medium text-gray-900">
+                            Nama Lengkap
+                            <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="nama_lengkap" name="nama_lengkap"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                            placeholder="Isi nama lengkap" required>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="mb-4">
+                        <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Email <span
+                                class="text-red-500">*</span></label>
+                        <input type="email" id="email" name="email"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                            placeholder="Isi email" required>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="mb-4">
+                        <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Password
+                            <span class="text-red-500">*</span>
+                        </label>
+                        <input type="password" id="password" name="password"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                            placeholder="Isi password" required>
+                    </div>
+
+                    <!-- Role -->
+                    <div class="mb-4">
+                        <label for="roles" class="block mb-2 text-sm font-medium text-gray-900">Role
+                            <span class="text-red-500">*</span></label>
+                        <select id="roles" name="role"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                            required>
+                            <option selected>Pilih Role</option>
+                            <option value="pembaca">pembaca</option>
+                            <option value="penulis">penulis</option>
+                            <option value="admin">admin</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="flex justify-end pt-4 border-t">
+                <button type="button"
+                    class="modal_roleUserUbahStatus-close ml-2 px-4 py-2 text-gray-700 border rounded-lg hover:bg-gray-100 mr-2">Balik</button>
+                <button type="submit"
+                    class="modal_roleUserUbahStatus-close px-4 py-2 text-white bg-blue-700 rounded-lg hover:bg-blue-800">Submit</button>
+            </div>
+        </form>
+    </div>
+    <!--script -->
     <script>
         let currentPage = 1;
         const itemsPerPage = 10;
@@ -177,7 +326,7 @@
         fetch('http://localhost/KabarE-Web/api/user.php')
             .then(response => response.json())
             .then(data => {
-                console.log(data);  // Log the entire data object to check the structure
+                console.log(data); // Log the entire data object to check the structure
                 userData = data.data || [];
                 totalItems = userData.length;
                 console.log(totalItems);
@@ -189,68 +338,131 @@
                 console.error('Error fetching data:', error);
             });
 
-    // Function to update table data based on current page
-    function updateTable() {
-        const tableBody = document.getElementById('pengguna-table-body');
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
-        let i = 0;
-        // Clear previous rows
-        tableBody.innerHTML = '';
+        function updateTable(filteredPenggunas = userData) {
+            const tableBody = document.getElementById('pengguna-table-body');
+            const paginationLinks = document.getElementById('pagination-links');
+            const searchTerm = document.getElementById('search-input').value.trim(); // Get the search term
 
-        // If there is no data to display
-        if (userData.length === 0) {
-            const noDataRow = document.createElement('tr');
-            noDataRow.innerHTML = `
-                <td colspan="5" class="py-4 px-6 text-center text-base font-semibold text-gray-900">
-                    No data available
+            const totalPages = Math.ceil(filteredPenggunas.length / itemsPerPage);
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, filteredPenggunas.length);
+
+            // Filter the data based on the selected role
+            let filteredData = userData;
+            if (currentRole && currentRole !== 'Semua') {
+                filteredData = userData.filter(pengguna => pengguna.role === currentRole);
+            }
+
+            // Count how many admin users exist in the filtered data
+            const adminCount = filteredData.filter(pengguna => pengguna.role === 'admin').length;
+
+            // Clear previous rows
+            tableBody.innerHTML = '';
+
+            // If there is no data to display
+            if (filteredData.length === 0) {
+                const noDataRow = document.createElement('tr');
+                noDataRow.innerHTML = `
+            <td colspan="5" class="py-4 px-6 text-center text-base text-gray-900">
+                No data available
+            </td>
+        `;
+                tableBody.appendChild(noDataRow);
+            } else {
+                // Populate rows with data for the current page
+                for (let i = startIndex; i < endIndex; i++) {
+                    const pengguna = filteredData[i];
+                    const row = document.createElement('tr');
+
+                    // Highlight search term in nama_pengguna and email
+                    const highlightedNamaPengguna = searchTerm ? pengguna.nama_pengguna.replace(new RegExp(searchTerm,
+                        'gi'), (match) => {
+                        return `<span class="bg-yellow-300">${match}</span>`; // Highlight with yellow background
+                    }) : pengguna.nama_pengguna;
+
+                    const highlightedEmail = searchTerm ? pengguna.email.replace(new RegExp(searchTerm, 'gi'), (
+                        match) => {
+                        return `<span class="bg-yellow-300">${match}</span>`; // Highlight with yellow background
+                    }) : pengguna.email;
+
+                    row.innerHTML = `
+                <td class="py-4 px-6 border-b text-left text-base text-gray-900 max-w-[100px] overflow-x-auto whitespace-nowrap">
+                    ${pengguna.uid}
+                </td>
+
+                <td class="py-4 px-6 border-b">
+                    <div class="flex items-center px-6 py-4 whitespace-nowrap">
+                        <img id="profilePicPreview" class="w-10 h-10 rounded-full" src="data:image/jpeg;base64,${pengguna.profile_pic}">
+                            <div class="text-sm font-normal text-gray-500 ml-4">
+                                <div class="text-base font-semibold text-gray-900">${highlightedNamaPengguna}</div>
+                                <div class="text-sm font-normal text-gray-500">${highlightedEmail}</div>
+                            </div>
+                    </div>
+                </td>
+                <td class="py-4 px-6 border-b text-base text-left font-medium text-gray-900 whitespace-nowrap">${pengguna.role}</td>                
+                <td class="py-4 px-6 border-b text-center">
+                    ${adminCount > 1 || pengguna.role !== 'admin' ? `
+                    <button type="button" class="inline-flex items-center px-1.5 py-1.5 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-800 focus:ring-4 focus:ring-red-300" onclick="deletePengguna('${pengguna.uid}')">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                        </svg>                                
+                    </button>` : ''}
+
+                    <button type="button" class="modal_user_toggle inline-flex items-center px-1.5 py-1.5 text-sm font-medium text-center text-white bg-yellow-500 rounded-lg hover:bg-yellow-800 focus:ring-4 focus:ring-yellow-300 mt-0 sm:mt-5" onclick="getEditPengguna('${pengguna.uid}')">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path>
+                            <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
                 </td>
             `;
-            tableBody.appendChild(noDataRow);
-        } else {
-            // Populate rows with data for the current page
-            for (let i = startIndex; i < endIndex; i++) {
-                const pengguna = userData[i];
-
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="py-4 px-6 border-b text-left text-base font-semibold text-gray-900 max-w-[100px] overflow-x-auto whitespace-nowrap">
-                        ${pengguna.uid}
-                    </td>
-
-                    <td class="py-4 px-6 border-b ">
-                        <div class="text-sm font-normal text-gray-500">
-                            <div class="text-base font-semibold text-gray-900">${pengguna.nama_pengguna}</div>
-                            <div class="text-sm font-normal text-gray-500">${pengguna.email}</div>
-                        </div>
-                    </td>
-                    <td class="py-4 px-6 border-b text-base text-left font-medium text-gray-900 whitespace-nowrap">${pengguna.role}</td>
-                    <td class="py-4 px-6 border-b text-base text-left font-sm text-gray-600 whitespace-nowrap">${pengguna.waktu_login || "N/A"}</td>
-                    <td class="py-4 px-6 border-b text-right">
-                        <button type="button" data-modal-target="update-user-modal" data-modal-toggle="update-user-modal" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-yellow-500 rounded-lg hover:bg-yellow-800 focus:ring-4 focus:ring-yellow-300" onclick="getEditPengguna('${pengguna.uid}')">
-                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path></svg>
-                            Update User
-                        </button>
-
-                        <button type="button" data-modal-target="delete-user-modal" data-modal-toggle="delete-user-modal" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-800 focus:ring-4 focus:ring-red-300" onclick="deletePengguna('${pengguna.uid}')">
-                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                            </svg>
-                            Delete user
-                        </button>
-                    </td>
-                `;
-                tableBody.appendChild(row);
+                    tableBody.appendChild(row);
+                }
             }
+
+            // Update results info
+            const resultsInfo = document.getElementById('results-info');
+            resultsInfo.textContent = `Showing ${startIndex + 1}-${endIndex} of ${filteredData.length} results`;
+
+            // Update pagination
+            updatePagination(totalPages);
         }
 
-        // Update results info
-        const resultsInfo = document.getElementById('results-info');
-        resultsInfo.textContent = `Showing ${startIndex + 1}-${endIndex} of ${totalItems} results`;
-    }
+        const searchInput = document.getElementById('search-input');
+
+        // Event listener for pressing Enter in the search input
+        searchInput.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                const searchTerm = searchInput.value.trim();
+                const searchUrl =
+                    `http://localhost/KabarE-Web/dashboard_admin/menu/pengguna.php?search=${searchTerm}`;
+                window.history.pushState({}, '', searchUrl);
+
+                // Filter the data based on the search term
+                const filteredUser = searchTerm ?
+                    userData.filter(user => user.nama_pengguna.toLowerCase().includes(searchTerm
+                        .toLowerCase()) || user.email.toLowerCase().includes(searchTerm.toLowerCase())) :
+                    userData;
+
+                // Update the table with the filtered data
+                updateTable(filteredUser);
+                updatePagination(filteredUser);
+            }
+        });
 
 
+        let currentRole = ''; // Variable to store the selected role
 
+        // Get all filter items in the dropdown
+        const filterItems = document.querySelectorAll('#dropdownHover a');
+
+        filterItems.forEach(item => {
+            item.addEventListener('click', function () {
+                currentRole = this.textContent
+                    .trim(); // Set the currentRole to the text content of the clicked item
+                updateTable(); // Re-render the table with the new filtered data
+            });
+        });
 
         // Function to update pagination buttons
         function updatePagination() {
@@ -263,157 +475,135 @@
             // Add "Previous" button
             const prevButton = document.createElement('li');
             prevButton.innerHTML = `
-                <a href="#" class="px-3 py-1 text-gray-500 bg-gray-200 rounded hover:bg-gray-300" aria-label="Previous" onclick="changePage(currentPage - 1)">
-                    &laquo;
-                </a>
-            `;
+        <a href="#" class="px-3 py-1 text-gray-500 bg-gray-200 rounded hover:bg-gray-300" aria-label="Previous" onclick="changePage(currentPage - 1)">
+            &laquo;
+        </a>
+    `;
             prevButton.classList.toggle('cursor-not-allowed', currentPage === 1);
             paginationLinks.appendChild(prevButton);
 
+            // Define the maximum pages to show
+            const maxPagesToShow = 3;
+            let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+            let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+
+            // Adjust start page if end page is less than total pages
+            if (endPage - startPage < maxPagesToShow - 1) {
+                startPage = Math.max(1, endPage - maxPagesToShow + 1);
+            }
+
             // Add page number buttons
-            for (let i = 1; i <= totalPages; i++) {
+            for (let i = startPage; i <= endPage; i++) {
                 const pageButton = document.createElement('li');
                 pageButton.innerHTML = `
-                    <a href="#" class="px-3 py-1 text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-100 ${currentPage === i ? 'bg-blue-100' : ''}" onclick="changePage(${i})">${i}</a>
-                `;
+            <a href="#" class="px-3 py-1 text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-100 ${currentPage === i ? 'bg-blue-100' : ''}" onclick="changePage(${i})">${i}</a>
+        `;
                 paginationLinks.appendChild(pageButton);
             }
 
             // Add "Next" button
             const nextButton = document.createElement('li');
             nextButton.innerHTML = `
-                <a href="#" class="px-3 py-1 text-gray-500 bg-gray-200 rounded hover:bg-gray-300" aria-label="Next" onclick="changePage(currentPage + 1)">
-                    &raquo;
-                </a>
-            `;
+        <a href="#" class="px-3 py-1 text-gray-500 bg-gray-200 rounded hover:bg-gray-300" aria-label="Next" onclick="changePage(currentPage + 1)">
+            &raquo;
+        </a>
+    `;
             nextButton.classList.toggle('cursor-not-allowed', currentPage === totalPages);
             paginationLinks.appendChild(nextButton);
         }
 
-        document.getElementById('search-input').addEventListener('input', function () {
-            const query = this.value.toLowerCase();
-            filterPenggunas(query);
-        });
+        // Change page logic to update both the table and pagination
+        function changePage(pageNumber) {
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-        function filterPenggunas(query) {
-            const filteredPenggunas = userData.filter(pengguna => pengguna.nama_pengguna.toLowerCase().includes(query));
-            totalItems = filteredPenggunas.length; 
-            updateTable(filteredPenggunas); 
-            updatePagination(); 
-        }
-
-        // function updateTable(filteredPenggunas = userData) {
-        //     const tableBody = document.getElementById('pengguna-table-body');
-        //     const startIndex = (currentPage - 1) * itemsPerPage;
-        //     const endIndex = Math.min(startIndex + itemsPerPage, filteredPenggunas.length);
-
-        //     tableBody.innerHTML = '';
-
-        //     for (let i = startIndex; i < endIndex; i++) {
-        //         const pengguna = filteredPenggunas[i];
-        //         const row = document.createElement('tr');
-        //         row.innerHTML = `
-        //             <td class="py-4 px-6 border-b text-center">${pengguna.id}</td>
-        //             <td class="py-4 px-6 border-b">${pengguna.nama_pengguna}</td>
-        //             <td class="py-4 px-6 border-b text-center">
-        //                 <div class="relative inline-block text-left">
-        //                     <div>
-        //                         <button 
-        //                             type="button" 
-        //                             class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 focus:ring-1 ring-inset ring-blue-300 hover:bg-gray-50 focus:outline-none"
-        //                             id="menu-button-${i + 1}" 
-        //                             aria-expanded="false" 
-        //                             aria-haspopup="true" 
-        //                             onclick="toggleDropdown(event, ${i + 1}, '${pengguna.nama_pengguna}')">
-        //                             <img src="../asset/elipses.svg" class="h-8" alt="dropdown" />
-        //                         </button>
-        //                     </div>
-
-        //                     <!-- Dropdown menu -->
-        //                     <div id="dropdown-menu-${i + 1}" class="hidden absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button-${i + 1}" tabindex="-1">
-        //                         <div class="py-1" role="none">            
-        //                            <!-- Edit Button -->
-        //                             <a href="#" class="flex items-center gap-2 block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1" onclick="getEditPengguna(${pengguna.id})">
-        //                                 <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-        //                                     <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path>
-        //                                     <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path>
-        //                                 </svg>
-        //                                 <span>Edit</span>
-        //                             </a>
-
-        //                             <a href="#" class="flex items-center gap-2 block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1" onclick="deletePengguna(${pengguna.id})">
-        //                                 <svg aria-hidden="true" class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-        //                                     <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-        //                                 </svg>
-        //                                 <span>Delete</span>
-        //                             </a>
-        //                         </div>
-        //                     </div>
-        //                 </div>
-        //             </td>
-        //         `;
-        //         tableBody.appendChild(row);
-        //     }
-
-        //     const resultsInfo = document.getElementById('results-info');
-        //     resultsInfo.textContent = `Showing ${startIndex + 1}-${endIndex} of ${filteredPenggunas.length} results`;
-        // }
-
-
-        function deletePengguna(penggunaId) {
-            console.log("delete id" + penggunaId);
-            if (confirm('Are you sure you want to delete this pengguna?')) {
-                // Update the URL to match the correct API endpoint
-                const apiUrl = `http://localhost/KabarE-Web/api/user.php?id=${penggunaId}`;
-
-                fetch(apiUrl, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        showAlert('success', 'Pengguna deleted successfully!');
-                        
-                        // Close the dropdown if it exists
-                        const dropdown = document.querySelector(`#dropdown-menu-${penggunaId}`);
-                        if (dropdown) {
-                            dropdown.classList.add('hidden');
-                        }
-
-                        // Remove the pengguna from the data and update table/pagination
-                        userData = userData.filter(pengguna => pengguna.uid !== penggunaId);
-                        totalItems = userData.length;
-
-                        // Check if the current page is now empty after deletion
-                        if (userData.length <= (currentPage - 1) * itemsPerPage) {
-                            currentPage = Math.max(1, currentPage - 1); // Go back to previous page if the current page is now out of range
-                        }
-
-                        // Update table and pagination after deletion
-                        updateTable();
-                        updatePagination();
-                    } else {
-                        showAlert('error', 'Failed to delete the pengguna.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error deleting pengguna:', error);
-                    showAlert('error', 'An error occurred while deleting the pengguna.');
-                });
+            if (pageNumber >= 1 && pageNumber <= totalPages) {
+                currentPage = pageNumber;
+                updateTable(); // Update the table with new data
+                updatePagination(); // Update the pagination links
             }
         }
 
 
+        // Get modal elements
+        const modal = document.querySelector('.modal_roleUserUbahStatus');
+        const modalToggle = document.querySelector(
+            '.modal_user_toggle');
+        const modalCloseButtons = modal.querySelectorAll('.modal_roleUserUbahStatus-close');
 
+        // Open modal - Ensure there is a trigger element for modal toggle
+        if (modalToggle) {
+            modalToggle.addEventListener('click', () => {
+                document.querySelector('.edit_pengguna_text').textContent = "";
+                modal.classList.remove('hidden'); // Show the modal
+            });
+        }
+
+        // Close modal when clicking close buttons (SVG icon and 'Balik' button)
+        modalCloseButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                modal.classList.add('hidden'); // Hide the modal
+            });
+        });
+
+        // Close modal when clicking outside the modal content
+        window.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                modal.classList.add('hidden'); // Close the modal if clicked outside of it
+            }
+        });
+
+        function deletePengguna(penggunaId) {
+            console.log("delete id" + penggunaId);
+            if (confirm('Apakah Anda yakin ingin menghapus pengguna ini?')) {
+                // Update the URL to match the correct API endpoint
+                const apiUrl = `http://localhost/KabarE-Web/api/user.php?id=${penggunaId}`;
+
+                fetch(apiUrl, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            showAlert('success', 'Pengguna deleted successfully!');
+
+                            // Close the dropdown if it exists
+                            const dropdown = document.querySelector(`#dropdown-menu-${penggunaId}`);
+                            if (dropdown) {
+                                dropdown.classList.add('hidden');
+                            }
+
+                            // Remove the pengguna from the data and update table/pagination
+                            userData = userData.filter(pengguna => pengguna.uid !== penggunaId);
+                            totalItems = userData.length;
+
+                            // Check if the current page is now empty after deletion
+                            if (userData.length <= (currentPage - 1) * itemsPerPage) {
+                                currentPage = Math.max(1, currentPage -
+                                    1); // Go back to previous page if the current page is now out of range
+                            }
+
+                            // Update table and pagination after deletion
+                            updateTable();
+                            updatePagination();
+                        } else {
+                            showAlert('error', 'Failed to delete the pengguna.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error deleting pengguna:', error);
+                        showAlert('error', 'An error occurred while deleting the pengguna.');
+                    });
+            }
+        }
 
         function showAlert(type, message) {
             // Create the alert div
             const alertDiv = document.createElement('div');
             alertDiv.classList.add('flex', 'items-center', 'p-4', 'mb-4', 'rounded-lg', 'text-sm', 'font-medium');
-            
+
             // Check the type of alert (success or error)
             if (type === 'success') {
                 alertDiv.classList.add('bg-green-50', 'text-green-800', );
@@ -458,164 +648,69 @@
             alert.remove();
         }
 
-        // Function to change the page
-        function changePage(page) {
-            if (page < 1 || page > Math.ceil(totalItems / itemsPerPage)) return;
-            currentPage = page;
-            updateTable();
-            updatePagination();
-        }
 
-        // Function to handle dropdown actions
-        function toggleDropdown(event, index, penggunaName) {
-            const dropdown = document.getElementById(`dropdown-menu-${index}`);
-            const isVisible = !dropdown.classList.contains('hidden');
 
-            // Hide all dropdowns first
-            const allDropdowns = document.querySelectorAll('[id^="dropdown-menu-"]');
-            allDropdowns.forEach(drop => drop.classList.add('hidden'));
-
-            // If the dropdown wasn't visible, show it
-            if (!isVisible) {
-                dropdown.classList.remove('hidden');
-            }
-
-            // Add event listener to close the dropdown when clicking outside
-            document.addEventListener('click', function closeDropdown(event) {
-                // Check if the click is outside the dropdown and button
-                if (!dropdown.contains(event.target) && !document.getElementById(`menu-button-${index}`).contains(event.target)) {
-                    dropdown.classList.add('hidden');
-                    document.removeEventListener('click', closeDropdown); // Remove the event listener after closing
-                }
-            });
-        }
-        
-        // Function to handle opening and closing of the drawer with overlay
-        function handleDrawer(drawerId, overlayId, openButtonSelector, closeButtonSelector) {
-            const openDrawerButtons = document.querySelectorAll(openButtonSelector); // All open buttons
-            const closeDrawerButtons = document.querySelectorAll(closeButtonSelector); // All close buttons
-            const drawer = document.getElementById(drawerId); // Drawer element
-            const overlay = document.getElementById(overlayId); // Overlay element
-
-            // Open the drawer when the open button is clicked
-            openDrawerButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    drawer.classList.remove('translate-x-full');  // Show the drawer (remove translate effect)
-                    overlay.classList.remove('hidden');  // Show the overlay
-                    overlay.classList.add('block');  // Make the overlay visible
-                    drawer.setAttribute('aria-hidden', 'false'); // Accessibility
-                });
-            });
-
-            // Close the drawer when any close button is clicked
-            closeDrawerButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    drawer.classList.add('translate-x-full');  // Hide the drawer (add translate effect)
-                    overlay.classList.add('hidden');  // Hide the overlay
-                    overlay.classList.remove('block');  // Make the overlay invisible
-                    drawer.setAttribute('aria-hidden', 'true'); // Accessibility
-                });
-            });
-
-            overlay.addEventListener('click', () => {
-                    drawer.classList.add('translate-x-full');  // Hide the drawer
-                    overlay.classList.add('hidden');  // Hide the overlay
-                    overlay.classList.remove('block');  // Make the overlay invisible
-                    drawer.setAttribute('aria-hidden', 'true'); // Accessibility
-                    resetFormAndCloseDrawer();
-                });
-        }
-
-        // Call the function with specific arguments for your drawer and overlay
-        handleDrawer('drawer-create-product-default', 'overlay', '.openDrawerBtn', '.close-drawer-btn');
-
-        document.getElementById('penggunaForm').addEventListener('submit', async function (event) {
-            event.preventDefault(); // Prevent the default form submission
-
-            const formData = new FormData(this);
-            const nama_pengguna = formData.get('nama_pengguna'); // Get the 'nama_pengguna' input value
-
-            // Check if we are in edit mode by looking for a data attribute on the form
-            const penggunaId = this.getAttribute('data-edit-id');
-            const url = penggunaId 
-                ? `http://localhost/KabarE-Web/api/pengguna.php?id=${penggunaId}` // Update URL if in edit mode
-                : 'http://localhost/KabarE-Web/api/pengguna.php';            // Create URL if creating new pengguna
-
-            const method = penggunaId ? 'PUT' : 'POST'; // Use PUT for updates, POST for creation
-
-            try {
-                console.log('Form Data to Submit:', { nama_pengguna, penggunaId }); // Log the data for debugging
-
-                // Make the fetch request with dynamic method and URL
-                const response = await fetch(url, {
-                    method: method,
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ nama_pengguna }),
-                });
-
-                // Update the table and pagination after submission
-                await updateTable();
-                await updatePagination();
-
-                if (response.ok) {
-                    showAlert('success', `Data ${penggunaId ? 'updated' : 'created'} successfully.`);
-                    resetFormAndCloseDrawer(); // Reset the form and close drawer after success
-                } else {
-                    const errorData = await response.json();
-                    console.error(`Failed to ${penggunaId ? 'update' : 'create'} pengguna: ${errorData.message}`);
-                    showAlert('error', `Failed to ${penggunaId ? 'update' : 'create'} pengguna: ${errorData.message}`);
-                }
-            } catch (error) {
-                console.error("Error submitting form:", error);
-                showAlert('error', `An error occurred: ${error.message || "Unknown error"}`);
-            }
-        });
-
-        // Helper function to reset the form and close the drawer
-        function resetFormAndCloseDrawer() {
-            const drawer = document.getElementById('drawer-create-product-default');
-            const overlay = document.getElementById('overlay');
-            
-            // Clear the form input and reset the button text
-            const form = document.getElementById('penggunaForm');
-            form.reset(); // Resets all form inputs to their default values
-
-            // Explicitly remove the data-edit-id if present
-            form.removeAttribute('data-edit-id');
-            
-            // Reset the button text
-            document.querySelector('#penggunaForm button[type="submit"]').textContent = 'Create';
-
-            // Hide drawer and overlay
-            drawer.classList.add('translate-x-full');
-            overlay.classList.add('hidden');
-            overlay.classList.remove('block');
-            drawer.setAttribute('aria-hidden', 'true');
-        }
-
+        // Function to fetch and populate user data into the modal        
+        let currentPenggunaId = null;
 
         function getEditPengguna(editPengguna) {
+            currentPenggunaId = editPengguna;
+            console.log("Stored currentPenggunaId:", currentPenggunaId);
             console.log('Editing pengguna with ID:', editPengguna);
-            fetch(`http://localhost/KabarE-Web/api/pengguna.php?id=${editPengguna}`)
+
+            document.querySelector('.edit_pengguna_text').textContent = "Edit";
+
+            // Ensure the editPengguna is not undefined or null
+            if (!editPengguna) {
+                console.error("No ID provided for edit!");
+                showAlert('error', 'No valid ID provided for edit.');
+                return; // Exit if the ID is invalid
+            }
+
+            // Log the ID before fetching to ensure it's valid
+            console.log("Attempting to fetch data for ID:", editPengguna);
+
+            fetch(`http://localhost/KabarE-Web/api/user.php?id=${editPengguna}`)
                 .then(response => response.json())
                 .then(responseData => {
-                    console.log('API Response Data:', responseData); // Log the whole response to inspect
+                    console.log('API Response Data:', responseData); // Log the entire response for debugging
 
-                    // Check if responseData contains 'data' and 'data.nama_pengguna'
-                    if (responseData && responseData.data && responseData.data.nama_pengguna) {
-                        const penggunaData = responseData.data; // Access the 'data' object
-                        document.getElementById('name').value = penggunaData.nama_pengguna;  // Set input value with 'nama_pengguna'
-                        document.getElementById('penggunaForm').setAttribute('data-edit-id', editPengguna);
-                        
-                        const submitButton = document.querySelector('#penggunaForm button[type="submit"]');
-                        if (submitButton) {
-                            submitButton.textContent = 'Update'; // Change button to 'Update' for editing
+                    if (responseData && responseData.data) {
+                        const penggunaData = responseData.data;
+                        console.log("Fetched pengguna data:", penggunaData); // Log the pengguna data
+
+                        // Set the values of the form fields
+                        document.querySelector('#nama_pengguna').value = penggunaData.nama_pengguna || '';
+                        document.querySelector('#email').value = penggunaData.email || '';
+                        document.querySelector('#email').readOnly = true;
+                        document.querySelector('#email').classList.replace('bg-gray-50', 'bg-gray-200');
+                        document.querySelector('#password').value =
+                            '*********'; // Clear password field for security
+                        document.querySelector('#password').readOnly = true;
+                        document.querySelector('#password').classList.replace('bg-gray-50', 'bg-gray-200');
+                        document.querySelector('#nama_lengkap').value = penggunaData.nama_lengkap || '';
+
+                        // Set the role
+                        const roleSelect = document.querySelector('#roles');
+                        if (roleSelect) {
+                            roleSelect.value = penggunaData.role ||
+                                ''; // Set the current role as the selected option
                         }
 
-                        document.querySelector('.openDrawerBtn').click(); // Open the drawer after fetching
+                        // Set the profile picture if available
+                        const profileImg = document.querySelector('#profile-img');
+                        if (profileImg && penggunaData.profile_pic) {
+                            profileImg.src = `data:image/jpeg;base64,${penggunaData.profile_pic}` || profileImg.src;
+                        }
+
+                        // Show the modal
+                        const modal = document.querySelector('.modal_roleUserUbahStatus');
+                        if (modal) {
+                            modal.classList.remove('hidden'); // Show modal
+                        }
+
                     } else {
+                        console.error('Pengguna data not found!');
                         showAlert('error', 'Pengguna data not found!');
                     }
                 })
@@ -624,6 +719,262 @@
                     showAlert('error', 'Error fetching pengguna data.');
                 });
         }
+
+        // Handle form submission for role update or insert
+        document.getElementById('penggunaForm').addEventListener('submit', async function (event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            console.log("id update:", currentPenggunaId);
+
+            const formData = new FormData(this);
+            const nama_pengguna = formData.get('nama_pengguna');
+            const nama_lengkap = formData.get('nama_lengkap');
+            const email = formData.get('email');
+            const password = formData.get('password');
+            const role = formData.get('role');
+            const profile_pic_file = document.getElementById('profile_pic').files[
+            0]; // Explicitly get file input
+
+            // Validation - Required fields
+            if (!nama_pengguna || !nama_lengkap || !email || !role) {
+                console.error('Some required fields are missing!');
+                showAlert('error', 'Please fill all required fields!');
+                return;
+            }
+
+            // Validate email format
+            const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+            if (!emailPattern.test(email)) {
+                console.error('Invalid email format');
+                showAlert('error', 'Please enter a valid email address!');
+                return;
+            }
+
+            // Validate password if provided (if it's required)
+            if (!password && !currentPenggunaId) {
+                console.error('Password is required');
+                showAlert('error', 'Password is required!');
+                return;
+            }
+
+            // Prepare request body
+            const requestBody = {
+                nama_pengguna,
+                nama_lengkap,
+                email,
+                role,
+            };
+
+            // Add password for new user
+            if (!currentPenggunaId && password) {
+                requestBody.password = password;
+            }
+
+            // If profile picture exists, convert to Base64 and update
+            if (profile_pic_file) {
+                const reader = new FileReader();
+                reader.onloadend = function () {
+                    const base64Image = reader.result; // Base64-encoded image data
+                    requestBody.profile_pic = base64Image; // Add to the request body
+                    // Send the request after profile_pic is processed
+                    sendRequestToBackend(requestBody);
+                };
+                reader.readAsDataURL(profile_pic_file); // Convert image to Base64
+            } else {
+                // No profile picture - directly send the request without updating image
+                sendRequestToBackend(requestBody);
+            }
+        });
+
+        // Function to send request
+        function sendRequestToBackend(body) {
+            const url = currentPenggunaId ?
+                `http://localhost/KabarE-Web/api/user.php?id=${currentPenggunaId}` :
+                `http://localhost/KabarE-Web/api/user.php`;
+
+            const method = currentPenggunaId ? 'PUT' : 'POST';
+
+            fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(body),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                    showAlert('success', 'User data submitted successfully!');
+                    fetchDataAndUpdateTable();
+                    updateTable();
+                    updatePagination();
+                    // Optional: Close modal or refresh data
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showAlert('error', 'Something went wrong!');
+                });
+        }
+
+
+        // // Function to send request
+        // function sendRequest(method, url, data) {
+        //     const options = {
+        //         method: method,
+        //         headers: {
+        //             'Content-Type': 'application/json', // Send JSON data
+        //         },
+        //         body: JSON.stringify(
+        //             data), // Stringify the request body (including the profile picture if it exists)
+        //     };
+
+        //     fetch(url, options)
+        //         .then(response => response.json())
+        //         .then(data => {
+        //             console.log("Response data:", data);
+        //             // Handle the response here (success or failure)
+        //         })
+        //         .catch(error => {
+        //             console.error("Error sending request:", error);
+        //         });
+        //     resetForm();
+        //     updateTable();
+        //     updatePagination();
+        // }
+
+        // Reset the form and ID
+        function resetForm() {
+            // Reset currentPenggunaId
+            currentPenggunaId = null;
+
+            // Reset the form fields
+            const penggunaForm = document.getElementById('penggunaForm');
+            if (penggunaForm) {
+                penggunaForm.reset(); // Reset the form elements
+            }
+
+            // Reset the email input's properties
+            const emailInput = document.querySelector('#email');
+            if (emailInput) {
+                emailInput.readOnly = false; // Make the email input editable again
+                emailInput.classList.replace('bg-gray-200', 'bg-gray-50'); // Reset the background color
+            }
+
+            // Reset the password input's properties
+            const passwordInput = document.querySelector('#password');
+            if (passwordInput) {
+                passwordInput.value = ''; // Clear password field
+                passwordInput.readOnly = false; // Make it editable
+                passwordInput.classList.replace('bg-gray-200', 'bg-gray-50'); // Reset the background color
+            }
+
+            // Reset the profile picture
+            const profileImg = document.querySelector('#profile-img');
+            if (profileImg) {
+                profileImg.src =
+                    'https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3407.jpg?w=360';
+            }
+
+            // Clear the profile picture file input
+            const profilePicInput = document.querySelector('input[name="profile_pic"]');
+            if (profilePicInput) {
+                profilePicInput.value = ''; // Clear the file input field
+            }
+
+            // Log the reset for debugging purposes
+            console.log("Form has been reset. currentPenggunaId:", currentPenggunaId);
+        }
+
+        function getEditPengguna(editPengguna) {
+            // Call resetForm before fetching data
+            resetForm();
+
+            currentPenggunaId = editPengguna;
+            console.log("Stored currentPenggunaId:", currentPenggunaId);
+            console.log('Editing pengguna with ID:', editPengguna);
+
+            document.querySelector('.edit_pengguna_text').textContent = "Edit";
+
+            // Ensure the editPengguna is not undefined or null
+            if (!editPengguna) {
+                console.error("No ID provided for edit!");
+                showAlert('error', 'No valid ID provided for edit.');
+                return; // Exit if the ID is invalid
+            }
+
+            // Log the ID before fetching to ensure it's valid
+            console.log("Attempting to fetch data for ID:", editPengguna);
+
+            fetch(`http://localhost/KabarE-Web/api/user.php?id=${editPengguna}`)
+                .then(response => response.json())
+                .then(responseData => {
+                    console.log('API Response Data:', responseData); // Log the entire response for debugging
+
+                    if (responseData && responseData.data) {
+                        const penggunaData = responseData.data;
+                        console.log("Fetched pengguna data:", penggunaData); // Log the pengguna data
+
+                        // Set the values of the form fields
+                        document.querySelector('#nama_pengguna').value = penggunaData.nama_pengguna || '';
+                        document.querySelector('#email').value = penggunaData.email || '';
+                        document.querySelector('#email').readOnly = true;
+                        document.querySelector('#email').classList.replace('bg-gray-50', 'bg-gray-200');
+                        document.querySelector('#password').value =
+                            '*********'; // Clear password field for security
+                        document.querySelector('#password').readOnly = true;
+                        document.querySelector('#password').classList.replace('bg-gray-50', 'bg-gray-200');
+                        document.querySelector('#nama_lengkap').value = penggunaData.nama_lengkap || '';
+
+                        // Set the role
+                        const roleSelect = document.querySelector('#roles');
+                        if (roleSelect) {
+                            roleSelect.value = penggunaData.role ||
+                                ''; // Set the current role as the selected option
+                        }
+
+                        // Set the profile picture if available
+                        const profileImg = document.querySelector('#profile-img');
+                        if (profileImg && penggunaData.profile_pic) {
+                            profileImg.src = `data:image/jpeg;base64,${penggunaData.profile_pic}` || profileImg.src;
+                        }
+
+                        // Show the modal
+                        const modal = document.querySelector('.modal_roleUserUbahStatus');
+                        if (modal) {
+                            modal.classList.remove('hidden'); // Show modal
+                        }
+
+                    } else {
+                        console.error('Pengguna data not found!');
+                        showAlert('error', 'Pengguna data not found!');
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching pengguna data:", error);
+                    showAlert('error', 'Error fetching pengguna data.');
+                });
+        }
+
+
+        // Fetch data and update table and pagination
+        async function fetchDataAndUpdateTable() {
+            try {
+                const response = await fetch('http://localhost/KabarE-Web/api/user.php');
+                const data = await response.json();
+
+                console.log(data); // Log the entire data object to check the structure
+                userData = data.data || [];
+                totalItems = userData.length;
+                console.log(totalItems);
+                console.log(userData);
+
+                updateTable();
+                updatePagination();
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
     </script>
 </body>
+
 </html>
