@@ -351,6 +351,28 @@ $isPenulis = ($role === 'Penulis');
 
 
     <script>
+        // Fungsi untuk menampilkan waktu
+        function updateTime() {
+            const currentDateElement = document.getElementById('currentDate');
+            const now = new Date();
+
+            // Format waktu: Hari, Bulan Tanggal, Tahun Jam:Menit:Detik
+            const formattedTime = now.toLocaleString('id-ID', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+            });
+
+            currentDateElement.textContent = formattedTime;
+        }
+
+        // Panggil fungsi untuk menampilkan waktu saat halaman dimuat
+        updateTime();
+
+        // Update waktu setiap detik
+        setInterval(updateTime, 1000);
+
         const otherCategoryButton = document.getElementById('otherCategoryButton');
         const otherCategoryMenu = document.getElementById('otherCategoryMenu');
         const profileButton = document.getElementById('profileButton');
