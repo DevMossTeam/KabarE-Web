@@ -30,8 +30,8 @@ class FeedbackHandler {
         if (empty($pesan)) {
             return ['status' => 'error', 'message' => 'Pesan tidak boleh kosong!'];
         }
-        if (empty($user_id)) {
-            return ['status' => 'error', 'message' => 'Pengguna tidak terdeteksi.'];
+        if (empty($user_id) || $user_id === null) {
+            return ['status' => 'error', 'message' => 'Pengguna tidak terdeteksi. Anda harus login untuk mengirim pesan.'];
         }
         return null;
     }
