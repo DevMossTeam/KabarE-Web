@@ -7,7 +7,7 @@ include '../api/berita/detail_berita.php';
 
 $userRole = ''; // Variabel untuk menyimpan role
 $canInteract = false; // Flag untuk mengizinkan interaksi
-
+$get_penerima_user_id = $_SESSION['user_id'];
 if ($user_id) {
     $stmt = $conn->prepare("SELECT nama_pengguna, profile_pic, role FROM user WHERE uid = ?");
     if ($stmt) {
@@ -23,6 +23,7 @@ if ($user_id) {
         }
     }
 }
+
 // Contoh untuk handling reaction
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reaction'])) {
     // Cek ulang otorisasi di sisi server
@@ -34,7 +35,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reaction'])) {
 
     // Lanjutkan proses normal
     $jenis_reaksi = $_POST['reaction'];
-    toggleReaction($conn, $user_id, $id, $jenis_reaksi);
+    // htmlspecialchars($uid) 
+    toggleReaction($conn, $user_id, $id, $jenis_reaksi, htmlspecialchars($uid));
+    // inserOrUpdateNotifReaksi($user_id, );
     header("Location: news-detail.php?id=$id");
     exit;
 }
@@ -53,7 +56,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bookmark'])) {
     header("Location: news-detail.php?id=$id");
     exit;
 }
+
+// notifLike($user_id);
 ?>
+
+
 
 <!-- Tambahkan link Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -65,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bookmark'])) {
             <span class="inline-block bg-red-500 text-white px-3 py-1 rounded-md my-2"><?= htmlspecialchars($kategori) ?></span>
             <h1 class="text-3xl font-bold mt-2"><?= htmlspecialchars($judul) ?></h1>
             <div class="text-gray-500 text-sm mt-2">
-                <span>Penulis: <?= htmlspecialchars($penulis) ?></span> |
+                <span>Penulis: <?= htmlspecialchars($uid) ?></span> |
                 <span><?= date('d F Y', strtotime($tanggalDiterbitkan)) ?> WIB</span>
             </div>
             <div class="mt-4">
@@ -96,18 +103,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bookmark'])) {
                     </form>
 
                     <!-- Button Dislike -->
-                    <form method="post" action=""
+                    <form method="post" action=""                        
                         class="<?= !$canInteract ? 'cursor-not-allowed opacity-50 pointer-events-none' : '' ?>">
-                        <input type="hidden" name="reaction" value="Tidak Suka">
-                        <button type="submit"
-                            <?= !$canInteract ? 'disabled' : '' ?>
-                            class="flex items-center border border-blue-500 px-4 py-2 rounded 
-            <?= $userReaction === 'Tidak Suka' ? 'text-blue-500 bg-blue-100' : 'text-gray-500 hover:text-blue-500 hover:bg-blue-50' ?> 
-            transition-colors
-            <?= !$canInteract ? 'opacity-50 cursor-not-allowed' : '' ?>">
-                            <i class="fas fa-thumbs-down"></i>
-                            <span class="ml-2"><?= $dislikeCount ?></span>
-                        </button>
+                            <input type="hidden" name="reaction" value="Tidak Suka">
+                            <button type="submit"
+                                <?= !$canInteract ? 'disabled' : '' ?>
+                                class="flex items-center border border-blue-500 px-4 py-2 rounded 
+                <?= $userReaction === 'Tidak Suka' ? 'text-blue-500 bg-blue-100' : 'text-gray-500 hover:text-blue-500 hover:bg-blue-50' ?> 
+                transition-colors
+                <?= !$canInteract ? 'opacity-50 cursor-not-allowed' : '' ?>">
+                                <i class="fas fa-thumbs-down"></i>
+                                <span class="ml-2"><?= $dislikeCount ?></span>
+                            </button>
                     </form>
 
                     <!-- Button Share -->

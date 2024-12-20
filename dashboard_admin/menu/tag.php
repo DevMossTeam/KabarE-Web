@@ -194,7 +194,7 @@
         let uniqueTags = [];
 
         // Fetch data from the API
-        fetch('http://localhost/KabarE-Web/api/tag.php')
+        fetch('../../api/tag.php')
             .then(response => response.json())
             .then(data => {
                 tagsData = data.data || [];

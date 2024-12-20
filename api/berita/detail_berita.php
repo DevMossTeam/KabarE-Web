@@ -1,9 +1,42 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 include '../connection/config.php';
 
 // Ambil ID dari URL
 $id = isset($_GET['id']) ? $_GET['id'] : null;
+
+// Query untuk mendapatkan detail berita dan nama penulis
+$query = "SELECT b.judul, b.konten_artikel, b.tanggal_diterbitkan, b.kategori, u.nama_lengkap, u.nama_pengguna, u.profile_pic, u.uid 
+          FROM berita b 
+          JOIN user u ON b.user_id = u.uid 
+          WHERE b.id = ?";
+$stmt = $conn->prepare($query);
+$stmt->bind_param('s', $id);
+$stmt->execute();
+$result = $stmt->get_result();
+$berita = $result->fetch_assoc();
+
+if ($berita) {
+    $judul = $berita['judul'];
+    $konten = $berita['konten_artikel'];
+    $tanggalDiterbitkan = $berita['tanggal_diterbitkan'];
+    $kategori = $berita['kategori'];
+    $penulis = $berita['nama_lengkap'];
+    $uid = $berita['uid'];
+    $namaPengguna = $berita['nama_pengguna'];
+    $profilePic = $berita['profile_pic'];
+
+    // Ekstrak URL gambar pertama dari konten artikel
+    preg_match('/<img.*?src=["\'](.*?)["\'].*?>/i', $konten, $matches);
+    $gambarPertama = $matches[1] ?? ''; // Ambil URL gambar pertama jika ada
+    $konten = preg_replace('/<img.*?>/i', '', $konten, 1); // Hapus hanya gambar pertama
+} else {
+    echo "Berita tidak ditemukan.";
+    exit;
+}
 
 // Tangani permintaan komentar
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
@@ -17,6 +50,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
         $stmt = $conn->prepare($query);
         $stmt->bind_param('sssss', $randomId, $user_id, $id, $teks_komentar, $tanggal_komentar);
         $stmt->execute();
+        
+        $query2 = "INSERT INTO notifikasi (tipe_notif, penerima_notif_user_id, dari_user_id, berita_id, komen_id) 
+        VALUES (?, ?, ?, ?, ?)";
+        $stmt2 = $conn->prepare($query2);
+        $tipe_notif = "komentar";
+        $penerima_notif_user_id = htmlspecialchars($uid);
+        $dari_user_id = $_SESSION['user_id'];
+        $berita_id = $id;
+        $komen_id = $randomId;
+        $stmt2->bind_param('sssss', $tipe_notif, $penerima_notif_user_id, $dari_user_id, $berita_id, $komen_id);
+        if ($stmt2->execute()) {
+            echo "Record inserted successfully";
+        } else {
+            echo "Error: " . $stmt2->error;
+        }
+        $stmt2->close();
 
         echo json_encode(['success' => true]);
     } else {
@@ -35,6 +84,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_comment_id']))
         $stmt = $conn->prepare($query);
         $stmt->bind_param('ss', $commentId, $user_id);
         $stmt->execute();
+
+        $query2 = "DELETE FROM notifikasi WHERE komen_id = ? AND dari_user_id = ?";
+        $stmt2 = $conn->prepare($query2);
+        $stmt2->bind_param('ss', $commentId,  $_SESSION['user_id']);
+        $stmt2->execute();
 
         echo json_encode(['success' => true]);
     } else {
@@ -61,35 +115,6 @@ function timeAgo($datetimeString) {
     if ($interval->h > 0) return $interval->h . " jam yang lalu";
     if ($interval->i > 0) return $interval->i . " menit yang lalu";
     return "baru saja";
-}
-
-// Query untuk mendapatkan detail berita dan nama penulis
-$query = "SELECT b.judul, b.konten_artikel, b.tanggal_diterbitkan, b.kategori, u.nama_lengkap, u.nama_pengguna, u.profile_pic 
-          FROM berita b 
-          JOIN user u ON b.user_id = u.uid 
-          WHERE b.id = ?";
-$stmt = $conn->prepare($query);
-$stmt->bind_param('s', $id);
-$stmt->execute();
-$result = $stmt->get_result();
-$berita = $result->fetch_assoc();
-
-if ($berita) {
-    $judul = $berita['judul'];
-    $konten = $berita['konten_artikel'];
-    $tanggalDiterbitkan = $berita['tanggal_diterbitkan'];
-    $kategori = $berita['kategori'];
-    $penulis = $berita['nama_lengkap'];
-    $namaPengguna = $berita['nama_pengguna'];
-    $profilePic = $berita['profile_pic'];
-
-    // Ekstrak URL gambar pertama dari konten artikel
-    preg_match('/<img.*?src=["\'](.*?)["\'].*?>/i', $konten, $matches);
-    $gambarPertama = $matches[1] ?? ''; // Ambil URL gambar pertama jika ada
-    $konten = preg_replace('/<img.*?>/i', '', $konten, 1); // Hapus hanya gambar pertama
-} else {
-    echo "Berita tidak ditemukan.";
-    exit;
 }
 
 // Ambil ID dan kategori dari berita saat ini
@@ -205,7 +230,7 @@ function generateRandomId($length = 12) {
 }
 
 // Fungsi untuk mengelola reaksi
-function toggleReaction($conn, $user_id, $berita_id, $jenis_reaksi) {
+function toggleReaction($conn, $user_id, $berita_id, $jenis_reaksi, $penerima_user_id) {
     // Cek apakah reaksi sudah ada
     $query = "SELECT * FROM reaksi WHERE user_id = ? AND berita_id = ?";
     $stmt = $conn->prepare($query);
@@ -222,12 +247,29 @@ function toggleReaction($conn, $user_id, $berita_id, $jenis_reaksi) {
             $stmt = $conn->prepare($query);
             $stmt->bind_param('ss', $user_id, $berita_id);
             $stmt->execute();
+
+            $query_delete = "DELETE FROM notifikasi 
+            WHERE tipe_notif = ? 
+              AND dari_user_id = ? 
+              AND berita_id = ?";
+            $stmt_delete = $conn->prepare($query_delete);
+            $stmt_delete->bind_param('sss', $jenis_reaksi, $_SESSION['user_id'], $berita_id);
+            $stmt_delete->execute();
+            $stmt_delete->close();
         } else {
             // Ubah jenis reaksi
             $query = "UPDATE reaksi SET jenis_reaksi = ?, tanggal_reaksi = NOW() WHERE user_id = ? AND berita_id = ?";
             $stmt = $conn->prepare($query);
             $stmt->bind_param('sss', $jenis_reaksi, $user_id, $berita_id);
             $stmt->execute();
+
+            $query2 = "UPDATE notifikasi 
+                    SET tipe_notif = ? 
+                    WHERE dari_user_id = ? AND berita_id = ?";
+            $stmt2 = $conn->prepare($query2);
+            $stmt2->bind_param('sss', $jenis_reaksi, $_SESSION['user_id'], $berita_id);
+            $stmt2->execute();
+            $stmt2->close();
         }
     } else {
         // Tambahkan reaksi baru dengan ID acak
@@ -236,8 +278,17 @@ function toggleReaction($conn, $user_id, $berita_id, $jenis_reaksi) {
         $stmt = $conn->prepare($query);
         $stmt->bind_param('ssss', $randomId, $user_id, $berita_id, $jenis_reaksi);
         $stmt->execute();
+
+        // Insert notifikasi baru
+        $query2 = "INSERT INTO notifikasi (tipe_notif, penerima_notif_user_id, dari_user_id, berita_id) 
+        VALUES (?, ?, ?, ?)";
+        $stmt2 = $conn->prepare($query2);
+        $stmt2->bind_param('ssss', $jenis_reaksi, $penerima_user_id, $_SESSION['user_id'], $berita_id);
+        $stmt2->execute();       
+        $stmt2->close();
     }
 }
+
 
 // Fungsi untuk mengelola bookmark
 function toggleBookmark($conn, $user_id, $berita_id) {
@@ -269,7 +320,7 @@ function toggleBookmark($conn, $user_id, $berita_id) {
 // Tangani permintaan reaksi
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reaction'])) {
     $jenis_reaksi = $_POST['reaction'];
-    toggleReaction($conn, $user_id, $id, $jenis_reaksi);
+    toggleReaction($conn, $user_id, $id, $jenis_reaksi, htmlspecialchars($uid));
     // Refresh halaman untuk memperbarui tampilan
     header("Location: news-detail.php?id=$id");
     exit;
@@ -331,4 +382,5 @@ $stmt->bind_param('s', $id);
 $stmt->execute();
 $commentResult = $stmt->get_result();
 $commentCount = $commentResult->num_rows;
+
 ?>

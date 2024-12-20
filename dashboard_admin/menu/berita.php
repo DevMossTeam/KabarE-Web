@@ -18,7 +18,7 @@
 
     <?php
 // The URL of your API endpoint
-$apiUrl = "http://localhost/KabarE-Web/api/berita.php";
+$apiUrl = "/../api/berita.php";
 
 // Number of items per page
 $itemsPerPage = 10; // Limit to 5 items per page

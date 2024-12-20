@@ -87,18 +87,25 @@ class NotifAPI {
 
     // Insert a new notification
     public function insertNotif($data) {
-        if (isset($data['tipe_notif'], $data['penerima_notif_user_id'], $data['dari_user_id'])) {
+        if (isset($data['tipe_notif'], $data['penerima_notif_user_id'], $data['dari_user_id'], $data['berita_id'])) {
             try {
+                // Prepare the insert query
                 $stmt = $this->conn->prepare("
-                    INSERT INTO notifikasi (tipe_notif, penerima_notif_user_id, komen_id, dari_user_id) 
-                    VALUES (:tipe_notif, :penerima_notif_user_id, :komen_id, :dari_user_id)
+                    INSERT INTO notifikasi (tipe_notif, penerima_notif_user_id, komen_id, dari_user_id, berita_id) 
+                    VALUES (:tipe_notif, :penerima_notif_user_id, :komen_id, :dari_user_id, :berita_id)
                 ");
-                $komen_id = isset($data['komen_id']) ? $data['komen_id'] : null; // Optional field
+    
+                // Set 'komen_id' to null if it's not provided
+                $komen_id = isset($data['komen_id']) ? $data['komen_id'] : null;
+    
+                // Bind the parameters
                 $stmt->bindParam(':tipe_notif', $data['tipe_notif']);
                 $stmt->bindParam(':penerima_notif_user_id', $data['penerima_notif_user_id']);
                 $stmt->bindParam(':komen_id', $komen_id);
                 $stmt->bindParam(':dari_user_id', $data['dari_user_id']);
-                
+                $stmt->bindParam(':berita_id', $data['berita_id']);
+    
+                // Execute the query
                 if ($stmt->execute()) {
                     $last_id = $this->conn->lastInsertId();
                     $this->fetchNotif($last_id); // Return the inserted notification
@@ -115,9 +122,9 @@ class NotifAPI {
 
     // Update an existing notification
     public function updateNotif($id, $data) {
-        if (isset($data['tipe_notif'], $data['penerima_notif_user_id'], $data['dari_user_id'])) {
+        if (isset($data['tipe_notif'], $data['penerima_notif_user_id'], $data['dari_user_id'], $data['berita_id'])) {
             try {
-                $query = "UPDATE notifikasi SET tipe_notif = :tipe_notif, penerima_notif_user_id = :penerima_notif_user_id, dari_user_id = :dari_user_id";
+                $query = "UPDATE notifikasi SET tipe_notif = :tipe_notif, penerima_notif_user_id = :penerima_notif_user_id, dari_user_id = :dari_user_id, berita_id = :berita_id";
                 if (isset($data['komen_id'])) {
                     $query .= ", komen_id = :komen_id";
                 }
@@ -127,6 +134,7 @@ class NotifAPI {
                 $stmt->bindParam(':tipe_notif', $data['tipe_notif']);
                 $stmt->bindParam(':penerima_notif_user_id', $data['penerima_notif_user_id']);
                 $stmt->bindParam(':dari_user_id', $data['dari_user_id']);
+                $stmt->bindParam(':berita_id', $data['berita_id']);
                 if (isset($data['komen_id'])) {
                     $stmt->bindParam(':komen_id', $data['komen_id']);
                 }
@@ -204,3 +212,4 @@ switch ($request_method) {
         echo json_encode(['message' => 'Invalid request method']);
         break;
 }
+?>
