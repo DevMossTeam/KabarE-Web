@@ -2,6 +2,10 @@
 session_start(); // Mulai sesi
 include '../connection/config.php'; // Pastikan path ini sesuai dengan struktur folder Anda
 
+// Nonaktifkan output buffering dan error reporting untuk respon bersih
+ob_clean();
+error_reporting(0);
+
 // Inisialisasi variabel dengan nilai default
 $judul = '';
 $konten = '';
@@ -29,44 +33,25 @@ if (isset($_GET['edit_id']) && !empty($_GET['edit_id'])) {
         $visibilitas = $article['visibilitas'];
         $kategori = $article['kategori'];
     } else {
-        echo "Artikel tidak ditemukan.";
-        exit;
+        // Respon plain text untuk tidak ditemukannya artikel
+        header('Content-Type: text/plain');
+        die("Artikel tidak ditemukan.");
     }
 } else {
-    // Jika edit_id tidak ada, tampilkan pesan kesalahan
-    echo "ID artikel tidak ditemukan. Pastikan Anda mengakses halaman ini dengan benar.";
-    exit;
-}
-
-function generateId($conn) {
-    $prefix = "BRT";
-    $newId = null;
-    $isUnique = false;
-
-    while (!$isUnique) {
-        $query = "SELECT MAX(CAST(SUBSTRING(id, 4) AS UNSIGNED)) AS max_id FROM berita WHERE id LIKE '$prefix%'";
-        $result = $conn->query($query);
-        $row = $result->fetch_assoc();
-        $maxId = $row['max_id'] ? $row['max_id'] : 0;
-        $newId = $prefix . ($maxId + 1);
-
-        // Cek apakah ID sudah ada
-        $checkQuery = "SELECT id FROM berita WHERE id = '$newId'";
-        $checkResult = $conn->query($checkQuery);
-        if ($checkResult->num_rows == 0) {
-            $isUnique = true;
-        }
-    }
-
-    return $newId;
+    // Respon plain text untuk ID artikel tidak valid
+    header('Content-Type: text/plain');
+    die("ID artikel tidak ditemukan.");
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
+    // Set header untuk respon plain text
+    header('Content-Type: text/plain');
+
     $conn->begin_transaction(); // Mulai transaksi
 
     try {
-        // Ambil ID dari parameter GET
-        $edit_id = $_GET['edit_id'];
+        // Ambil ID dari parameter GET dan pastikan adalah string
+        $edit_id = (string)$_GET['edit_id'];
         
         // Ambil data dari form
         $title = $_POST['title'];
@@ -76,27 +61,74 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
         $updated_at = date('Y-m-d H:i:s');
         $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
 
+        // Validasi input
         if ($user_id === null) {
-            throw new Exception("User  ID tidak ditemukan.");
+            throw new Exception("User ID tidak ditemukan.");
         }
 
-        if ($visibility === null) {
-            throw new Exception("Visibilitas tidak boleh kosong.");
+        // Cek apakah artikel dengan ID tersebut milik user yang sedang login
+        $check_ownership_query = "SELECT COUNT(*) as count FROM berita WHERE id = ? AND user_id = ?";
+        $check_ownership_stmt = $conn->prepare($check_ownership_query);
+        $check_ownership_stmt->bind_param('ss', $edit_id, $user_id);
+        $check_ownership_stmt->execute();
+        $ownership_result = $check_ownership_stmt->get_result();
+        $ownership_row = $ownership_result->fetch_assoc();
+
+        if ($ownership_row['count'] == 0) {
+            throw new Exception("Anda tidak memiliki izin untuk mengedit artikel ini.");
         }
+
+        // Debug: Cetak informasi untuk pengecekan
+        error_log("Updating article - ID: $edit_id, Title: $title, Category: $category, Visibility: $visibility");
 
         // Query untuk memperbarui artikel
-        $query = "UPDATE berita SET judul = ?, konten_artikel = ?, tanggal_diterbitkan = ?, user_id = ?, kategori = ?, visibilitas = ? 
-                  WHERE id = ?";
+        $query = "UPDATE berita SET 
+                    judul = ?, 
+                    konten_artikel = ?, 
+                    tanggal_diterbitkan = ?, 
+                    kategori = ?, 
+                    visibilitas = ? 
+                  WHERE id = ? AND user_id = ?";
+        
         $stmt = $conn->prepare($query);
-        $stmt->bind_param('ssssssi', $title, $content, $updated_at , $user_id, $category, $visibility, $edit_id);
-        $stmt->execute();
+        
+        // Gunakan string untuk semua parameter
+        $stmt->bind_param('sssssss', 
+            $title, 
+            $content, 
+            $updated_at, 
+            $category, 
+            $visibility, 
+            $edit_id,
+            $user_id
+        );
+        
+        // Eksekusi query
+        if (!$stmt->execute()) {
+            // Tangkap error MySQL secara spesifik
+            throw new Exception("Eksekusi query gagal: " . $stmt->error);
+        }
+
+        // Cek apakah ada baris yang diupdate
+        if ($stmt->affected_rows === 0) {
+            throw new Exception("Tidak ada baris yang diupdate. Periksa kembali ID artikel.");
+        }
 
         // Commit transaksi
         $conn->commit();
-        echo "Artikel berhasil diperbarui.";
+        
+        // Respon plain text untuk sukses
+        echo "Artikel berhasil diperbarui";
+        exit;
     } catch (Exception $e) {
         $conn->rollback();
+        
+        // Log error untuk debugging
+        error_log("Gagal memperbarui artikel: " . $e->getMessage());
+        
+        // Respon plain text untuk error
         echo "Gagal memperbarui artikel: " . $e->getMessage();
+        exit;
     }
 }
 ?>
@@ -104,6 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -121,6 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
             display: block;
             margin: 0 auto;
         }
+
         .ql-editor iframe {
             max-width: 80%;
             height: 300px;
@@ -128,14 +162,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
             margin: 0 auto;
             background-color: #f0f0f0;
         }
+
         .tag-item {
             display: inline-flex;
             align-items: center;
-            background-color: #e2e8f0; /* Warna abu-abu */
-            color: #1a202c; /* Warna teks */
-            border-radius: 9999px; /* Membuat bungkusan bulat */
-            padding: 0.25rem 0.5rem; /* Padding dalam bungkusan */
-            margin: 0.25rem; /* Jarak antar bungkusan */
+            background-color: #e2e8f0;
+            /* Warna abu-abu */
+            color: #1a202c;
+            /* Warna teks */
+            border-radius: 9999px;
+            /* Membuat bungkusan bulat */
+            padding: 0.25rem 0.5rem;
+            /* Padding dalam bungkusan */
+            margin: 0.25rem;
+            /* Jarak antar bungkusan */
         }
 
         .tag-item button {
@@ -143,10 +183,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
             border: none;
             cursor: pointer;
             font-size: 1rem;
-            margin-right: 0.5rem; /* Jarak antara tombol "×" dan teks */
+            margin-right: 0.5rem;
+            /* Jarak antara tombol "×" dan teks */
         }
     </style>
 </head>
+
 <body class="bg-white">
     <!-- Animasi Loading -->
     <div id="loading" class="fixed inset-0 bg-gray-800 bg-opacity-75 hidden flex items-center justify-center z-50">
@@ -170,7 +212,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
                 <div class="mb-2">
                     <label for="articleContent" class="block text-lg font-semibold mb-2">Form Penulisan Artikel</label>
                     <div id="quillEditor" class="border border-gray-300 rounded p-4 h-96">
-                        <?php echo $konten; // Tampilkan konten HTML yang disimpan ?>
+                        <?php echo $konten; // Tampilkan konten HTML yang disimpan 
+                        ?>
                     </div>
                     <input type="hidden" name="content" id="hiddenContent">
                 </div>
@@ -327,13 +370,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
             modules: {
                 toolbar: {
                     container: [
-                        [{ 'font': [] }, { 'size': [] }],
+                        [{
+                            'font': []
+                        }, {
+                            'size': []
+                        }],
                         ['bold', 'italic', 'underline', 'strike'],
-                        [{ 'color': [] }, { 'background': [] }],
-                        [{ 'script': 'sub' }, { 'script': 'super' }],
-                        [{ 'header': '1' }, { 'header': '2' }, 'blockquote', 'code-block'],
-                        [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
-                        [{ 'direction': 'rtl' }, { 'align': [] }],
+                        [{
+                            'color': []
+                        }, {
+                            'background': []
+                        }],
+                        [{
+                            'script': 'sub'
+                        }, {
+                            'script': 'super'
+                        }],
+                        [{
+                            'header': '1'
+                        }, {
+                            'header': '2'
+                        }, 'blockquote', 'code-block'],
+                        [{
+                            'list': 'ordered'
+                        }, {
+                            'list': 'bullet'
+                        }, {
+                            'indent': '-1'
+                        }, {
+                            'indent': '+1'
+                        }],
+                        [{
+                            'direction': 'rtl'
+                        }, {
+                            'align': []
+                        }],
                         ['link', 'image', 'video'],
                         ['clean']
                     ],
@@ -476,7 +547,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
                     document.getElementById('previewTitle').textContent = titleInput || 'Penulisan Artikel';
                     document.getElementById('previewContent').innerHTML = contentHtml;
                     document.getElementById('previewCategory').textContent = selectedCategory;
-                    document.getElementById('previewDate').textContent = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+                    document.getElementById('previewDate').textContent = new Date().toLocaleDateString('id-ID', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric'
+                    });
 
                     // Sembunyikan elemen yang tidak diperlukan pada layar md ke bawah
                     document.getElementById('pageTitle').classList.add('hidden');
@@ -567,20 +642,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
             const titleInput = document.getElementById('title').value.trim();
             const contentHtml = quill.root.innerHTML.trim();
             const selectedCategory = categorySelect.value;
+            const visibility = document.querySelector('input[name="visibility"]:checked').value; // Ambil visibilitas yang dipilih
+            const editId = '<?php echo $edit_id; ?>'; // Ambil ID artikel yang akan diedit
 
             // Kirim data ke server menggunakan AJAX
             const xhr = new XMLHttpRequest();
-            xhr.open('POST', 'Update_author.php', true);
+            xhr.open('POST', 'Update_author.php?edit_id=' + encodeURIComponent(editId), true);
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             xhr.onload = function() {
                 if (xhr.status === 200) {
                     alert(xhr.responseText);
                     window.location.href = 'publishAuthor.php'; // Redirect ke publishAuthor.php setelah berhasil
                 } else {
-                    alert('Terjadi kesalahan saat memperbarui artikel.');
+                    alert('Terjadi kesalahan saat memperbarui artikel.' + xhr.responseText);
                 }
             };
-            xhr.send(`publish=true&title=${encodeURIComponent(titleInput)}&content=${encodeURIComponent(contentHtml)}&category=${encodeURIComponent(selectedCategory)}`);
+            xhr.send(`publish=true&title=${encodeURIComponent(titleInput)}&content=${encodeURIComponent(contentHtml)}&category=${encodeURIComponent(selectedCategory)}&visibility=${encodeURIComponent(visibility)}`);
         });
 
         confirmNo.addEventListener('click', hideConfirmPopup);
@@ -613,7 +690,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
             }
             // Ambil semua tag dari labelContainer
             const tags = Array.from(document.getElementById('labelContainer').children)
-            .map(label => label.textContent.trim().replace('×', ''));
+                .map(label => label.textContent.trim().replace('×', ''));
 
             // Set nilai input hidden untuk tag
             document.getElementById('hiddenTags').value = tags.join(',');
@@ -667,4 +744,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
         }
     </script>
 </body>
+
 </html>

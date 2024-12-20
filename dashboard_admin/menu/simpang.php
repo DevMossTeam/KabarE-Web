@@ -55,7 +55,7 @@
                                             </tr>
                                             <tr>
                                                 <td>
-                                                    <a href="http://localhost/KabarE-Web/category/news-detail.php?="
+                                                    <a href="../../category/news-detail.php?="
                                                         style="text-decoration: none; color: inherit;">
                                                         <h3
                                                             style="font-size: 16px; font-weight: bold; color: #1a202c; margin: 8px 0;">
@@ -81,7 +81,7 @@
                                         </table>
                                     </td>
                                     <td width="50%" align="center">
-                                        <a href="http://localhost/KabarE-Web/category/news-detail.php?=" style="">
+                                        <a href="../../category/news-detail.php?=" style="">
                                             <img src="https://via.placeholder.com/400x300" alt="Breaking News Image"
                                                 style="max-width: 100%; height: auto; object-fit: contain; border-radius: 8px;">
                                         </a>
@@ -183,7 +183,7 @@
                                             </tr>
                                             <tr>
                                                 <td>
-                                                    <a href="http://localhost/KabarE-Web/category/news-detail.php?="
+                                                    <a href="../../category/news-detail.php?="
                                                         style="text-decoration: none; color: inherit;">
                                                         <h3
                                                             style="font-size: 16px; font-weight: bold; color: #1a202c; margin: 8px 0;">
@@ -209,7 +209,7 @@
                                         </table>
                                     </td>
                                     <td width="50%" align="center">
-                                        <a href="http://localhost/KabarE-Web/category/news-detail.php?=" style="">
+                                        <a href="../../category/news-detail.php?=" style="">
                                             <img src="https://via.placeholder.com/400x300" alt="Breaking News Image"
                                                 style="max-width: 100%; height: auto; object-fit: contain; border-radius: 8px;">
                                         </a>

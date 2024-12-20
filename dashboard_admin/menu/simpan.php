@@ -24,7 +24,7 @@
 
 <?php
 // The URL of your API endpoint
-$apiUrl = "http://localhost/KabarE-Web/api/newsletterFetch.php";
+$apiUrl = "../../api/newsletterFetch.php";
 
 // Fetch the data using file_get_contents()
 $response = file_get_contents($apiUrl);
@@ -154,7 +154,7 @@ $result = [
 
                                             <tr>
                                                 <td>
-                                                    <a href="http://localhost/KabarE-Web/category/news-detail.php?="
+                                                    <a href="../../category/news-detail.php?="
                                                         style="text-decoration: none; color: inherit;">
                                                         <h3
                                                             style="font-size: 16px; font-weight: bold; color: #1a202c; margin: 8px 0;">
@@ -188,7 +188,7 @@ $result = [
                                         </table>
                                     </td>
                                     <td width="50%" align="center">
-                                        <a href="http://localhost/KabarE-Web/category/news-detail.php?=">
+                                        <a href="../../category/news-detail.php?=">
                                             <img src="<?php echo htmlspecialchars($imageData[0]); ?>" alt="Post Image"
                                                 style="width: 80%; max-height: 150px; object-fit: cover; border-radius: 8px;">
                                         </a>

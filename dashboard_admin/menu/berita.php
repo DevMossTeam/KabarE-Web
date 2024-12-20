@@ -18,7 +18,7 @@
 
     <?php
 // The URL of your API endpoint
-$apiUrl = "http://localhost/KabarE-Web/api/berita.php";
+$apiUrl = "../../api/berita.php";
 
 // Number of items per page
 $itemsPerPage = 10; // Limit to 5 items per page
@@ -37,9 +37,9 @@ $filter = isset($_GET['filter']) ? $_GET['filter'] : '';
 $response = file_get_contents($apiUrl);
 
 // Check if the response is valid
-if ($response === FALSE) {
-    die('Error occurred while fetching data');
-}
+// if ($response === FALSE) {
+//     die('Error occurred while fetching data');
+// }
 
 // Decode the JSON response into a PHP array
 $data = json_decode($response, true);
@@ -325,7 +325,7 @@ echo "<script>console.log(" . json_encode($currentPageData) . ");</script>";
                                                     </button>
 
                                                     <button
-                                                        onclick="window.location.href='http://localhost/KabarE-Web/category/news-detail.php?id=<?php echo $item['id']; ?>';"
+                                                        onclick="window.location.href='../../category/news-detail.php?id=<?php echo $item['id']; ?>';"
                                                         class="modal_roleUserUbahStatus-toggle inline-flex items-center px-1.5 py-1.5 text-sm font-medium text-center text-white bg-blue-500 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 mt-0 md:mt-5">
                                                         <svg width=" 1.25rem" height=" 1.25rem" viewBox="0 0 98 98"
                                                             fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -194,7 +194,7 @@
         let uniqueTags = [];
 
         // Fetch data from the API
-        fetch('http://localhost/KabarE-Web/api/tag.php')
+        fetch('../../api/tag.php')
             .then(response => response.json())
             .then(data => {
                 tagsData = data.data || [];
@@ -331,7 +331,7 @@
             if (event.key === 'Enter') {
                 searchTerm = searchInput.value.trim();
                 const searchUrl =
-                    `http://localhost/KabarE-Web/dashboard_admin/menu/tag.php?search=${searchTerm}`;
+                    `../menu/tag.php?search=${searchTerm}`;
                 window.history.pushState({}, '', searchUrl);
 
                 // Filter the tags based on the search term
@@ -425,7 +425,7 @@
                 // Ensure that the tag name is URL encoded to handle spaces and special characters
                 const encodedTagName = encodeURIComponent(tagName);
 
-                fetch(`http://localhost/KabarE-Web/api/tag.php?name=${encodedTagName}`, {
+                fetch(`../../api/tag.php?name=${encodedTagName}`, {
                         method: 'DELETE',
                         headers: {
                             'Content-Type': 'application/json',
@@ -588,9 +588,9 @@
             // Check if we are in edit mode by looking for a data attribute on the form
             const tagId = this.getAttribute('data-edit-id');
             const url = tagId ?
-                `http://localhost/KabarE-Web/api/tag.php?id=${tagId}` // Update URL if in edit mode
+                `../../api/tag.php?id=${tagId}` // Update URL if in edit mode
                 :
-                'http://localhost/KabarE-Web/api/tag.php'; // Create URL if creating new tag
+                '../../api/tag.php'; // Create URL if creating new tag
 
             const method = tagId ? 'PUT' : 'POST'; // Use PUT for updates, POST for creation
 
@@ -656,7 +656,7 @@
 
         function getEditTag(editTag) {
             console.log('Editing tag with ID:', editTag);
-            fetch(`http://localhost/KabarE-Web/api/tag.php?id=${editTag}`)
+            fetch(`../../api/tag.php?id=${editTag}`)
                 .then(response => response.json())
                 .then(responseData => {
                     console.log('API Response Data:', responseData); // Log the whole response to inspect
@@ -684,7 +684,7 @@
         }
 
         function refectch() {
-            fetch('http://localhost/KabarE-Web/api/tag.php')
+            fetch('../../api/tag.php')
                 .then(response => response.json())
                 .then(data => {
                     tagsData = data.data || [];

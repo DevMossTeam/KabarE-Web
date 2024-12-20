@@ -323,7 +323,7 @@
         let totalItems = 0;
         let userData = [];
 
-        fetch('http://localhost/KabarE-Web/api/user.php')
+        fetch('../../api/user.php')
             .then(response => response.json())
             .then(data => {
                 console.log(data); // Log the entire data object to check the structure
@@ -497,7 +497,7 @@
             if (event.key === 'Enter') {
                 const searchTerm = searchInput.value.trim();
                 const searchUrl =
-                    `http://localhost/KabarE-Web/dashboard_admin/menu/pengguna.php?search=${searchTerm}`;
+                    `../menu/pengguna.php?search=${searchTerm}`;
                 window.history.pushState({}, '', searchUrl);
 
                 // Filter the data based on the search term
@@ -557,7 +557,7 @@
             console.log("delete id" + penggunaId);
             if (confirm('Apakah Anda yakin ingin menghapus pengguna ini?')) {
                 // Update the URL to match the correct API endpoint
-                const apiUrl = `http://localhost/KabarE-Web/api/user.php?id=${penggunaId}`;
+                const apiUrl = `../../api/user.php?id=${penggunaId}`;
 
                 fetch(apiUrl, {
                         method: 'DELETE',
@@ -671,7 +671,7 @@
             // Log the ID before fetching to ensure it's valid
             console.log("Attempting to fetch data for ID:", editPengguna);
 
-            fetch(`http://localhost/KabarE-Web/api/user.php?id=${editPengguna}`)
+            fetch(`../..//api/user.php?id=${editPengguna}`)
                 .then(response => response.json())
                 .then(responseData => {
                     console.log('API Response Data:', responseData); // Log the entire response for debugging
@@ -790,8 +790,8 @@
         // Function to send request
         function sendRequestToBackend(body) {
             const url = currentPenggunaId ?
-                `http://localhost/KabarE-Web/api/user.php?id=${currentPenggunaId}` :
-                `http://localhost/KabarE-Web/api/user.php`;
+                `../../api/user.php?id=${currentPenggunaId}` :
+                `../../api/user.php`;
 
             const method = currentPenggunaId ? 'PUT' : 'POST';
 
@@ -906,7 +906,7 @@
             // Log the ID before fetching to ensure it's valid
             console.log("Attempting to fetch data for ID:", editPengguna);
 
-            fetch(`http://localhost/KabarE-Web/api/user.php?id=${editPengguna}`)
+            fetch(`../../api/user.php?id=${editPengguna}`)
                 .then(response => response.json())
                 .then(responseData => {
                     console.log('API Response Data:', responseData); // Log the entire response for debugging
@@ -960,7 +960,7 @@
         // Fetch data and update table and pagination
         async function fetchDataAndUpdateTable() {
             try {
-                const response = await fetch('http://localhost/KabarE-Web/api/user.php');
+                const response = await fetch('../../api/user.php');
                 const data = await response.json();
 
                 console.log(data); // Log the entire data object to check the structure

@@ -12,76 +12,75 @@
 <body class="bg-[#ECEFF5]">
     <?php
     // Include necessary components
-    include '../layouts/navbar.php'; 
-    include '../layouts/sidebar.php';   
+    include '../layouts/navbar.php';
+    include '../layouts/sidebar.php';
     ?>
-    
+
     <?php
-        // The URL of your API endpoint
-        $apiUrl = "http://localhost/KabarE-Web/api/newsletter.php";
+    // The URL of your API endpoint
+    $apiUrl = "../api/newsletter.php";
 
-        // Number of items per page
-        $itemsPerPage = 10;
+    // Number of items per page
+    $itemsPerPage = 10;
 
-        // Get the current page number from the query string, default to page 1
-        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-        $offset = ($page - 1) * $itemsPerPage;
+    // Get the current page number from the query string, default to page 1
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    $offset = ($page - 1) * $itemsPerPage;
 
-        // Fetch the data using file_get_contents()
-        $response = file_get_contents($apiUrl);
+    // Fetch the data using file_get_contents()
+    $response = file_get_contents($apiUrl);
 
-        // Check if the response is valid
-        if ($response === FALSE) {
-            die('Error occurred while fetching data');
-        }
+    // Check if the response is valid
+    if ($response === FALSE) {
+        die('Error occurred while fetching data');
+    }
 
-        // // Decode the JSON response into a PHP array
-        $data = json_decode($response, true);
+    // Decode the JSON response into a PHP array
+    $data = json_decode($response, true);
 
-        // // Check if data is empty or if the 'data' key is not set
-        // if (empty($data['data'])) {
-        //     echo "No data found.";
-        //     exit;
-        // }
+    // Check if 'data' key exists and is an array
+    if (!isset($data['data']) || !is_array($data['data'])) {
+        die('No data found or data is not in the expected format.');
+    }
 
-        // Calculate total pages
-        $totalItems = count($data['data']);
-        $totalPages = ceil($totalItems / $itemsPerPage);
+    // Calculate total pages
+    $totalItems = count($data['data']);
+    $totalPages = ceil($totalItems / $itemsPerPage);
 
-        // Get the data for the current page
-        $pageData = array_slice($data['data'], $offset, $itemsPerPage);
-        ?>
+    // Get the data for the current page
+    $pageData = array_slice($data['data'], $offset, $itemsPerPage);
+    ?>
 
     <div class="p-4 sm:ml-64 mt-14">
         <div class="p-4 dark:border-gray-700">
-        <div class="container mx-auto">
-            <!-- Breadcrumb -->
-            <nav class="flex mb-5" aria-label="Breadcrumb">
-                <ol class="inline-flex items-center space-x-1 text-sm font-medium md:space-x-2">
-                    <li class="inline-flex items-center">
-                        <a href="#" class="inline-flex items-center text-gray-700 hover:text-primary-600">
-                            <svg class="w-5 h-5 mr-2.5" fill="currentColor" viewBox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z">
-                                </path>
-                            </svg>
-                            Home
-                        </a>
-                    </li>
-                    <li>
-                        <div class="flex items-center">
-                            <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                            <a href="#" class="ml-1 text-gray-700 hover:text-primary-600 md:ml-2">Pengguna</a>
-                        </div>
-                    </li>
-                </ol>
-            </nav>
+            <div class="container mx-auto">
+                <!-- Breadcrumb -->
+                <nav class="flex mb-5" aria-label="Breadcrumb">
+                    <ol class="inline-flex items-center space-x-1 text-sm font-medium md:space-x-2">
+                        <li class="inline-flex items-center">
+                            <a href="#" class="inline-flex items-center text-gray-700 hover:text-primary-600">
+                                <svg class="w-5 h-5 mr-2.5" fill="currentColor" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z">
+                                    </path>
+                                </svg>
+                                Home
+                            </a>
+                        </li>
+                        <li>
+                            <div class="flex items-center">
+                                <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                <a href="#" class="ml-1 text-gray-700 hover:text-primary-600 md:ml-2">Pengguna</a>
+                            </div>
+                        </li>
+                    </ol>
+                </nav>
 
                 <!-- Table Container -->
                 <div class="bg-white shadow-md rounded-lg p-6 border border-gray-200">
@@ -174,7 +173,7 @@
                         </div>
 
                         <script>
-                            document.getElementById('search-input').addEventListener('input', function () {
+                            document.getElementById('search-input').addEventListener('input', function() {
                                 const query = this.value.toLowerCase();
                                 filterTable(query);
                             });
@@ -284,7 +283,7 @@
                                                 foreach ($pageData as $item) {
                                                     $statusClass = '';
                                                     $statusText = '';
-                                                    
+
                                                     // Determine the status class and text
                                                     switch ($item['status']) {
                                                         case 'scheduled':
@@ -304,40 +303,40 @@
                                                             $statusText = 'Unknown';
                                                     }
                                             ?>
-                                            <tr class="hover:bg-gray-100">
-                                                <td class="p-4 text-gray-900 whitespace-nowrap border-b"><?php echo $item['id']; ?></td>
-                                                <td class="p-4 text-gray-900 whitespace-nowrap border-b"><?php echo $item['judul_bulletin']; ?></td>
-                                                <td class="p-4 text-gray-900 whitespace-nowrap border-b"><?php echo $item['tipe_content']; ?></td>
-                                                <td class="p-4 text-gray-900 whitespace-nowrap border-b">
-                                                    <span class="px-2 py-1 text-xs font-semibold text-white <?php echo $statusClass; ?> rounded">
-                                                        <?php echo $statusText; ?>
-                                                    </span>
-                                                </td>
-                                                <td class="p-4 text-gray-900 whitespace-nowrap border-b">
-                                                    <?php 
-                                                    if (isset($item['send_date']) && !is_null($item['send_date'])) {
-                                                        echo date('Y-m-d H:i', strtotime($item['send_date']));
-                                                    } else {
-                                                        echo $item['tipe_penjadwalan'];
-                                                    }
-                                                    ?>
-                                                </td>
-                                                <td class="p-4 text-center border-b">
-                                                    <button type="button" data-modal-target="delete-user-modal" data-modal-toggle="delete-user-modal"
-                                                        class="inline-flex items-center px-1.5 py-1.5 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-800 focus:ring-4 focus:ring-red-300 lg:mr-2">
-                                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                                                        </svg>
-                                                    </button>
-                                                    <button class="modal_roleUserUbahStatus-toggle inline-flex items-center px-1.5 py-1.5 text-sm font-medium text-center text-white bg-yellow-500 rounded-lg hover:bg-yellow-800 focus:ring-4 focus:ring-yellow-300 mt-0 md:mt-5">
-                                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                                            <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path>
-                                                            <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path>
-                                                        </svg>
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                            <?php 
+                                                    <tr class="hover:bg-gray-100">
+                                                        <td class="p-4 text-gray-900 whitespace-nowrap border-b"><?php echo $item['id']; ?></td>
+                                                        <td class="p-4 text-gray-900 whitespace-nowrap border-b"><?php echo $item['judul_bulletin']; ?></td>
+                                                        <td class="p-4 text-gray-900 whitespace-nowrap border-b"><?php echo $item['tipe_content']; ?></td>
+                                                        <td class="p-4 text-gray-900 whitespace-nowrap border-b">
+                                                            <span class="px-2 py-1 text-xs font-semibold text-white <?php echo $statusClass; ?> rounded">
+                                                                <?php echo $statusText; ?>
+                                                            </span>
+                                                        </td>
+                                                        <td class="p-4 text-gray-900 whitespace-nowrap border-b">
+                                                            <?php
+                                                            if (isset($item['send_date']) && !is_null($item['send_date'])) {
+                                                                echo date('Y-m-d H:i', strtotime($item['send_date']));
+                                                            } else {
+                                                                echo $item['tipe_penjadwalan'];
+                                                            }
+                                                            ?>
+                                                        </td>
+                                                        <td class="p-4 text-center border-b">
+                                                            <button type="button" data-modal-target="delete-user-modal" data-modal-toggle="delete-user-modal"
+                                                                class="inline-flex items-center px-1.5 py-1.5 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-800 focus:ring-4 focus:ring-red-300 lg:mr-2">
+                                                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                                                </svg>
+                                                            </button>
+                                                            <button class="modal_roleUserUbahStatus-toggle inline-flex items-center px-1.5 py-1.5 text-sm font-medium text-center text-white bg-yellow-500 rounded-lg hover:bg-yellow-800 focus:ring-4 focus:ring-yellow-300 mt-0 md:mt-5">
+                                                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                                    <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path>
+                                                                    <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path>
+                                                                </svg>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                            <?php
                                                 }
                                             } else {
                                                 echo "<tr><td colspan='6' class='text-center p-4'>No data available</td></tr>";
@@ -352,7 +351,7 @@
                     </div>
 
 
-                                    
+
                     <!-- Pagination -->
                     <div id="pagination" class="flex justify-between items-center mt-4">
                         <div>
