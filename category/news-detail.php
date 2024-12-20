@@ -159,13 +159,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bookmark'])) {
                 <div class="mt-4 w-full pr-4">
                     <span id="commentCount" class="block text-gray-700 font-bold mb-2">Komentar (<?= $commentCount ?>)</span>
                     <div class="flex items-center mb-4">
-                        <input id="commentInput" type="text" placeholder="Tulis komentarmu disini" class="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <button id="sendCommentButton" class="ml-2 bg-blue-500 text-white rounded-full flex items-center justify-center" style="width: 40px; height: 40px;">
+                        <input id="commentInput" type="text" placeholder="Tulis komentarmu disini" class="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 <?= !$canInteract ? 'cursor-not-allowed opacity-50 pointer-events-none' : '' ?>">
+                        <button id="sendCommentButton" class="ml-2 rounded-full flex items-center justify-center <?= !$canInteract ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-blue-500 text-white' ?>" style="width: 40px; height: 40px;" <?= !$canInteract ? 'disabled' : '' ?>>
                             <i class="fas fa-paper-plane text-xl"></i>
                         </button>
                     </div>
-                    <div id="commentsContainer" class="border border-gray-300 rounded-lg p-4 overflow-y-auto text-left relative" style="height: 24rem;">
-                        <?php if ($commentResult->num_rows === 0): ?>
+                    <div id="commentsContainer" class="border border-gray-300 rounded-lg p-4 overflow-y-auto text-left relative <?= !$canInteract ? 'pointer-events-none opacity-50' : '' ?>" style="height: 24rem;"> <?php if ($commentResult->num_rows === 0): ?>
                             <div id="noComments" class="flex flex-col items-center justify-center h-full">
                                 <i class="fas fa-comments text-4xl text-gray-300 mb-2"></i>
                                 <p class="text-gray-500">Belum ada komentar. Jadilah yang pertama untuk memberikan komentar!</p>
@@ -185,7 +184,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bookmark'])) {
                                                 </button>
                                             <?php endif; ?>
                                         </div>
-                                        <p class="mt-1 break-words max-w-full comment-text"><?= htmlspecialchars($comment['teks_komentar']) ?></p>
+                                        <p class="mt-1 break-words max-w-full comment-text"><?= htmlspecialchars($comment['teks_komentar'] ?? '') ?></p>
                                     </div>
                                 </div>
                             </div>

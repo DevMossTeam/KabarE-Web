@@ -4,7 +4,8 @@ include '../header & footer/header_AuthRev.php';
 include '../header & footer/category_header.php';
 include '../connection/config.php';
 
-function timeAgo($datetime) {
+function timeAgo($datetime)
+{
     $now = new DateTime();
     $posted = new DateTime($datetime);
     $interval = $now->diff($posted);
@@ -97,7 +98,8 @@ $totalRow = $totalResult->fetch_assoc();
 $totalPages = ceil($totalRow['total'] / $limit);
 
 // Fungsi untuk memformat angka menjadi K, M, B
-function formatNumber($num) {
+function formatNumber($num)
+{
     if ($num >= 1000000000) {
         return round($num / 1000000000, 1) . 'B';
     } elseif ($num >= 1000000) {
@@ -123,10 +125,10 @@ echo "<div class='flex flex-col md:flex-row items-center justify-between mb-4'>
         </div>
     </div>
     <div class='flex items-center w-full md:w-auto md:justify-end mr-4'>
-        <span class='text-sm text-gray-600'>".formatNumber(($page - 1) * $limit + 1)." - ".formatNumber(min($page * $limit, $totalRow['total']))." dari ".formatNumber($totalRow['total'])."</span>
+        <span class='text-sm text-gray-600'>" . formatNumber(($page - 1) * $limit + 1) . " - " . formatNumber(min($page * $limit, $totalRow['total'])) . " dari " . formatNumber($totalRow['total']) . "</span>
         <div class='ml-4 flex space-x-2'>
-            <a href='?page=".max(1, $page - 1)."' class='px-2 py-1 border rounded-l-md ".($page > 1 ? "bg-white text-gray-600 hover:bg-gray-100" : "bg-gray-200 text-gray-400")."'>Prev</a>
-            <a href='?page=".min($totalPages, $page + 1)."' class='px-2 py-1 border rounded-r-md ".($page < $totalPages ? "bg-white text-gray-600 hover:bg-gray-100" : "bg-gray-200 text-gray-400")."'>Next</a>
+            <a href='?page=" . max(1, $page - 1) . "' class='px-2 py-1 border rounded-l-md " . ($page > 1 ? "bg-white text-gray-600 hover:bg-gray-100" : "bg-gray-200 text-gray-400") . "'>Prev</a>
+            <a href='?page=" . min($totalPages, $page + 1) . "' class='px-2 py-1 border rounded-r-md " . ($page < $totalPages ? "bg-white text-gray-600 hover:bg-gray-100" : "bg-gray-200 text-gray-400") . "'>Next</a>
         </div>
     </div>
 </div>";
@@ -286,21 +288,24 @@ $conn->close();
     }
 
     // Event listener untuk tombol edit
-    document.querySelectorAll('.edit-button').forEach(function(button) {
-        button.addEventListener('click', function(event) {
-            event.preventDefault();
-            var id = this.getAttribute('data-id');
-            showModal(
-                'Edit Artikel',
-                'Apakah Anda yakin ingin mengedit artikel ini?',
-                'https://img.icons8.com/ios-filled/50/0000FF/edit.png',
-                function() {
-                    // Redirect ke Main_author.php dengan ID artikel
-                    window.location.href = 'Main_author.php?edit_id=' + id;
-                }
-            );
-        });
+document.querySelectorAll('.edit-button').forEach(function(button) {
+    button.addEventListener('click', function(event) {
+        event.preventDefault();
+        var id = this.getAttribute('data-id');
+        console.log("ID yang akan diedit: " + id); // Debugging
+        showModal(
+            'Edit Artikel',
+            'Apakah Anda yakin ingin memperbarui artikel ini?',
+            'https://img.icons8.com/ios-filled/50/0000FF/edit.png',
+            function() {
+                // Redirect ke Update_author.php dengan ID artikel
+                var editUrl = 'Update_author.php?edit_id=' + id;
+                console.log("Redirecting to: " + editUrl); // Debugging
+                window.location.href = editUrl;
+            }
+        );
     });
+});
 
     // Event listener untuk tombol hapus
     document.querySelectorAll('.delete-button').forEach(function(button) {

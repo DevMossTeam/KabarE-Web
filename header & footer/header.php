@@ -30,6 +30,7 @@ $allowed_pages = [
     'test.php',
     'news-detail.php',
     'contact-us.php',
+    'Update_author.php',
     'download.php'
 ];
 $current_page = basename($_SERVER['PHP_SELF']);
