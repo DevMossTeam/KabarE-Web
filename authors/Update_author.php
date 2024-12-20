@@ -2,16 +2,38 @@
 session_start(); // Mulai sesi
 include '../connection/config.php'; // Pastikan path ini sesuai dengan struktur folder Anda
 
-// Nonaktifkan output buffering dan error reporting untuk respon bersih
-ob_clean();
-error_reporting(0);
-
 // Inisialisasi variabel dengan nilai default
 $judul = '';
 $konten = '';
 $visibilitas = 'public'; // Atur default visibilitas jika diperlukan
 $kategori = '';
 $tags = '';
+
+// Fungsi generate ID tag unik
+function generateTagId($conn) {
+    $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    
+    do {
+        $tagId = 'TAG';
+        for ($i = 0; $i < 9; $i++) {
+            $tagId .= $characters[random_int(0, strlen($characters) - 1)];
+        }
+        
+        // Potong untuk memastikan panjang sesuai
+        $tagId = substr($tagId, 0, 12);
+        
+        // Cek keunikan ID
+        $checkQuery = "SELECT COUNT(*) as count FROM tag WHERE id = ?";
+        $checkStmt = $conn->prepare($checkQuery);
+        $checkStmt->bind_param('s', $tagId);
+        $checkStmt->execute();
+        $result = $checkStmt->get_result();
+        $row = $result->fetch_assoc();
+        $checkStmt->close();
+    } while ($row['count'] > 0);
+    
+    return $tagId;
+}
 
 // Cek apakah ada ID untuk edit
 if (isset($_GET['edit_id']) && !empty($_GET['edit_id'])) {
@@ -37,12 +59,26 @@ if (isset($_GET['edit_id']) && !empty($_GET['edit_id'])) {
         header('Content-Type: text/plain');
         die("Artikel tidak ditemukan.");
     }
+
+    // Query untuk mendapatkan tag terkait
+    $tagQuery = "SELECT nama_tag FROM tag WHERE berita_id = ?";
+    $tagStmt = $conn->prepare($tagQuery);
+    $tagStmt->bind_param('s', $edit_id);
+    $tagStmt->execute();
+    $tagResult = $tagStmt->get_result();
+
+    $tagsArray = [];
+    while ($tagRow = $tagResult->fetch_assoc()) {
+        $tagsArray[] = $tagRow['nama_tag'];
+    }
+    $tags = implode(',', $tagsArray);
 } else {
     // Respon plain text untuk ID artikel tidak valid
     header('Content-Type: text/plain');
     die("ID artikel tidak ditemukan.");
 }
 
+// Proses update artikel
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
     // Set header untuk respon plain text
     header('Content-Type: text/plain');
@@ -52,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
     try {
         // Ambil ID dari parameter GET dan pastikan adalah string
         $edit_id = (string)$_GET['edit_id'];
-        
+
         // Ambil data dari form
         $title = $_POST['title'];
         $content = $_POST['content'];
@@ -65,64 +101,107 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
             throw new Exception("User ID tidak ditemukan.");
         }
 
-        // Cek apakah artikel dengan ID tersebut milik user yang sedang login
-        $check_ownership_query = "SELECT COUNT(*) as count FROM berita WHERE id = ? AND user_id = ?";
+        // Cek kepemilikan artikel dan ambil data artikel saat ini
+        $check_ownership_query = "SELECT * FROM berita WHERE id = ? AND user_id = ?";
         $check_ownership_stmt = $conn->prepare($check_ownership_query);
         $check_ownership_stmt->bind_param('ss', $edit_id, $user_id);
         $check_ownership_stmt->execute();
         $ownership_result = $check_ownership_stmt->get_result();
-        $ownership_row = $ownership_result->fetch_assoc();
+        $current_article = $ownership_result->fetch_assoc();
 
-        if ($ownership_row['count'] == 0) {
+        if (!$current_article) {
             throw new Exception("Anda tidak memiliki izin untuk mengedit artikel ini.");
         }
 
-        // Debug: Cetak informasi untuk pengecekan
-        error_log("Updating article - ID: $edit_id, Title: $title, Category: $category, Visibility: $visibility");
+        // Cek apakah ada perubahan
+        $is_changed = false;
 
-        // Query untuk memperbarui artikel TANPA mengubah tanggal_diterbitkan
+        // Bandingkan setiap field
+        if ($title !== $current_article['judul']) $is_changed = true;
+        if ($content !== $current_article['konten_artikel']) $is_changed = true;
+        if ($category !== $current_article['kategori']) $is_changed = true;
+        if ($visibility !== $current_article['visibilitas']) $is_changed = true;
+
+        // Cek perubahan tag
+        $current_tags_query = "SELECT nama_tag FROM tag WHERE berita_id = ?";
+        $current_tags_stmt = $conn->prepare($current_tags_query);
+        $current_tags_stmt->bind_param('s', $edit_id);
+        $current_tags_stmt->execute();
+        $current_tags_result = $current_tags_stmt->get_result();
+        
+        $current_tags = [];
+        while ($tag_row = $current_tags_result->fetch_assoc()) {
+            $current_tags[] = $tag_row['nama_tag'];
+        }
+
+        // Ambil tag baru dari form
+        $new_tags = !empty($_POST['tags']) ? explode(',', $_POST['tags']) : [];
+        $new_tags = array_map('trim', $new_tags);
+        $new_tags = array_filter($new_tags);
+
+        // Bandingkan tag
+        sort($current_tags);
+        sort($new_tags);
+        if ($current_tags !== $new_tags) $is_changed = true;
+
+        // Jika tidak ada perubahan, kembalikan pesan
+        if (!$is_changed) {
+            echo "Tidak ada perubahan pada artikel.";
+            exit;
+        }
+
+        // Query untuk memperbarui artikel
         $query = "UPDATE berita SET 
                     judul = ?, 
                     konten_artikel = ?, 
                     kategori = ?, 
                     visibilitas = ? 
                   WHERE id = ? AND user_id = ?";
-        
+
         $stmt = $conn->prepare($query);
-        
-        // Gunakan string untuk semua parameter
-        $stmt->bind_param('ssssss', 
-            $title, 
-            $content, 
-            $category, 
-            $visibility, 
+        $stmt->bind_param(
+            'ssssss',
+            $title,
+            $content,
+            $category,
+            $visibility,
             $edit_id,
             $user_id
         );
-        
+
         // Eksekusi query
         if (!$stmt->execute()) {
-            // Tangkap error MySQL secara spesifik
             throw new Exception("Eksekusi query gagal: " . $stmt->error);
         }
 
-        // Cek apakah ada baris yang diupdate
-        if ($stmt->affected_rows === 0) {
-            throw new Exception("Tidak ada baris yang diupdate. Periksa kembali ID artikel.");
+        // Hapus tag lama
+        $delete_tag_query = "DELETE FROM tag WHERE berita_id = ?";
+        $delete_tag_stmt = $conn->prepare($delete_tag_query);
+        $delete_tag_stmt->bind_param('s', $edit_id);
+        $delete_tag_stmt->execute();
+
+        // Proses penyimpanan tag baru
+        if (!empty($_POST['tags'])) {
+            foreach ($new_tags as $tag) {
+                $tagId = generateTagId($conn);
+                $insert_tag_query = "INSERT INTO tag (id, nama_tag, berita_id) VALUES (?, ?, ?)";
+                $insert_tag_stmt = $conn->prepare($insert_tag_query);
+                $insert_tag_stmt->bind_param('sss', $tagId, $tag, $edit_id);
+                $insert_tag_stmt->execute();
+            }
         }
 
-        // Commit transaksi
         $conn->commit();
-        
+
         // Respon plain text untuk sukses
-        echo "Artikel berhasil diperbarui";
+        echo "Artikel berhasil diperbarui!";
         exit;
     } catch (Exception $e) {
         $conn->rollback();
-        
+
         // Log error untuk debugging
         error_log("Gagal memperbarui artikel: " . $e->getMessage());
-        
+
         // Respon plain text untuk error
         echo "Gagal memperbarui artikel: " . $e->getMessage();
         exit;
@@ -639,8 +718,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
             const titleInput = document.getElementById('title').value.trim();
             const contentHtml = quill.root.innerHTML.trim();
             const selectedCategory = categorySelect.value;
-            const visibility = document.querySelector('input[name="visibility"]:checked').value; // Ambil visibilitas yang dipilih
-            const editId = '<?php echo $edit_id; ?>'; // Ambil ID artikel yang akan diedit
+            const visibility = document.querySelector('input[name="visibility"]:checked').value;
+            const editId = '<?php echo $edit_id; ?>';
+
+            // Ambil tag dari labelContainer
+            const tags = Array.from(document.getElementById('labelContainer').children)
+                .map(label => label.textContent.trim().replace('×', ''));
 
             // Kirim data ke server menggunakan AJAX
             const xhr = new XMLHttpRequest();
@@ -649,12 +732,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
             xhr.onload = function() {
                 if (xhr.status === 200) {
                     alert(xhr.responseText);
-                    window.location.href = 'publishAuthor.php'; // Redirect ke publishAuthor.php setelah berhasil
+                    window.location.href = 'publishAuthor.php';
                 } else {
                     alert('Terjadi kesalahan saat memperbarui artikel.' + xhr.responseText);
                 }
             };
-            xhr.send(`publish=true&title=${encodeURIComponent(titleInput)}&content=${encodeURIComponent(contentHtml)}&category=${encodeURIComponent(selectedCategory)}&visibility=${encodeURIComponent(visibility)}`);
+
+            // Tambahkan parameter tags ke dalam pengiriman
+            xhr.send(`publish=true&title=${encodeURIComponent(titleInput)}&content=${encodeURIComponent(contentHtml)}&category=${encodeURIComponent(selectedCategory)}&visibility=${encodeURIComponent(visibility)}&tags=${encodeURIComponent(tags.join(','))}`);
         });
 
         confirmNo.addEventListener('click', hideConfirmPopup);
@@ -694,6 +779,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
 
             // Lanjutkan dengan validasi dan submit form
             document.getElementById('articleForm').submit();
+        });
+
+        // Tambahkan fungsi untuk mengumpulkan tag sebelum submit
+        function collectTags() {
+            const tags = Array.from(document.getElementById('labelContainer').children)
+                .map(label => label.textContent.trim().replace('×', ''));
+            document.getElementById('hiddenTags').value = tags.join(',');
+        }
+
+        // Panggil collectTags() sebelum submit form di event listener publish
+        document.getElementById('publishButton').addEventListener('click', function(event) {
+            collectTags(); // Kumpulkan tag sebelum submit
+            // ... kode validasi lainnya
+        });
+
+        document.getElementById('publishButtonLg').addEventListener('click', function(event) {
+            collectTags(); // Kumpulkan tag sebelum submit
+            // ... kode validasi lainnya
         });
 
         document.getElementById('publishButtonLg').addEventListener('click', function(event) {
