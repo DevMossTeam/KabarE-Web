@@ -58,7 +58,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
         $content = $_POST['content'];
         $category = $_POST['category'];
         $visibility = isset($_POST['visibility']) ? $_POST['visibility'] : 'public';
-        $updated_at = date('Y-m-d H:i:s');
         $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
 
         // Validasi input
@@ -81,11 +80,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
         // Debug: Cetak informasi untuk pengecekan
         error_log("Updating article - ID: $edit_id, Title: $title, Category: $category, Visibility: $visibility");
 
-        // Query untuk memperbarui artikel
+        // Query untuk memperbarui artikel TANPA mengubah tanggal_diterbitkan
         $query = "UPDATE berita SET 
                     judul = ?, 
                     konten_artikel = ?, 
-                    tanggal_diterbitkan = ?, 
                     kategori = ?, 
                     visibilitas = ? 
                   WHERE id = ? AND user_id = ?";
@@ -93,10 +91,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
         $stmt = $conn->prepare($query);
         
         // Gunakan string untuk semua parameter
-        $stmt->bind_param('sssssss', 
+        $stmt->bind_param('ssssss', 
             $title, 
             $content, 
-            $updated_at, 
             $category, 
             $visibility, 
             $edit_id,
