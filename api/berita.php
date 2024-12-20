@@ -21,8 +21,12 @@ $request_method = $_SERVER['REQUEST_METHOD'];
 
 switch ($request_method) {
     case 'GET':
-        if (isset($_GET['id'])) {
+        if (isset($_GET['id']) && isset($_GET['join']) && $_GET['join'] === 'user') {
+            fetch_beritaJoinUser($_GET['id']);
+        } elseif (isset($_GET['id'])) {
             fetch_berita($_GET['id']);
+        } elseif (isset($_GET['join']) && $_GET['join'] === 'user') {
+            fetch_beritaJoinUsers();
         } else {
             fetch_beritas();
         }
@@ -40,6 +44,7 @@ switch ($request_method) {
         echo json_encode(['message' => 'Invalid request method']);
         break;
 }
+
 
 // Fetch all berita
 function fetch_beritas() {
@@ -72,6 +77,67 @@ function fetch_berita($id) {
         echo json_encode(['error' => $e->getMessage()]);
     }
 }
+
+// Fetch all berita
+function fetch_beritaJoinUsers() {
+    global $conn;
+    try {
+        $query = "SELECT 
+                    berita.*, 
+                    user.profile_pic, 
+                    user.nama_pengguna, 
+                    user.email
+                  FROM 
+                    berita
+                  JOIN 
+                    user 
+                  ON 
+                    berita.user_id = user.uid";
+
+        $stmt = $conn->prepare($query);
+        $stmt->execute();
+        $beritas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if (!empty($beritas)) {
+            echo json_encode(['data' => $beritas, 'message' => 'Berita fetched successfully']);
+        } else {
+            echo json_encode(['message' => 'No berita found']);
+        }
+    } catch (PDOException $e) {
+        echo json_encode(['error' => $e->getMessage()]);
+    }
+}
+
+
+// Fetch a single berita by ID
+function fetch_beritaJoinUser($id) {
+    global $conn;
+    try {
+        $stmt = $conn->prepare("SELECT 
+                                    berita.*, 
+                                    user.profile_pic, 
+                                    user.nama_pengguna, 
+                                    user.email
+                                FROM 
+                                    berita
+                                JOIN 
+                                    user 
+                                ON 
+                                    berita.user_id = user.uid
+                                WHERE berita.id = :id");
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        $berita = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($berita) {
+            echo json_encode(['data' => $berita, 'message' => 'Berita fetched successfully']);
+        } else {
+            echo json_encode(['message' => 'Berita not found']);
+        }
+    } catch (PDOException $e) {
+        echo json_encode(['error' => $e->getMessage()]);
+    }
+}
+
 
 // Insert a new berita
 function insert_berita() {

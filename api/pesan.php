@@ -43,9 +43,10 @@ class PesanAPI {
         }
     }    
         
+    // Fetch pesan by alphanumeric ID
     public function fetchPesanById($id) {
         try {
-            if (empty($id) || !is_numeric($id)) {
+            if (empty($id)) {
                 echo json_encode(['error' => 'Invalid ID parameter']);
                 return;
             }
@@ -60,7 +61,7 @@ class PesanAPI {
                 throw new Exception('Statement preparation failed');
             }
 
-            mysqli_stmt_bind_param($stmt, 'i', $id);
+            mysqli_stmt_bind_param($stmt, 's', $id); // 's' for string binding
             mysqli_stmt_execute($stmt);
             $result = mysqli_stmt_get_result($stmt);
 
@@ -85,10 +86,9 @@ class PesanAPI {
         }
     }
 
-    
-    // Update
+    // Update pesan by alphanumeric ID
     public function updatePesan($id, $data) {
-        if (empty($id) || !is_numeric($id)) {
+        if (empty($id)) {
             echo json_encode(['message' => 'Invalid ID']);
             return;
         }
@@ -114,7 +114,7 @@ class PesanAPI {
         }
 
         $params[] = $id; 
-        $types .= 'i';  
+        $types .= 's';  // Use 's' for string binding since ID is alphanumeric
 
         mysqli_stmt_bind_param($stmt, $types, ...$params);
 
@@ -129,12 +129,18 @@ class PesanAPI {
         }
     }
 
-    // Delete a pesan by ID
+    // Delete pesan by alphanumeric ID
     public function deletePesan($id) {
         try {
+            if (empty($id)) {
+                echo json_encode(['message' => 'Invalid ID']);
+                return;
+            }
+
+            // Check if the pesan exists
             $query = "SELECT * FROM pesan WHERE id = ?";
             $stmt = mysqli_prepare($this->conn, $query);
-            mysqli_stmt_bind_param($stmt, 'i', $id);
+            mysqli_stmt_bind_param($stmt, 's', $id); // 's' for string binding
             mysqli_stmt_execute($stmt);
             $result = mysqli_stmt_get_result($stmt);
             $pesan = mysqli_fetch_assoc($result);
@@ -142,7 +148,7 @@ class PesanAPI {
             if ($pesan) {
                 $delete_query = "DELETE FROM pesan WHERE id = ?";
                 $delete_stmt = mysqli_prepare($this->conn, $delete_query);
-                mysqli_stmt_bind_param($delete_stmt, 'i', $id);
+                mysqli_stmt_bind_param($delete_stmt, 's', $id); // 's' for string binding
                 if (mysqli_stmt_execute($delete_stmt)) {
                     echo json_encode(['message' => 'Pesan deleted successfully']);
                 } else {

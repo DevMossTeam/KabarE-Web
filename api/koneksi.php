@@ -6,7 +6,7 @@ error_reporting(E_ALL);
 
 // Database connection settings
 $server = 'localhost';
-$db = 'kabare_db';
+$db = 'kabare_db2';
 $username = 'root';
 $password = '';
 

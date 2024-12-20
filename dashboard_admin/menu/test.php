@@ -1,127 +1,220 @@
+<?php
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require '../../vendor/autoload.php';
+
+$apiUrl = "http://localhost/KabarE-Web/api/user.php";
+
+$response = file_get_contents($apiUrl);
+
+if ($response === FALSE) {
+    die('Error occurred while fetching data');
+}
+
+$dataEmail = json_decode($response, true);
+
+if (empty($dataEmail['data'])) {
+    echo "No data found.";
+    exit;
+}
+
+echo '<script>';
+echo 'console.log(' . json_encode(array_column($dataEmail['data'], 'email')) . ');';
+echo '</script>';
+
+function sendEmail($recipientEmail, $subject, $htmlMessage)
+{
+    $senderEmail = 'ardianthauno@gmail.com'; // Ganti dengan email pengirim Anda
+    $senderName = 'KabarE'; // Ganti dengan nama pengirim Anda
+    $senderPassword = 'phok infp xkkp rvwy'; // Ganti dengan password atau App Password pengirim
+
+    // Buat objek PHPMailer
+    $mail = new PHPMailer(true);
+    try {
+        // Server settings
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = $senderEmail;
+        $mail->Password = $senderPassword;
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
+
+        // Recipients
+        $mail->setFrom($senderEmail, $senderName);
+        $mail->addAddress($recipientEmail);
+
+        // Content
+        $mail->isHTML(true);
+        $mail->Subject = $subject;
+        $mail->Body = $htmlMessage;
+
+        // Send email
+        $mail->send();
+        return 'Message has been sent';
+    } catch (Exception $e) {
+        return "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $emailAddresses = array_column($dataEmail['data'], 'email');
+    $subject = "Test ubah Here"; // Subject email
+    $message = '
+        <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KabarE</title>
+</head>
+
+<body style="background-color: #f7fafc; font-family: Arial, sans-serif; margin: 0; padding: 0;">
+    <table align="center" width="100%" border="0" cellspacing="0" cellpadding="0"
+        style="background-color: #f7fafc; margin: 0; padding: 0;">
+        <tr>
+            <td align="center">
+                <table width="600" border="0" cellspacing="0" cellpadding="0"
+                    style="background-color: #ffffff; padding: 20px; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1); margin-top: 20px;">
+                    <tr>
+                        <td align="center" style="padding: 5px;">
+                            <h1 style="font-size: 24px; color: #3b82f6; font-weight: bold; margin: 0;">KabarE</h1>
+                            <p style="color: #6b7280; font-size: 14px; margin: 4px 0;">Stories from your recommendation
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border-top: 1px solid #e2e8f0;"></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <h2 style="color: #4a5568; font-size: 24px; font-weight: 600;">Weekly Tech Update</h2>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border-top: 1px solid #e2e8f0; padding: 4px 0;"></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0" style="padding: 10px 0;">
+                                <tr>
+                                    <td width="50%" valign="top">
+                                        <table width="100%" cellspacing="0" cellpadding="0"
+                                            style="padding-right: 16px;">
+                                            <tr>
+                                                <td
+                                                    style="display: flex; justify-content: space-between; align-items: center;">
+                                                    <div style="display: flex; align-items: center;">
+                                                        <img src="https://a.storyblok.com/f/191576/1200x800/a3640fdc4c/profile_picture_maker_before.webp"
+                                                            alt="Profile Picture"
+                                                            style="border-radius: 50%; width: 40px; height: 40px; object-fit: cover;">
+                                                        <p
+                                                            style="color: #4a5568; font-weight: 500; font-size: 14px; margin-left: 8px;">
+                                                            Satria Ardiantha Uno</p>
+                                                    </div>                                         
+                                                </td>
+
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <a href="http://localhost/KabarE-Web/category/news-detail.php?="
+                                                        style="text-decoration: none; color: inherit;">
+                                                        <h3
+                                                            style="font-size: 16px; font-weight: bold; color: #1a202c; margin: 8px 0;">
+                                                            Breaking News: AI</h3>
+                                                    </a>
+                                                    <p style="color: #a0aec0; font-size: 12px; margin: 4px 0;">Artikel
+                                                        ini membahas perkembangan terbaru dalam teknologi.</p>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="margin-top: 16px;">
+                                                    <img src="https://icons.veryicon.com/png/o/miscellaneous/yuanql/icon-like.png"
+                                                        alt="Likes" style="width: 20px; height: 20px;">
+                                                    <span
+                                                        style="color: #4a5568; font-size: 14px; font-weight: 500; margin-left: 4px;">32</span>
+                                                    <img src="https://img.icons8.com/ios_filled/200/speech-bubble.png"
+                                                        alt="Comments"
+                                                        style="width: 20px; height: 20px; margin-left: 16px;">
+                                                    <span
+                                                        style="color: #4a5568; font-size: 14px; font-weight: 500; margin-left: 4px;">45</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td width="50%" align="center">
+                                        <a href="http://localhost/KabarE-Web/category/news-detail.php?=" style="">
+                                            <img src="https://via.placeholder.com/400x300" alt="Breaking News Image"
+                                                style="max-width: 100%; height: auto; object-fit: contain; border-radius: 8px;">
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border-top: 1px solid #e2e8f0; padding: 4px 0;"></td>
+                    </tr>
+                    <tr>
+                        <td align="center">
+                            <p style="color: #a0aec0; font-size: 12px; margin-top: 24px;">Artikel ini membahas
+                                perkembangan terbaru dalam teknologi.</p>
+                        </td>
+                    </tr>
+                </table>
+                <table width="600" border="0" cellspacing="0" cellpadding="0"
+                    style="background-color: #101827; padding: 20px;">
+                    <tr>
+                        <td align="center" style="color: #ffffff; font-size: 16px; margin-bottom: 16px;">Baca Dimana
+                            saja.</td>
+                    </tr>
+                    <tr>
+                        <td align="center">
+                            <img src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png?hl=id"
+                                alt="Play Store Badge" style="height: 50px; width: auto;">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border-top: 1px solid #e2e8f0; padding: 16px 0;"></td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="color: #a0aec0; font-size: 12px; margin-bottom: 20px;">
+                            © 2024 KabarE. All Rights Reserved.
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+    ';
+    $results = [];
+    foreach ($emailAddresses as $email) {
+        $result = sendEmail($email, $subject, $message);
+        $results[] = "Email to {$email}: {$result}";
+    }
+    echo $result;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test</title>
-    <link rel="shortcut icon" href="../../assets/web-icon/Ic-main-KabarE.svg" type="KabarE">
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css" rel="stylesheet">
-    <style>
-        /* Custom styles for modal and overlay */
-        .hidden {
-            display: none;
-        }
-
-        .block {
-            display: block;
-        }
-    </style>
+    <title>Send Email</title>
 </head>
-<body class="bg-gray-100">
-<!-- Table -->
-<div class="flex flex-col">
-    <div class="overflow-x-auto relative"> <!-- Add relative here to help position dropdown correctly -->
-        <div class="inline-block min-w-full align-middle">
-            <div class="overflow-hidden shadow">
-                <table class="min-w-full divide-y divide-gray-200 table-fixed">
-                    <thead class="bg-gray-100 text-sm">
-                        <tr>
-                            <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase ">
-                                Id
-                            </th>
-                            <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase">
-                                Username
-                            </th>
-                            <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase">
-                                Role
-                            </th>
-                            <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase">
-                                Terakhir Login
-                            </th>
-                            <th scope="col" class="p-4 text-xs font-medium text-center text-gray-500 uppercase">
-                                Aksi
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody id="pengguna-table-body" class="text-gray-600 text-sm">
-                        <!-- Example row, repeat for dynamic data -->
-                        <tr>
-                            <td class="py-4 px-6 border-b text-left text-base font-semibold text-gray-900">1</td>
-                            <td class="py-4 px-6 border-b">
-                                <div class="text-sm font-normal text-gray-500">
-                                    <div class="text-base font-semibold text-gray-900">john_doe</div>
-                                    <div class="text-sm font-normal text-gray-500">john@example.com</div>
-                                </div>
-                            </td>
-                            <td class="py-4 px-6 border-b text-base text-left font-medium text-gray-900 whitespace-nowrap">Admin</td>
-                            <td class="py-4 px-6 border-b text-base text-left text-gray-600 whitespace-nowrap">2024-11-12 10:30</td>
-                            <td class="py-4 px-6 border-b text-center">
-                                <div class="relative inline-block text-left">
-                                    <button 
-                                        type="button" 
-                                        class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 focus:ring-1 ring-inset ring-blue-300 hover:bg-gray-50 focus:outline-none"
-                                        id="menu-button-1" 
-                                        aria-expanded="false" 
-                                        aria-haspopup="true" 
-                                        onclick="toggleDropdown(event, 1, 'john_doe')">
-                                        <img src="../asset/elipses.svg" class="h-8" alt="dropdown" />
-                                    </button>
-
-                                    <!-- Dropdown menu -->
-                                    <div id="dropdown-menu-1" class="hidden absolute right-0 z-20 mt-2 w-56 origin-top-right rounded-md bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button-1" tabindex="-1">
-                                        <div class="py-1" role="none">
-                                            <a href="#" class="flex items-center gap-2 block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1" onclick="getEditPengguna(1)">
-                                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path>
-                                                    <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path>
-                                                </svg>
-                                                <span>Edit</span>
-                                            </a>
-
-                                            <a href="#" class="flex items-center gap-2 block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1" onclick="deletePengguna(1)">
-                                                <svg aria-hidden="true" class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                                                </svg>
-                                                <span>Delete</span>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-<script>
-    // Function to handle dropdown actions
-function toggleDropdown(event, index, penggunaName) {
-    const dropdown = document.getElementById(`dropdown-menu-${index}`);
-    const isVisible = !dropdown.classList.contains('hidden');
-
-    // Hide all dropdowns first
-    const allDropdowns = document.querySelectorAll('[id^="dropdown-menu-"]');
-    allDropdowns.forEach(drop => drop.classList.add('hidden'));
-
-    // If the dropdown wasn't visible, show it
-    if (!isVisible) {
-        dropdown.classList.remove('hidden');
-    }
-
-    // Add event listener to close the dropdown when clicking outside
-    document.addEventListener('click', function closeDropdown(event) {
-        // Check if the click is outside the dropdown and button
-        if (!dropdown.contains(event.target) && !document.getElementById(`menu-button-${index}`).contains(event.target)) {
-            dropdown.classList.add('hidden');
-            document.removeEventListener('click', closeDropdown); // Remove the event listener after closing
-        }
-    });
-}
-
-</script>
-
-
+<body>
+    <form action="test.php" method="POST">
+        <button type="submit">Send Email</button>
+    </form>
 </body>
 </html>

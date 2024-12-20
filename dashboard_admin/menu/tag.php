@@ -57,7 +57,7 @@
                 </nav>
 
                 <!-- Table Container -->
-                <<div class="bg-white shadow-md rounded-lg p-6 border border-gray-200">
+                <div class="bg-white shadow-md rounded-lg p-6 border border-gray-200">
                     <div class="mb-4 flex items-center">
                         <svg class="flex-shrink-0 w-6 h-6 text-black transition duration-75" aria-hidden="true"
                             xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 32 32">
@@ -127,9 +127,9 @@
                             </nav>
                         </div>
                     </div>
+                </div>
             </div>
         </div>
-    </div>
     </div>
 
 
@@ -190,90 +190,141 @@
     <script>
         let currentPage = 1;
         const itemsPerPage = 10;
-        let totalItems = 0;
         let tagsData = [];
+        let uniqueTags = [];
 
         // Fetch data from the API
         fetch('http://localhost/KabarE-Web/api/tag.php')
             .then(response => response.json())
             .then(data => {
                 tagsData = data.data || [];
-                totalItems = tagsData.length;
+                uniqueTags = getUniqueTags(tagsData);
                 updateTable();
                 updatePagination();
-                console.log(tagsData);
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
             });
 
-        function updateTable(filteredTags = tagsData) {
-            const tableBody = document.getElementById('tag-table-body');
-            const startIndex = (currentPage - 1) * itemsPerPage;
-            const endIndex = startIndex + itemsPerPage;
-            const uniqueNames = new Set(); // Track unique `nama_tag`
-            let displayedCount = 0; // Track the number of displayed rows
-
-            tableBody.innerHTML = '';
-
-            // Filter unique tags and slice for current page
-            const paginatedTags = filteredTags.filter(tag => {
+        // Function to get unique tags based on `nama_tag`
+        function getUniqueTags(data) {
+            const uniqueNames = new Set();
+            return data.filter(tag => {
                 if (!uniqueNames.has(tag.nama_tag)) {
                     uniqueNames.add(tag.nama_tag);
                     return true;
                 }
                 return false;
-            }).slice(startIndex, endIndex);
+            });
+        }
+
+        function updateTable(filteredTags = tagsData) {
+            const tableBody = document.getElementById('tag-table-body');
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+
+            tableBody.innerHTML = '';
+
+            // Slice tags for the current page
+            const paginatedTags = filteredTags.slice(startIndex, endIndex);
 
             if (paginatedTags.length === 0) {
-                // Add "No data available" row if no data matches
                 const noDataRow = document.createElement('tr');
                 noDataRow.innerHTML = `
-                <td colspan="5" class="py-4 px-6 text-center text-base text-gray-900">
-                    No data available
-                </td>
-            `;
+            <td colspan="5" class="py-4 px-6 text-center text-base text-gray-900">
+                No data available
+            </td>
+        `;
                 tableBody.appendChild(noDataRow);
             } else {
                 paginatedTags.forEach((tag, index) => {
                     const row = document.createElement('tr');
-                    const rowNumber = startIndex + index + 1; // Adjust row number for pagination
+                    const rowNumber = startIndex + index + 1;
 
-                    // Highlight the search term in the 'nama_tag'
-                    const highlightedTag = searchTerm ? tag.nama_tag.replace(new RegExp(searchTerm, 'gi'), (
-                        match) => {
-                        return `<span class="bg-yellow-300">${match}</span>`;
-                    }) : tag.nama_tag;
+                    // Highlight search term in the tag name
+                    let highlightedTagName = tag.nama_tag;
+                    if (searchTerm) {
+                        const regex = new RegExp(`(${searchTerm})`, 'gi');
+                        highlightedTagName = tag.nama_tag.replace(
+                            regex,
+                            `<span class="bg-yellow-200">$1</span>`
+                        );
+                    }
 
                     row.innerHTML = `
-                    <td class="py-4 px-6 border-b text-center"> KT${rowNumber}</td>
-                    <td class="py-4 px-6 border-b">${highlightedTag}</td>
-                    <td class="py-4 px-6 border-b text-center">
-                        <button type="button" data-modal-target="delete-user-modal" data-modal-toggle="delete-user-modal" class="inline-flex items-center px-1.5 py-1.5 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-800 focus:ring-4 focus:ring-red-300 mr-2" onclick="deleteTag('${tag.nama_tag}')">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                            </svg>
-                        </button>
-                    </td>
-                `;
+                <td class="py-4 px-6 border-b text-center">KT${rowNumber}</td>
+                <td class="py-4 px-6 border-b">${highlightedTagName}</td>
+                <td class="py-4 px-6 border-b text-center">
+                    <button type="button" data-modal-target="delete-user-modal" data-modal-toggle="delete-user-modal" class="inline-flex items-center px-1.5 py-1.5 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-800 focus:ring-4 focus:ring-red-300 mr-2" onclick="deleteTag('${tag.nama_tag}')">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+                </td>
+            `;
                     tableBody.appendChild(row);
                 });
             }
 
-            // Update results info
             const resultsInfo = document.getElementById('results-info');
-            const totalUnique = uniqueNames.size; // Total unique tags
-            const startIndexDisplay = Math.min(startIndex + 1, totalUnique);
-            const endIndexDisplay = Math.min(startIndex + itemsPerPage, totalUnique);
-
             resultsInfo.textContent =
-                `Showing ${startIndexDisplay}-${endIndexDisplay} of ${totalUnique} unique results`;
+                `Showing ${Math.min(startIndex + 1, filteredTags.length)}-${Math.min(endIndex, filteredTags.length)} of ${filteredTags.length} unique results`;
         }
 
 
+        function updatePagination(filteredTags = uniqueTags) {
+            const paginationLinks = document.getElementById('pagination-links');
+            const totalPages = Math.ceil(filteredTags.length / itemsPerPage);
+
+            paginationLinks.innerHTML = '';
+
+            const prevButton = document.createElement('li');
+            prevButton.innerHTML = `
+        <a href="#" class="px-3 py-1 text-gray-500 bg-gray-200 rounded hover:bg-gray-300" aria-label="Previous" onclick="changePage(currentPage - 1)">
+            &laquo;
+        </a>
+    `;
+            prevButton.classList.toggle('cursor-not-allowed', currentPage === 1);
+            paginationLinks.appendChild(prevButton);
+
+            const maxPagesToShow = 3;
+            let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+            let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+
+            if (endPage - startPage < maxPagesToShow - 1) {
+                startPage = Math.max(1, endPage - maxPagesToShow + 1);
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                const pageButton = document.createElement('li');
+                pageButton.innerHTML = `
+            <a href="#" class="px-3 py-1 border border-gray-300 rounded  ${currentPage === i ? 'bg-blue-100 text-blue-800 hover:bg-blue-300' : 'text-gray-700 bg-white hover:bg-gray-300'}" onclick="changePage(${i})">${i}</a>
+        `;
+                paginationLinks.appendChild(pageButton);
+            }
+
+            const nextButton = document.createElement('li');
+            nextButton.innerHTML = `
+        <a href="#" class="px-3 py-1 text-gray-500 bg-gray-200 rounded hover:bg-gray-300" aria-label="Next" onclick="changePage(currentPage + 1)">
+            &raquo;
+        </a>
+    `;
+            nextButton.classList.toggle('cursor-not-allowed', currentPage === totalPages);
+            paginationLinks.appendChild(nextButton);
+        }
+
+        function changePage(pageNumber) {
+            const totalPages = Math.ceil(uniqueTags.length / itemsPerPage);
+
+            if (pageNumber >= 1 && pageNumber <= totalPages) {
+                currentPage = pageNumber;
+                updateTable();
+                updatePagination();
+            }
+        }
+
         // Input element event listener
         const searchInput = document.getElementById('search-input');
-
         let searchTerm = '';
 
         searchInput.addEventListener('keydown', function (event) {
@@ -285,15 +336,19 @@
 
                 // Filter the tags based on the search term
                 const filteredTags = searchTerm ?
-                    tagsData.filter(tag => tag.nama_tag.toLowerCase().includes(searchTerm.toLowerCase())) :
+                    tagsData.filter(tag =>
+                        tag.nama_tag.toLowerCase().includes(searchTerm.toLowerCase())
+                    ) :
                     tagsData;
 
-                // Update the table with the filtered data
+                // Reset currentPage to 1 to show results from the first page
+                currentPage = 1;
+
+                // Update the table and pagination with the filtered data
                 updateTable(filteredTags);
                 updatePagination(filteredTags);
             }
         });
-
 
         // // Function to update the table with data
         // function updateTable(filteredTags = tagsData) {
@@ -352,64 +407,6 @@
         //         `Showing ${startIndexDisplay}-${endIndexDisplay} of ${totalUnique} unique results`;
         // }
 
-        // Function to update pagination buttons
-        function updatePagination(filteredTags = tagsData) {
-            const paginationLinks = document.getElementById('pagination-links');
-            const totalPages = Math.ceil(filteredTags.length /
-                itemsPerPage); // Calculate total pages based on filtered data
-
-            paginationLinks.innerHTML = ''; // Clear previous pagination links
-
-            // Add "Previous" button
-            const prevButton = document.createElement('li');
-            prevButton.innerHTML = `
-        <a href="#" class="px-3 py-1 text-gray-500 bg-gray-200 rounded hover:bg-gray-300" aria-label="Previous" onclick="changePage(currentPage - 1)">
-            &laquo;
-        </a>
-    `;
-            prevButton.classList.toggle('cursor-not-allowed', currentPage === 1);
-            paginationLinks.appendChild(prevButton);
-
-            // Define the range of pages to display
-            const maxPagesToShow = 3; // Maximum number of page links to show
-            let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
-            let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
-
-            // Adjust start page if end page is less than total pages
-            if (endPage - startPage < maxPagesToShow - 1) {
-                startPage = Math.max(1, endPage - maxPagesToShow + 1);
-            }
-
-            // Add page number buttons
-            for (let i = startPage; i <= endPage; i++) {
-                const pageButton = document.createElement('li');
-                pageButton.innerHTML = `
-            <a href="#" class="px-3 py-1 text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-100 ${currentPage === i ? 'bg-blue-100' : ''}" onclick="changePage(${i})">${i}</a>
-        `;
-                paginationLinks.appendChild(pageButton);
-            }
-
-            // Add "Next" button
-            const nextButton = document.createElement('li');
-            nextButton.innerHTML = `
-        <a href="#" class="px-3 py-1 text-gray-500 bg-gray-200 rounded hover:bg-gray-300" aria-label="Next" onclick="changePage(currentPage + 1)">
-            &raquo;
-        </a>
-    `;
-            nextButton.classList.toggle('cursor-not-allowed', currentPage === totalPages);
-            paginationLinks.appendChild(nextButton);
-        }
-
-        // Change page logic to update both the table and pagination
-        function changePage(pageNumber) {
-            const totalPages = Math.ceil(totalItems / itemsPerPage); // Calculate total pages dynamically
-
-            if (pageNumber >= 1 && pageNumber <= totalPages) {
-                currentPage = pageNumber; // Update the current page
-                updateTable(); // Refresh the table with data for the new page
-                updatePagination(); // Refresh the pagination links
-            }
-        }
 
         // document.getElementById('search-input').addEventListener('input', function () {
         //     const query = this.value.toLowerCase();

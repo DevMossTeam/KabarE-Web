@@ -299,9 +299,9 @@
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                             required>
                             <option selected>Pilih Role</option>
-                            <option value="pembaca">pembaca</option>
-                            <option value="penulis">penulis</option>
-                            <option value="admin">admin</option>
+                            <option value="Pembaca">Pembaca</option>
+                            <option value="Penulis">Penulis</option>
+                            <option value="Admin">Admin</option>
                         </select>
                     </div>
                 </div>
@@ -428,42 +428,6 @@
             updatePagination(totalPages);
         }
 
-        const searchInput = document.getElementById('search-input');
-
-        // Event listener for pressing Enter in the search input
-        searchInput.addEventListener('keydown', function (event) {
-            if (event.key === 'Enter') {
-                const searchTerm = searchInput.value.trim();
-                const searchUrl =
-                    `http://localhost/KabarE-Web/dashboard_admin/menu/pengguna.php?search=${searchTerm}`;
-                window.history.pushState({}, '', searchUrl);
-
-                // Filter the data based on the search term
-                const filteredUser = searchTerm ?
-                    userData.filter(user => user.nama_pengguna.toLowerCase().includes(searchTerm
-                        .toLowerCase()) || user.email.toLowerCase().includes(searchTerm.toLowerCase())) :
-                    userData;
-
-                // Update the table with the filtered data
-                updateTable(filteredUser);
-                updatePagination(filteredUser);
-            }
-        });
-
-
-        let currentRole = ''; // Variable to store the selected role
-
-        // Get all filter items in the dropdown
-        const filterItems = document.querySelectorAll('#dropdownHover a');
-
-        filterItems.forEach(item => {
-            item.addEventListener('click', function () {
-                currentRole = this.textContent
-                    .trim(); // Set the currentRole to the text content of the clicked item
-                updateTable(); // Re-render the table with the new filtered data
-            });
-        });
-
         // Function to update pagination buttons
         function updatePagination() {
             const paginationLinks = document.getElementById('pagination-links');
@@ -496,10 +460,13 @@
             for (let i = startPage; i <= endPage; i++) {
                 const pageButton = document.createElement('li');
                 pageButton.innerHTML = `
-            <a href="#" class="px-3 py-1 text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-100 ${currentPage === i ? 'bg-blue-100' : ''}" onclick="changePage(${i})">${i}</a>
-        `;
+                    <a href="#" class="px-3 py-1 border border-gray-300 rounded ${currentPage === i ? 'bg-blue-100 text-blue-800 hover:bg-blue-300' : 'text-gray-700 bg-white hover:bg-gray-300'}" onclick="changePage(${i})">
+                        ${i}
+                    </a>
+                `;
                 paginationLinks.appendChild(pageButton);
             }
+
 
             // Add "Next" button
             const nextButton = document.createElement('li');
@@ -523,6 +490,40 @@
             }
         }
 
+        const searchInput = document.getElementById('search-input');
+
+        // Event listener for pressing Enter in the search input
+        searchInput.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                const searchTerm = searchInput.value.trim();
+                const searchUrl =
+                    `http://localhost/KabarE-Web/dashboard_admin/menu/pengguna.php?search=${searchTerm}`;
+                window.history.pushState({}, '', searchUrl);
+
+                // Filter the data based on the search term
+                const filteredUser = searchTerm ?
+                    userData.filter(user => user.nama_pengguna.toLowerCase().includes(searchTerm
+                        .toLowerCase()) || user.email.toLowerCase().includes(searchTerm.toLowerCase())) :
+                    userData;
+
+                // Update the table with the filtered data
+                updateTable(filteredUser);
+                updatePagination(filteredUser);
+            }
+        });
+
+        let currentRole = ''; // Variable to store the selected role
+
+        // Get all filter items in the dropdown
+        const filterItems = document.querySelectorAll('#dropdownHover a');
+
+        filterItems.forEach(item => {
+            item.addEventListener('click', function () {
+                currentRole = this.textContent
+                    .trim(); // Set the currentRole to the text content of the clicked item
+                updateTable(); // Re-render the table with the new filtered data
+            });
+        });
 
         // Get modal elements
         const modal = document.querySelector('.modal_roleUserUbahStatus');

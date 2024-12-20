@@ -4,9 +4,6 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-<<<<<<< HEAD
-include 'koneksi.php'; 
-=======
 include 'koneksi.php'; // Include connection settings
 
 header("Content-Type: application/json");
@@ -101,23 +98,22 @@ class UserAPI {
         }
     }
 
-
     // Insert a new user
     public function insertUser($data) {
         $uid = $this->generateUID();
-
-        if (isset($data['nama_pengguna'], $data['password'], $data['email'], $data['role'], $data['kredensial'], $data['waktu_login'], $data['nama_lengkap'])) {
+    
+        if (isset($data['nama_pengguna'], $data['password'], $data['email'], $data['role'])) {
             try {
                 $check_stmt = $this->conn->prepare("SELECT * FROM user WHERE nama_pengguna = :nama_pengguna OR email = :email");
                 $check_stmt->bindParam(':nama_pengguna', $data['nama_pengguna']);
                 $check_stmt->bindParam(':email', $data['email']);
                 $check_stmt->execute();
-
+    
                 if ($check_stmt->rowCount() > 0) {
                     echo json_encode(['status' => 'error', 'message' => 'Username or email already exists']);
                 } else {
-                    $stmt = $this->conn->prepare("INSERT INTO user (uid, nama_pengguna, password, email, role, kredensial, nama_lengkap, waktu_login) 
-                                                VALUES (:uid, :nama_pengguna, :password, :email, :role, :kredensial, :nama_lengkap, :waktu_login)");
+                    $stmt = $this->conn->prepare("INSERT INTO user (uid, nama_pengguna, password, email, role, kredensial, nama_lengkap, profile_pic) 
+                                                VALUES (:uid, :nama_pengguna, :password, :email, :role, :kredensial, :nama_lengkap, :profile_pic)");
                     $stmt->bindParam(':uid', $uid);
                     $stmt->bindParam(':nama_pengguna', $data['nama_pengguna']);
                     $stmt->bindParam(':password', $data['password']);
@@ -125,8 +121,8 @@ class UserAPI {
                     $stmt->bindParam(':role', $data['role']);
                     $stmt->bindParam(':kredensial', $data['kredensial']);
                     $stmt->bindParam(':nama_lengkap', $data['nama_lengkap']);
-                    $stmt->bindParam(':waktu_login', $data['waktu_login']);
-
+                    $stmt->bindParam(':profile_pic', $data['profile_pic']);
+    
                     if ($stmt->execute()) {
                         $this->fetchUser($uid);
                     } else {
@@ -139,36 +135,61 @@ class UserAPI {
         } else {
             echo json_encode(['status' => 'error', 'message' => 'Invalid input']);
         }
-    }
+    }    
 
-    // Update an existing user
     public function updateUser($id, $data) {
-        if (isset($data['nama_pengguna'], $data['password'], $data['email'], $data['role'], $data['kredensial'], $data['waktu_login'], $data['nama_lengkap'])) {
-            try {
-                $stmt = $this->conn->prepare("UPDATE user SET nama_pengguna = :nama_pengguna, password = :password, email = :email, 
-                                             role = :role, kredensial = :kredensial, nama_lengkap = :nama_lengkap, waktu_login = :waktu_login WHERE uid = :id");
-                $stmt->bindParam(':nama_pengguna', $data['nama_pengguna']);
-                $stmt->bindParam(':password', $data['password']);
-                $stmt->bindParam(':email', $data['email']);
-                $stmt->bindParam(':role', $data['role']);
-                $stmt->bindParam(':kredensial', $data['kredensial']);
-                $stmt->bindParam(':nama_lengkap', $data['nama_lengkap']);
-                $stmt->bindParam(':waktu_login', $data['waktu_login']);
-                $stmt->bindParam(':id', $id, PDO::PARAM_STR);
-
-                if ($stmt->execute()) {
-                    $this->fetchUser($id);
-                } else {
-                    echo json_encode(['status' => 'error', 'message' => 'Failed to update user']);
-                }
-            } catch (PDOException $e) {
-                echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        try {
+            $query = "UPDATE user SET ";
+            $params = [];
+        
+            if (isset($data['nama_pengguna'])) {
+                $query .= "nama_pengguna = :nama_pengguna, ";
+                $params[':nama_pengguna'] = $data['nama_pengguna'];
             }
-        } else {
-            echo json_encode(['status' => 'error', 'message' => 'Invalid input']);
+            if (isset($data['password'])) {
+                $query .= "password = :password, ";
+                $params[':password'] = $data['password'];
+            }
+            if (isset($data['email'])) {
+                $query .= "email = :email, ";
+                $params[':email'] = $data['email'];
+            }
+            if (isset($data['role'])) {
+                $query .= "role = :role, ";
+                $params[':role'] = $data['role'];
+            }
+            if (isset($data['kredensial'])) {
+                $query .= "kredensial = :kredensial, ";
+                $params[':kredensial'] = $data['kredensial'];
+            }
+            if (isset($data['nama_lengkap'])) {
+                $query .= "nama_lengkap = :nama_lengkap, ";
+                $params[':nama_lengkap'] = $data['nama_lengkap'];
+            }
+        
+            // Remove the trailing comma
+            $query = rtrim($query, ', ');
+        
+            // Add the condition to match the user ID
+            $query .= " WHERE uid = :id";
+        
+            // Bind the user ID to the query
+            $params[':id'] = $id;
+        
+            // Prepare and execute the statement
+            $stmt = $this->conn->prepare($query);
+            
+            // Execute the update
+            if ($stmt->execute($params)) {
+                $this->fetchUser($id);  // Return the updated user data
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Failed to update user']);
+            }
+        } catch (PDOException $e) {
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
         }
-    }
-
+    }    
+    
     // Delete a user by ID
     public function deleteUser($id) {
         try {
@@ -196,174 +217,12 @@ class UserAPI {
 
 // Instantiate the class and handle the request
 $userAPI = new UserAPI($server, $db, $username, $password);
->>>>>>> 29b8b0facbd178c030519b31d9ac2de19a2d971d
 
 // Handle request method
 $request_method = $_SERVER['REQUEST_METHOD'];
 
 switch ($request_method) {
     case 'GET':
-<<<<<<< HEAD
-        if (isset($_GET['uid'])) {
-            fetch_user($_GET['uid']);
-        } else {
-            fetch_users();
-        }
-        break;
-    case 'POST':
-        insert_user();
-        break;
-    case 'PUT':
-        update_user();
-        break;
-    case 'DELETE':
-        delete_user();
-        break;
-    default:
-        echo json_encode(['message' => 'Invalid request method']);
-        break;
-}
-
-// Fetch all users
-function fetch_users() {
-    $conn = getKoneksi(); // Get the connection
-    try {
-        $stmt = mysqli_prepare($conn, "SELECT uid, username, email, profile_pic, role, kredensial FROM user");
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
-        $users = mysqli_fetch_all($result, MYSQLI_ASSOC);
-        echo json_encode(['data' => $users, 'message' => 'Users fetched successfully']);
-    } catch (Exception $e) {
-        echo json_encode(['message' => 'Failed to fetch users', 'error' => $e->getMessage()]);
-    }
-}
-
-
-// Fetch a single user by UID
-function fetch_user($uid) {
-    global $conn;
-    try {
-        $stmt = $conn->prepare("SELECT uid, username, email, profile_pic, role, kredensial FROM user WHERE uid = :uid"); // Exclude password from selection
-        $stmt->bindParam(':uid', $uid, PDO::PARAM_STR);
-        $stmt->execute();
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if ($user) {
-            echo json_encode(['data' => $user, 'message' => 'User fetched successfully']);
-        } else {
-            echo json_encode(['message' => 'User not found']);
-        }
-    } catch (PDOException $e) {
-        echo json_encode(['message' => 'Failed to fetch user', 'error' => $e->getMessage()]);
-    }
-}
-
-// Insert a new user
-function insert_user() {
-    global $conn;
-    $data = json_decode(file_get_contents("php://input"), true);
-    
-    // Check if required fields are present
-    if (empty($data['username']) || empty($data['password']) || empty($data['profil_id'])) {
-        echo json_encode(['message' => 'Required fields missing']);
-        return;
-    }
-    
-    try {
-        $hashed_password = password_hash($data['password'], PASSWORD_BCRYPT); // Hash the password
-        $uid = generateUid(); // Generate a random UID
-
-        $stmt = $conn->prepare("INSERT INTO user (uid, username, password, profil_id, email, profile_pic, token, token_expired_at, role, kredensial) 
-                                VALUES (:uid, :username, :password, :profil_id, :email, :profile_pic, :token, :token_expired_at, :role, :kredensial)");
-        $stmt->bindParam(':uid', $uid);
-        $stmt->bindParam(':username', $data['username']);
-        $stmt->bindParam(':password', $hashed_password); // Use hashed password here
-        $stmt->bindParam(':profil_id', $data['profil_id'], PDO::PARAM_INT); 
-        $stmt->bindParam(':email', $data['email']);
-        $stmt->bindParam(':profile_pic', $data['profile_pic'], PDO::PARAM_LOB); 
-        $stmt->bindParam(':token', $data['token']);
-        $stmt->bindParam(':token_expired_at', $data['token_expired_at']);
-        $stmt->bindParam(':role', $data['role']);
-        $stmt->bindParam(':kredensial', $data['kredensial']);
-        
-        if ($stmt->execute()) {
-            fetch_user($uid); // Fetch the newly created user
-        } else {
-            echo json_encode(['message' => 'Failed to insert user']);
-        }
-    } catch (PDOException $e) {
-        echo json_encode(['message' => 'Failed to insert user', 'error' => $e->getMessage()]);
-    }
-}
-
-// Update an existing user
-function update_user() {
-    global $conn;
-    $data = json_decode(file_get_contents("php://input"), true);
-    
-    // Check if uid is present for update
-    if (empty($data['uid'])) {
-        echo json_encode(['message' => 'UID is required for update']);
-        return;
-    }
-    
-    try {
-        // If the password is being updated, hash it; otherwise, retain the existing password
-        $password_to_update = isset($data['password']) && !empty($data['password']) ? password_hash($data['password'], PASSWORD_BCRYPT) : null;
-
-        $stmt = $conn->prepare("UPDATE user SET username = :username, password = COALESCE(:password, password), profil_id = :profil_id, email = :email, profile_pic = :profile_pic, token = :token, token_expired_at = :token_expired_at, role = :role, kredensial = :kredensial 
-                                WHERE uid = :uid");
-        $stmt->bindParam(':username', $data['username']);
-        $stmt->bindParam(':password', $password_to_update); // Hash if provided
-        $stmt->bindParam(':profil_id', $data['profil_id'], PDO::PARAM_INT);
-        $stmt->bindParam(':email', $data['email']);
-        $stmt->bindParam(':profile_pic', $data['profile_pic'], PDO::PARAM_LOB);
-        $stmt->bindParam(':token', $data['token']);
-        $stmt->bindParam(':token_expired_at', $data['token_expired_at']);
-        $stmt->bindParam(':role', $data['role']);
-        $stmt->bindParam(':kredensial', $data['kredensial']);
-        $stmt->bindParam(':uid', $data['uid'], PDO::PARAM_STR);
-
-        if ($stmt->execute()) {
-            fetch_user($data['uid']);
-        } else {
-            echo json_encode(['message' => 'Failed to update user']);
-        }
-    } catch (PDOException $e) {
-        echo json_encode(['message' => 'Failed to update user', 'error' => $e->getMessage()]);
-    }
-}
-
-// Delete a user by UID
-function delete_user() {
-    global $conn;
-    $data = json_decode(file_get_contents("php://input"), true);
-    
-    // Check if uid is present for deletion
-    if (empty($data['uid'])) {
-        echo json_encode(['message' => 'UID is required for deletion']);
-        return;
-    }
-    
-    try {
-        $stmt = $conn->prepare("DELETE FROM user WHERE uid = :uid");
-        $stmt->bindParam(':uid', $data['uid'], PDO::PARAM_STR);
-        
-        if ($stmt->execute()) {
-            echo json_encode(['message' => 'User deleted successfully']);
-        } else {
-            echo json_encode(['message' => 'Failed to delete user']);
-        }
-    } catch (PDOException $e) {
-        echo json_encode(['message' => 'Failed to delete user', 'error' => $e->getMessage()]);
-    }
-}
-
-// Generate a random UID
-function generateUid($length = 33) {
-    return bin2hex(random_bytes($length / 2)); // Generate a random hexadecimal UID
-}
-=======
         if (isset($_GET['id'])) {
             $userAPI->fetchUser($_GET['id']);
         } else {
@@ -395,5 +254,4 @@ function generateUid($length = 33) {
         echo json_encode(['status' => 'error', 'message' => 'Invalid request method']);
         break;
 }
->>>>>>> 29b8b0facbd178c030519b31d9ac2de19a2d971d
 ?>
