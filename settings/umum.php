@@ -21,25 +21,113 @@ if ($user_id) {
 }
 
 // Update atau insert data pengguna
+// Tambahkan di bagian atas file, sebelum logika utama
+if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+    // Ini adalah request AJAX
+    $isAjaxRequest = true;
+} else {
+    $isAjaxRequest = false;
+}
+
+// Modifikasi logika update
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_FILES['profile_pic'])) {
-    $field = $_POST['field'] ?? null;
-    $value = $_POST['value'] ?? null;
+    // Pastikan output bersih
+    ob_clean();
 
-    if ($user_id && $field && $value) {
-        $allowed_fields = ['nama_lengkap', 'nama_pengguna', 'kredensial'];
-        if (in_array($field, $allowed_fields)) {
-            $stmt = $conn->prepare("UPDATE user SET $field = ? WHERE uid = ?");
-            $stmt->bind_param("ss", $value, $user_id);
+    // Aktifkan error reporting
+    error_reporting(E_ALL);
+    ini_set('display_errors', 0); // Matikan display error di production
 
-            if ($stmt->execute()) {
-                $_SESSION[$field] = $value; // Simpan ke sesi
-                echo json_encode(['success' => true, 'field' => $field, 'value' => $value]); // Kirim data yang diperbarui
-            } else {
-                echo json_encode(['success' => false, 'error' => $stmt->error]);
-            }
-            $stmt->close();
-            exit;
+    // Fungsi untuk membuat response JSON yang aman
+    function sendJsonResponse($data)
+    {
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        exit;
+    }
+
+    // Sanitasi input
+    $field = isset($_POST['field']) ? trim($_POST['field']) : null;
+    $value = isset($_POST['value']) ? trim($_POST['value']) : null;
+
+    // Pemetaan field yang diperbolehkan
+    $allowed_fields = [
+        'nama_lengkap' => 'nama_lengkap',
+        'username' => 'nama_pengguna',
+        'infoLainnya' => 'kredensial'
+    ];
+
+    // Validasi field
+    $db_field = $allowed_fields[$field] ?? null;
+
+    // Respon untuk field tidak valid
+    if (!$db_field) {
+        sendJsonResponse([
+            'success' => false,
+            'error' => 'Field tidak valid',
+            'debug' => [
+                'received_field' => $field,
+                'allowed_fields' => array_keys($allowed_fields)
+            ]
+        ]);
+    }
+
+    // Validasi user_id
+    if (!$user_id) {
+        sendJsonResponse([
+            'success' => false,
+            'error' => 'Sesi pengguna tidak valid'
+        ]);
+    }
+
+    // Validasi value
+    if (empty($value)) {
+        sendJsonResponse([
+            'success' => false,
+            'error' => 'Nilai tidak boleh kosong'
+        ]);
+    }
+
+    try {
+        // Persiapan statement
+        $stmt = $conn->prepare("UPDATE user SET $db_field = ? WHERE uid = ?");
+
+        if (!$stmt) {
+            throw new Exception("Gagal mempersiapkan query: " . $conn->error);
         }
+
+        $stmt->bind_param("ss", $value, $user_id);
+
+        // Eksekusi update
+        if (!$stmt->execute()) {
+            throw new Exception("Gagal mengeksekusi query: " . $stmt->error);
+        }
+
+        // Ambil data terbaru
+        $stmt_fetch = $conn->prepare("SELECT $db_field FROM user WHERE uid = ?");
+        $stmt_fetch->bind_param("s", $user_id);
+        $stmt_fetch->execute();
+        $stmt_fetch->bind_result($updated_value);
+        $stmt_fetch->fetch();
+        $stmt_fetch->close();
+
+        // Kirim respon sukses
+        sendJsonResponse([
+            'success' => true,
+            'field' => $field,
+            'value' => $updated_value
+        ]);
+    } catch (Exception $e) {
+        // Tangani error
+        sendJsonResponse([
+            'success' => false,
+            'error' => $e->getMessage(),
+            'debug' => [
+                'field' => $field,
+                'db_field' => $db_field,
+                'value' => $value
+            ]
+        ]);
     }
 }
 
@@ -242,28 +330,79 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 
     function updateDatabase(field, value) {
+        // Pemetaan field yang benar
+        const fieldMap = {
+            'namaLengkap': 'nama_lengkap',
+            'username': 'username',
+            'infoLainnya': 'infoLainnya'
+        };
+
+        const mappedField = fieldMap[field] || field;
+
         const formData = new FormData();
-        formData.append('field', field);
+        formData.append('field', mappedField);
         formData.append('value', value);
 
-        console.log('Sending data:', field, value);
-
         fetch(window.location.href, {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Response:', data);
-            if (data.success) {
-                document.getElementById(`${field}Text`).textContent = data.value;
-                document.getElementById(`${field}Text`).contentEditable = false;
-                currentEdit = null;
-            } else {
-                console.error('Error:', data.error);
-            }
-        })
-        .catch(error => console.error('Error:', error));
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            })
+            .then(response => {
+                // Tambahkan pengecekan response
+                if (!response.ok) {
+                    // Coba ambil teks error jika ada
+                    return response.text().then(text => {
+                        console.error('Response not OK:', text);
+                        throw new Error(`HTTP error! status: ${response.status}, message: ${text}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Log data response untuk debugging
+                console.log('Response data:', data);
+
+                if (data.success) {
+                    // Update elemen di halaman
+                    const textElement = document.getElementById(`${field}Text`);
+                    textElement.textContent = data.value;
+                    textElement.contentEditable = false;
+                    currentEdit = null;
+
+                    showNotification('Data berhasil diperbarui');
+                } else {
+                    // Tampilkan pesan error dengan detail
+                    console.error('Update error:', data);
+                    showNotification(data.error || 'Gagal memperbarui data', 'error');
+                }
+            })
+            .catch(error => {
+                // Tangani error jaringan atau parsing
+                console.error('Fetch error:', error);
+                showNotification('Terjadi kesalahan: ' + error.message, 'error');
+            });
+    }
+
+    function showNotification(message, type = 'success') {
+        // Buat elemen notifikasi
+        const notification = document.createElement('div');
+        notification.classList.add(
+            'fixed', 'top-4', 'right-4', 'z-50', 'px-4', 'py-2', 'rounded',
+            type === 'success' ? 'bg-green-500' : 'bg-red-500',
+            'text-white'
+        );
+        notification.textContent = message;
+
+        // Tambahkan ke body
+        document.body.appendChild(notification);
+
+        // Hapus notifikasi setelah beberapa detik
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
     }
 
     document.addEventListener('keydown', function(event) {
@@ -325,7 +464,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
     function submitForm() {
         const formData = new FormData(document.getElementById('uploadForm'));
-        
+
         // Tambahkan data field dan value jika ada perubahan
         if (currentEdit) {
             const infoElement = document.getElementById(`${currentEdit}Info`);
@@ -334,21 +473,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         }
 
         fetch('', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                if (data.profile_pic) {
-                    document.getElementById('profilePicPreview').src = 'data:image/jpeg;base64,' + btoa(data.profile_pic);
-                    document.getElementById('profilePicPreview').classList.remove('hidden');
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (data.profile_pic) {
+                        document.getElementById('profilePicPreview').src = 'data:image/jpeg;base64,' + btoa(data.profile_pic);
+                        document.getElementById('profilePicPreview').classList.remove('hidden');
+                    }
+                    window.location.href = 'umum.php';
                 }
-                window.location.href = 'umum.php';
-            }
-            closePopup();
-        })
-        .catch(error => console.error('Error:', error));
+                closePopup();
+            })
+            .catch(error => console.error('Error:', error));
     }
 
     function toggleMenu(event) {
@@ -368,22 +507,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
     function confirmRemoveProfilePicture() {
         fetch(window.location.href, {
-            method: 'POST',
-            body: new URLSearchParams({ action: 'remove_profile_pic' })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                const output = document.getElementById('profilePicPreview');
-                if (output) {
-                    output.remove(); // Hapus elemen gambar jika ada
+                method: 'POST',
+                body: new URLSearchParams({
+                    action: 'remove_profile_pic'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const output = document.getElementById('profilePicPreview');
+                    if (output) {
+                        output.remove(); // Hapus elemen gambar jika ada
+                    }
+                    closeRemovePopup();
+                } else {
+                    console.error('Error:', data.error);
                 }
-                closeRemovePopup();
-            } else {
-                console.error('Error:', data.error);
-            }
-        })
-        .catch(error => console.error('Error:', error));
+            })
+            .catch(error => console.error('Error:', error));
     }
 
     document.addEventListener('click', function(event) {
@@ -397,7 +538,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     document.addEventListener('click', function(event) {
         const menu = document.getElementById('cameraMenu');
         const cameraIcon = document.querySelector('.fas.fa-camera');
-        
+
         // Jika menu terbuka dan klik terjadi di luar menu dan ikon kamera, tutup menu
         if (!menu.classList.contains('hidden') && !menu.contains(event.target) && !cameraIcon.contains(event.target)) {
             menu.classList.add('hidden');
