@@ -28,6 +28,7 @@ $allowed_pages = [
     'media-guidelines.php',
     'terms.php',
     'test.php',
+    'beritaTerbaru.php',
     'news-detail.php',
     'contact-us.php',
     'Update_author.php',

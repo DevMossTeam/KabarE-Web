@@ -23,6 +23,7 @@ if ($user_id) {
         }
     }
 }
+
 // Contoh untuk handling reaction
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reaction'])) {
     // Cek ulang otorisasi di sisi server
@@ -53,6 +54,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bookmark'])) {
     header("Location: news-detail.php?id=$id");
     exit;
 }
+
+// Ambil ID dari URL
+$id = $_GET['id']; // ID bisa berupa string seperti 'BRT100'
+
+// Pastikan ID tidak kosong
+if (empty($id)) {
+    die("ID berita tidak valid.");
+}
+
+// Tingkatkan view_count
+$stmt = $conn->prepare("UPDATE berita SET view_count = IFNULL(view_count, 0) + 1 WHERE id = ?");
+$stmt->bind_param("s", $id); // Gunakan 's' untuk string
+$stmt->execute();
+$stmt->close();
 ?>
 
 <!-- Tambahkan link Font Awesome -->
