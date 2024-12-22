@@ -117,12 +117,41 @@ function timeAgo($datetimeString) {
     return "baru saja";
 }
 
+// Query untuk mendapatkan detail berita dan nama penulis
+$query = "SELECT b.judul, b.konten_artikel, b.tanggal_diterbitkan, b.kategori, u.nama_lengkap, u.nama_pengguna, u.profile_pic 
+          FROM berita b 
+          JOIN user u ON b.user_id = u.uid 
+          WHERE b.id = ? AND b.visibilitas = 'public'";
+$stmt = $conn->prepare($query);
+$stmt->bind_param('s', $id);
+$stmt->execute();
+$result = $stmt->get_result();
+$berita = $result->fetch_assoc();
+
+if ($berita) {
+    $judul = $berita['judul'];
+    $konten = $berita['konten_artikel'];
+    $tanggalDiterbitkan = $berita['tanggal_diterbitkan'];
+    $kategori = $berita['kategori'];
+    $penulis = $berita['nama_lengkap'];
+    $namaPengguna = $berita['nama_pengguna'];
+    $profilePic = $berita['profile_pic'];
+
+    // Ekstrak URL gambar pertama dari konten artikel
+    preg_match('/<img.*?src=["\'](.*?)["\'].*?>/i', $konten, $matches);
+    $gambarPertama = $matches[1] ?? ''; // Ambil URL gambar pertama jika ada
+    $konten = preg_replace('/<img.*?>/i', '', $konten, 1); // Hapus hanya gambar pertama
+} else {
+    echo "Berita tidak ditemukan.";
+    exit;
+}
+
 // Ambil ID dan kategori dari berita saat ini
 $kategori = '';
 
 // Dapatkan kategori berita saat ini
 if ($id) {
-    $query = "SELECT kategori FROM berita WHERE id = ?";
+    $query = "SELECT kategori FROM berita WHERE id = ? AND visibilitas = 'public'";
     $stmt = $conn->prepare($query);
     $stmt->bind_param('s', $id);
     $stmt->execute();
@@ -136,7 +165,7 @@ $topNewsQuery = "
     SELECT b.id, b.judul, b.tanggal_diterbitkan, COUNT(r.jenis_reaksi) AS like_count
     FROM berita b
     LEFT JOIN reaksi r ON b.id = r.berita_id AND r.jenis_reaksi = 'Suka'
-    WHERE b.kategori = ?
+    WHERE b.kategori = ? AND b.visibilitas = 'public'
     GROUP BY b.id
     ORDER BY like_count DESC, b.view_count DESC
     LIMIT 6
@@ -151,7 +180,7 @@ $kategori = '';
 
 // Dapatkan kategori berita saat ini
 if ($id) {
-    $query = "SELECT kategori FROM berita WHERE id = ?";
+    $query = "SELECT kategori FROM berita WHERE id = ? AND visibilitas = 'public'";
     $stmt = $conn->prepare($query);
     $stmt->bind_param('s', $id);
     $stmt->execute();
@@ -161,7 +190,7 @@ if ($id) {
 }
 
 // Query untuk mendapatkan berita terbaru dari kategori yang sama
-$recentNewsQuery = "SELECT id, judul, tanggal_diterbitkan FROM berita WHERE kategori = ? AND id != ? ORDER BY tanggal_diterbitkan DESC LIMIT 4";
+$recentNewsQuery = "SELECT id, judul, tanggal_diterbitkan FROM berita WHERE kategori = ? AND id != ? AND visibilitas = 'public' ORDER BY tanggal_diterbitkan DESC LIMIT 4";
 $stmt = $conn->prepare($recentNewsQuery);
 $stmt->bind_param('ss', $kategori, $id);
 $stmt->execute();
@@ -172,7 +201,7 @@ if (!$recentNewsResult) {
 }
 
 // Query untuk mendapatkan berita acak dari kategori yang sama
-$sameTopicNewsQuery = "SELECT id, judul, konten_artikel FROM berita WHERE kategori = ? AND id != ? ORDER BY RAND() LIMIT 3";
+$sameTopicNewsQuery = "SELECT id, judul, konten_artikel FROM berita WHERE kategori = ? AND id != ? AND visibilitas = 'public' ORDER BY RAND() LIMIT 3";
 $stmt = $conn->prepare($sameTopicNewsQuery);
 $stmt->bind_param('ss', $kategori, $id);
 $stmt->execute();
@@ -183,7 +212,7 @@ if (!$sameTopicNewsResult) {
 }
 
 // Query untuk mendapatkan berita acak
-$randomNewsQuery = "SELECT id, judul, konten_artikel, tanggal_diterbitkan, kategori FROM berita ORDER BY RAND() LIMIT 4";
+$randomNewsQuery = "SELECT id, judul, konten_artikel, tanggal_diterbitkan, kategori FROM berita WHERE visibilitas = 'public' ORDER BY RAND() LIMIT 4";
 $randomNewsResult = $conn->query($randomNewsQuery);
 
 if (!$randomNewsResult) {
@@ -375,7 +404,8 @@ while ($tag = $tagResult->fetch_assoc()) {
 $commentQuery = "SELECT k.id, k.teks_komentar, k.tanggal_komentar, u.nama_pengguna, u.profile_pic, k.user_id 
                  FROM komentar k 
                  JOIN user u ON k.user_id = u.uid 
-                 WHERE k.berita_id = ? 
+                 JOIN berita b ON k.berita_id = b.id
+                 WHERE k.berita_id = ? AND b.visibilitas = 'public'
                  ORDER BY k.tanggal_komentar DESC";
 $stmt = $conn->prepare($commentQuery);
 $stmt->bind_param('s', $id);
@@ -383,4 +413,39 @@ $stmt->execute();
 $commentResult = $stmt->get_result();
 $commentCount = $commentResult->num_rows;
 
+function saveReport($conn, $user_id, $berita_id, $reason, $detail_pesan) {
+    // Generate ID acak 12 karakter
+    $id = bin2hex(random_bytes(6)); // 12 karakter heksadesimal
+
+    // Waktu saat laporan dibuat
+    $created_at = date('Y-m-d H:i:s');
+
+    // Status default
+    $status_read = 'belum';
+    $status = 'laporan';
+
+    // Siapkan statement untuk menyimpan laporan
+    $stmt = $conn->prepare("INSERT INTO pesan (id, user_id, berita_id, pesan, created_at, status_read, status, detail_pesan) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("ssssssss", $id, $user_id, $berita_id, $reason, $created_at, $status_read, $status, $detail_pesan);
+    
+    // Eksekusi statement
+    if ($stmt->execute()) {
+        return true; // Berhasil
+    } else {
+        return false; // Gagal
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['report_reason'])) {
+    $reportReason = $_POST['report_reason'];
+    $detailPesan = $_POST['detail_pesan'] ?? ''; // Ambil detail pesan jika ada
+
+    // Simpan laporan ke database
+    if (saveReport($conn, $user_id, $id, $reportReason, $detailPesan)) {
+        echo json_encode(['success' => true]);
+    } else {
+        echo json_encode(['success' => false]);
+    }
+    exit; // Hentikan eksekusi lebih lanjut
+}
 ?>

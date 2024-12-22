@@ -254,7 +254,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
                         </div>
 
                         <script>
-                            document.getElementById('search-input').addEventListener('input', function () {
+                            document.getElementById('search-input').addEventListener('input', function() {
                                 const query = this.value.toLowerCase();
                                 filterTable(query);
                             });

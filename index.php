@@ -58,14 +58,30 @@ if (!empty($categories)) {
 
 // Query untuk 3 berita dengan jumlah 'Suka' terbanyak dalam kategori yang sama
 $query = "
-    SELECT b.id, b.judul, b.konten_artikel, b.kategori, b.tanggal_diterbitkan, 
-           COUNT(CASE WHEN r.jenis_reaksi = 'Suka' THEN 1 END) AS suka_count
-    FROM berita b
-    LEFT JOIN reaksi r ON b.id = r.berita_id
-    WHERE b.kategori = '$randomTopCategory' 
-      AND b.tanggal_diterbitkan >= DATE_SUB(NOW(), INTERVAL 2 DAY)
-    GROUP BY b.id, b.judul, b.konten_artikel, b.kategori, b.tanggal_diterbitkan
-    ORDER BY suka_count DESC
+    SELECT 
+        b.id, 
+        b.judul, 
+        b.konten_artikel, 
+        b.kategori, 
+        b.tanggal_diterbitkan, 
+        b.view_count,
+        COUNT(CASE WHEN r.jenis_reaksi = 'Suka' THEN 1 END) AS suka_count
+    FROM 
+        berita b
+    INNER JOIN 
+        reaksi r ON b.id = r.berita_id
+    WHERE 
+        b.kategori = '$randomTopCategory' 
+        AND r.jenis_reaksi = 'Suka'
+        AND b.visibilitas = 'public'
+        AND b.tanggal_diterbitkan >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+    GROUP BY 
+        b.id, b.judul, b.konten_artikel, b.kategori, b.tanggal_diterbitkan, b.view_count
+    HAVING 
+        suka_count > 0
+    ORDER BY 
+        b.view_count DESC, 
+        suka_count DESC
     LIMIT 3
 ";
 
@@ -74,47 +90,119 @@ $result = $conn->query($query);
 // Inisialisasi array untuk top liked berita
 $topLikedBerita = [];
 
-// Jika tidak ada berita dalam 2 hari terakhir
-if ($result && $result->num_rows == 0) {
+// Jika tidak ada berita dalam 7 hari terakhir
+if ($result->num_rows < 3) {
     $query = "
-        SELECT b.id, b.judul, b.konten_artikel, b.kategori, b.tanggal_diterbitkan, 
-               COUNT(CASE WHEN r.jenis_reaksi = 'Suka' THEN 1 END) AS suka_count
-        FROM berita b
-        LEFT JOIN reaksi r ON b.id = r.berita_id
-        WHERE b.kategori = '$randomTopCategory'
-        GROUP BY b.id, b.judul, b.konten_artikel, b.kategori, b.tanggal_diterbitkan
-        ORDER BY suka_count DESC
-        LIMIT 3
-    ";
-    $result = $conn->query($query);
+        SELECT 
+            b.id, 
+            b.judul, 
+            b.konten_artikel, 
+            b.kategori, 
+            b.tanggal_diterbitkan, 
+            b.view_count,
+            COUNT(CASE WHEN r.jenis_reaksi = 'Suka' THEN 1 END) AS suka_count
+        FROM 
+            berita b
+        INNER JOIN 
+            reaksi r ON b.id = r.berita_id
+        WHERE 
+            b.kategori = '$randomTopCategory' 
+            AND r.jenis_reaksi = 'Suka'
+            AND b.visibilitas = 'public'
+            AND b.tanggal_diterbitkan < DATE_SUB(NOW(), INTERVAL 7 DAY)
+        GROUP BY 
+            b.id, b.judul, b.konten_artikel, b.kategori, b.tanggal_diterbitkan, b.view_count
+        HAVING 
+            suka_count > 0
+        ORDER BY 
+            b.view_count DESC, 
+            suka_count DESC
+        LIMIT " . (3 - $result->num_rows);
+    $additionalResult = $conn->query($query);
 }
 
-// Jika masih belum ada data dengan reaksi, ambil 3 berita terbaru dalam kategori yang sama
-if ($result && $result->num_rows == 0) {
-    $query = "
-        SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan 
-        FROM berita 
-        WHERE kategori = '$randomTopCategory'
-        ORDER BY tanggal_diterbitkan DESC 
-        LIMIT 3
-    ";
-    $result = $conn->query($query);
+// Tambahkan berita dari query pertama
+while ($row = $result->fetch_assoc()) {
+    $topLikedBerita[] = $row;
 }
 
-// Tambahkan berita ke array
-if ($result && $result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
+// Tambahkan berita tambahan jika perlu
+if (isset($additionalResult) && $additionalResult->num_rows > 0) {
+    while ($row = $additionalResult->fetch_assoc()) {
         $topLikedBerita[] = $row;
     }
 }
 
-// Jika masih tidak ada berita dalam kategori
-if (empty($topLikedBerita)) {
-    // Ambil 3 berita acak dari semua kategori
-    $query = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan FROM berita ORDER BY RAND() LIMIT 3";
-    $result = $conn->query($query);
+// Jika masih kurang dari 3 berita, ambil berita terbaru dalam kategori yang sama
+if (count($topLikedBerita) < 3) {
+    $query = "
+        SELECT 
+            id, 
+            judul, 
+            konten_artikel, 
+            kategori, 
+            tanggal_diterbitkan,
+            view_count,
+            0 AS suka_count
+        FROM 
+            berita
+        WHERE 
+            kategori = '$randomTopCategory'
+        ORDER BY 
+            tanggal_diterbitkan DESC 
+        LIMIT " . (3 - count($topLikedBerita));
+    $additionalResult = $conn->query($query);
 
-    while ($row = $result->fetch_assoc()) {
+    while ($row = $additionalResult->fetch_assoc()) {
+        $topLikedBerita[] = $row;
+    }
+}
+
+// Jika masih kurang dari 3 berita, tambahkan berita acak dalam kategori yang sama
+if (count($topLikedBerita) < 3) {
+    $query = "
+        SELECT 
+            id, 
+            judul, 
+            konten_artikel, 
+            kategori, 
+            tanggal_diterbitkan,
+            view_count,
+            0 AS suka_count
+        FROM 
+            berita
+        WHERE 
+            kategori = '$randomTopCategory'
+        ORDER BY 
+            RAND()
+        LIMIT " . (3 - count($topLikedBerita));
+    $additionalResult = $conn->query($query);
+
+    while ($row = $additionalResult->fetch_assoc()) {
+        $topLikedBerita[] = $row;
+    }
+}
+
+// Pastikan selalu ada 3 berita
+if (count($topLikedBerita) < 3) {
+    // Jika masih kurang, tambahkan berita dari kategori lain
+    $query = "
+        SELECT 
+            id, 
+            judul, 
+            konten_artikel, 
+            kategori, 
+            tanggal_diterbitkan,
+            view_count,
+            0 AS suka_count
+        FROM 
+            berita
+        ORDER BY 
+            RAND()
+        LIMIT " . (3 - count($topLikedBerita));
+    $additionalResult = $conn->query($query);
+
+    while ($row = $additionalResult->fetch_assoc()) {
         $topLikedBerita[] = $row;
     }
 }
@@ -122,72 +210,122 @@ if (empty($topLikedBerita)) {
 // Tambahkan variabel untuk menampilkan kategori top liked
 $topLikedCategory = $randomTopCategory;
 
-// Query untuk mengambil data untuk slider dari kategori acak dengan jumlah 'Suka' terbanyak
+// Query untuk mengambil 7 berita dengan kategori yang berbeda, yang memiliki reaksi 'Suka'
 $querySlider = "
-    SELECT b.id, b.judul, b.konten_artikel, b.kategori, b.tanggal_diterbitkan, 
-           COUNT(CASE WHEN r.jenis_reaksi = 'Suka' THEN 1 END) AS suka_count
-    FROM berita b
-    LEFT JOIN reaksi r ON b.id = r.berita_id
-    WHERE b.tanggal_diterbitkan >= DATE_SUB(NOW(), INTERVAL 2 DAY)
-    GROUP BY b.id, b.judul, b.konten_artikel, b.kategori, b.tanggal_diterbitkan
-    ORDER BY suka_count DESC, RAND()
+    SELECT 
+        b.id, 
+        b.judul, 
+        b.konten_artikel, 
+        b.kategori, 
+        b.tanggal_diterbitkan, 
+        b.view_count,
+        COUNT(CASE WHEN r.jenis_reaksi = 'Suka' THEN 1 END) AS suka_count
+    FROM 
+        berita b
+    INNER JOIN 
+        reaksi r ON b.id = r.berita_id
+    WHERE 
+        r.jenis_reaksi = 'Suka' 
+        AND b.tanggal_diterbitkan >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+    GROUP BY 
+        b.id, b.judul, b.konten_artikel, b.kategori, b.tanggal_diterbitkan, b.view_count
+    HAVING 
+        suka_count > 0
+    ORDER BY 
+        b.view_count DESC, 
+        suka_count DESC
     LIMIT 7
 ";
 
 $resultSlider = $conn->query($querySlider);
 $sliderData = [];
+$usedCategories = []; // Untuk melacak kategori yang sudah digunakan
 
-// Jika tidak ada berita dalam 2 hari terakhir dengan reaksi
-if ($resultSlider->num_rows == 0) {
+// Jika tidak cukup 7 berita dalam 7 hari terakhir
+if ($resultSlider->num_rows < 7) {
     $querySlider = "
-        SELECT b.id, b.judul, b.konten_artikel, b.kategori, b.tanggal_diterbitkan, 
-               COUNT(CASE WHEN r.jenis_reaksi = 'Suka' THEN 1 END) AS suka_count
-        FROM berita b
-        LEFT JOIN reaksi r ON b.id = r.berita_id
-        GROUP BY b.id, b.judul, b.konten_artikel, b.kategori, b.tanggal_diterbitkan
-        ORDER BY suka_count DESC, RAND()
-        LIMIT 7
-    ";
-    $resultSlider = $conn->query($querySlider);
+        SELECT 
+            b.id, 
+            b.judul, 
+            b.konten_artikel, 
+            b.kategori, 
+            b.tanggal_diterbitkan, 
+            b.view_count,
+            COUNT(CASE WHEN r.jenis_reaksi = 'Suka' THEN 1 END) AS suka_count
+        FROM 
+            berita b
+        INNER JOIN 
+            reaksi r ON b.id = r.berita_id
+        WHERE 
+            r.jenis_reaksi = 'Suka' 
+            AND b.tanggal_diterbitkan < DATE_SUB(NOW(), INTERVAL 7 DAY)
+        GROUP BY 
+            b.id, b.judul, b.konten_artikel, b.kategori, b.tanggal_diterbitkan, b.view_count
+        HAVING 
+            suka_count > 0
+        ORDER BY 
+            b.view_count DESC, 
+            suka_count DESC
+        LIMIT " . (7 - $resultSlider->num_rows);
+
+    $additionalResult = $conn->query($querySlider);
 }
 
-// Jika masih belum ada data dengan reaksi, ambil berita acak
-if ($resultSlider->num_rows == 0) {
-    $querySlider = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan FROM berita ORDER BY RAND() LIMIT 7";
-    $resultSlider = $conn->query($querySlider);
-}
+// Proses hasil query untuk mendapatkan 7 berita berbeda kategori
+$processedCategories = [];
+$finalSliderData = [];
 
-// Proses hasil query
+// Proses berita pertama
 while ($row = $resultSlider->fetch_assoc()) {
-    $firstImage = '';
-    if (preg_match('/<img.+src=[\'"](?P<src>.+?)[\'"].*>/i', $row['konten_artikel'], $image)) {
-        $firstImage = $image['src'];
+    if (!in_array($row['kategori'], $processedCategories)) {
+        $firstImage = '';
+        if (preg_match('/<img.+src=[\'"](?P<src>.+?)[\'"].*>/i', $row['konten_artikel'], $image)) {
+            $firstImage = $image['src'];
+        }
+        $row['firstImage'] = $firstImage;
+        $finalSliderData[] = $row;
+        $processedCategories[] = $row['kategori'];
     }
-    $row['firstImage'] = $firstImage;
-    $sliderData[] = $row;
+}
+
+// Jika masih kurang, tambahkan dari berita tambahan
+if (isset($additionalResult) && $additionalResult->num_rows > 0 && count($finalSliderData) < 7) {
+    while ($row = $additionalResult->fetch_assoc()) {
+        if (count($finalSliderData) < 7 && !in_array($row['kategori'], $processedCategories)) {
+            $firstImage = '';
+            if (preg_match('/<img.+src=[\'"](?P<src>.+?)[\'"].*>/i', $row['konten_artikel'], $image)) {
+                $firstImage = $image['src'];
+            }
+            $row['firstImage'] = $firstImage;
+            $finalSliderData[] = $row;
+            $processedCategories[] = $row['kategori'];
+        }
+    }
 }
 
 // Jika masih belum ada data sama sekali
-if (empty($sliderData)) {
-    // Tambahkan beberapa data default atau placeholder
-    $sliderData[] = [
+if (empty($finalSliderData)) {
+    $finalSliderData[] = [
         'id' => 0,
-        'judul' => 'Tidak Ada Berita',
-        'konten_artikel' => 'Belum ada berita yang tersedia.',
+        'judul' => 'Tidak Ada Berita dengan Reaksi Suka',
+        'konten_artikel' => 'Belum ada berita yang memiliki reaksi Suka.',
         'kategori' => 'Umum',
         'tanggal_diterbitkan' => date('Y-m-d H:i:s'),
         'firstImage' => 'https://via.placeholder.com/800x600'
     ];
 }
 
+// Gunakan $finalSliderData sebagai pengganti $sliderData
+$sliderData = $finalSliderData;
+
 // Query untuk mengambil 6 berita terbaru
-$query = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan FROM berita ORDER BY tanggal_diterbitkan DESC LIMIT 6";
+$query = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan FROM berita WHERE visibilitas = 'public' ORDER BY tanggal_diterbitkan DESC LIMIT 6";
 $result = $conn->query($query);
-$beritaTerkini = [];
+$beritaTerbaru = [];
 
 if ($result && $result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
-        $beritaTerkini[] = $row;
+        $beritaTerbaru[] = $row;
     }
 }
 
@@ -211,7 +349,7 @@ if (empty($categories)) {
 if (!empty($categories)) {
     // Pilih kategori acak untuk top liked berita
     $randomTopCategory = $categories[array_rand($categories)];
-    
+
     // Pilih kategori acak untuk berita random
     $randomCategory = $categories[array_rand($categories)]; // Tambahkan ini
 } else {
@@ -240,7 +378,7 @@ do {
 } while ($randomCategory1 === $randomCategory2);
 
 // Query untuk kategori acak pertama (satu gambar besar)
-$queryRandomCategory1 = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan FROM berita WHERE kategori = '$randomCategory1' ORDER BY RAND() LIMIT 1";
+$queryRandomCategory1 = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan FROM berita WHERE kategori = '$randomCategory1' AND visibilitas = 'public' ORDER BY RAND() LIMIT 1";
 $resultRandomCategory1 = $conn->query($queryRandomCategory1);
 $rowRandomCategory1 = $resultRandomCategory1->fetch_assoc();
 $firstImageRandomCategory1 = '';
@@ -249,7 +387,7 @@ if (preg_match('/<img.+src=[\'"](?P<src>.+?)[\'"].*>/i', $rowRandomCategory1['ko
 }
 
 // Query untuk kategori acak kedua (dua berita)
-$queryRandomCategory2 = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan FROM berita WHERE kategori = '$randomCategory2' ORDER BY RAND() LIMIT 2";
+$queryRandomCategory2 = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan FROM berita WHERE kategori = '$randomCategory2' AND visibilitas = 'public' ORDER BY RAND() LIMIT 2";
 $resultRandomCategory2 = $conn->query($queryRandomCategory2);
 $beritaRandomCategory2 = [];
 
@@ -260,7 +398,7 @@ if ($resultRandomCategory2 && $resultRandomCategory2->num_rows > 0) {
 }
 
 // Query untuk berita lainnya
-$queryBeritaLainnya = "SELECT id, judul, konten_artikel, tanggal_diterbitkan FROM berita ORDER BY RAND() LIMIT 4";
+$queryBeritaLainnya = "SELECT id, judul, konten_artikel, tanggal_diterbitkan FROM berita WHERE visibilitas = 'public' ORDER BY RAND() LIMIT 4";
 $resultBeritaLainnya = $conn->query($queryBeritaLainnya);
 $beritaLainnya = [];
 
@@ -369,57 +507,62 @@ function getNotif($user_id, $from_id) {
         </div>
     </div>
 
-    <!-- Berita Terkini -->
+    <!-- Berita Terbaru -->
     <div class="py-12 mt-8 bg-black -mx-20 px-20">
         <div class="flex items-center justify-between mb-4">
             <div class="flex items-center">
                 <div class="bg-[#FF3232] w-2 h-6"></div>
-                <h2 class="text-xl font-bold ml-2 text-white">Berita Terkini</h2>
+                <h2 class="text-xl font-bold ml-2 text-white">Berita Terbaru</h2>
             </div>
         </div>
         <!-- 3 Kartu Gambar di Atas -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <?php for ($i = 0; $i < 3; $i++): ?>
-                <?php if (isset($beritaTerkini[$i])): ?>
+                <?php if (isset($beritaTerbaru[$i])): ?>
                     <?php
                     $firstImage = '';
-                    if (preg_match('/<img.+src=[\'"](?P<src>.+?)[\'"].*>/i', $beritaTerkini[$i]['konten_artikel'], $image)) {
+                    if (preg_match('/<img.+src=[\'"](?P<src>.+?)[\'"].*>/i', $beritaTerbaru[$i]['konten_artikel'], $image)) {
                         $firstImage = $image['src'];
                     }
                     ?>
-                    <a href="../category/news-detail.php?id=<?= $beritaTerkini[$i]['id'] ?>" class="relative overflow-hidden rounded-lg">
+                    <a href="../category/news-detail.php?id=<?= $beritaTerbaru[$i]['id'] ?>" class="relative overflow-hidden rounded-lg">
                         <img src="<?= $firstImage ?: 'https://via.placeholder.com/300x200' ?>" class="w-full h-56 md:h-56 lg:h-56 object-cover">
                         <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
-                            <span class="text-white font-bold"><?= $beritaTerkini[$i]['kategori'] ?> | <?= timeAgo($beritaTerkini[$i]['tanggal_diterbitkan']) ?></span>
-                            <h3 class="text-white text-lg font-bold mt-1"><?= $beritaTerkini[$i]['judul'] ?></h3>
+                            <span class="text-white font-bold"><?= $beritaTerbaru[$i]['kategori'] ?> | <?= timeAgo($beritaTerbaru[$i]['tanggal_diterbitkan']) ?></span>
+                            <h3 class="text-white text-lg font-bold mt-1"><?= $beritaTerbaru[$i]['judul'] ?></h3>
                         </div>
                     </a>
                 <?php else: ?>
-                    <p class="text-white">Tidak ada berita terkini yang tersedia.</p>
+                    <p class="text-white">Tidak ada berita Terbaru yang tersedia.</p>
                 <?php endif; ?>
             <?php endfor; ?>
         </div>
         <!-- 3 Gambar di Bawah dengan Teks di Samping Kanan -->
         <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-4">
             <?php for ($i = 3; $i < 6; $i++): ?>
-                <?php if (isset($beritaTerkini[$i])): ?>
+                <?php if (isset($beritaTerbaru[$i])): ?>
                     <?php
                     $firstImage = '';
-                    if (preg_match('/<img.+src=[\'"](?P<src>.+?)[\'"].*>/i', $beritaTerkini[$i]['konten_artikel'], $image)) {
+                    if (preg_match('/<img.+src=[\'"](?P<src>.+?)[\'"].*>/i', $beritaTerbaru[$i]['konten_artikel'], $image)) {
                         $firstImage = $image['src'];
                     }
                     ?>
-                    <a href="../category/news-detail.php?id=<?= $beritaTerkini[$i]['id'] ?>" class="flex flex-col md:flex-row items-start">
+                    <a href="../category/news-detail.php?id=<?= $beritaTerbaru[$i]['id'] ?>" class="flex flex-col md:flex-row items-start">
                         <img src="<?= $firstImage ?: 'https://via.placeholder.com/200x150' ?>" class="w-full md:w-1/3 h-32 md:h-40 object-cover rounded-lg">
                         <div class="ml-4">
-                            <h3 class="text-md font-bold text-white"><?= $beritaTerkini[$i]['judul'] ?></h3>
-                            <p class="text-gray-300 text-sm"><?= substr(strip_tags($beritaTerkini[$i]['konten_artikel']), 0, 100) . '...' ?></p>
+                            <h3 class="text-md font-bold text-white"><?= $beritaTerbaru[$i]['judul'] ?></h3>
+                            <p class="text-gray-300 text-sm"><?= substr(strip_tags($beritaTerbaru[$i]['konten_artikel']), 0, 100) . '...' ?></p>
                         </div>
                     </a>
                 <?php else: ?>
-                    <p class="text-white">Tidak ada berita terkini yang tersedia.</p>
+                    <p class="text-white">Tidak ada berita Terbaru yang tersedia.</p>
                 <?php endif; ?>
             <?php endfor; ?>
+        </div>
+        <div class="flex justify-end mt-4">
+            <a href="beritaTerbaru.php?kategori=<?= $randomCategory1 ?>" class="text-blue-500 hover:text-blue-700 font-bold">
+                Lihat Lebih Banyak <i class="fas fa-chevron-right inline-block ml-1"></i>
+            </a>
         </div>
     </div>
 
@@ -429,7 +572,7 @@ function getNotif($user_id, $from_id) {
         <div class="w-full lg:w-2/3 pr-4">
             <?php
             // Ambil kategori acak
-            $queryRandomCategory = "SELECT kategori FROM berita GROUP BY kategori ORDER BY RAND() LIMIT 1";
+            $queryRandomCategory = "SELECT kategori FROM berita WHERE visibilitas = 'public' GROUP BY kategori ORDER BY RAND() LIMIT 1";
             $resultRandomCategory = $conn->query($queryRandomCategory);
             $rowRandomCategory = $resultRandomCategory->fetch_assoc();
             $randomCategory = $rowRandomCategory['kategori'];
@@ -442,7 +585,7 @@ function getNotif($user_id, $from_id) {
 
             <?php
             // Ambil 3 berita acak dari kategori yang sama
-            $queryRandom = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan FROM berita WHERE kategori = '$randomCategory' ORDER BY RAND() LIMIT 3";
+            $queryRandom = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan FROM berita WHERE kategori = '$randomCategory' AND visibilitas = 'public' ORDER BY RAND() LIMIT 3";
             $resultRandom = $conn->query($queryRandom);
             $beritaRandom = [];
 
@@ -477,38 +620,38 @@ function getNotif($user_id, $from_id) {
         </div>
 
         <!-- Baru Baru Ini Section -->
-<div class="w-full lg:w-1/3 pl-4 mt-8 md:mt-12 lg:mt-0">
-    <div class="mb-4">
-        <span class="inline-block bg-[#FFC300] text-white px-6 py-1 rounded-t-md">Baru Baru Ini</span>
-        <div class="border-b-4 border-[#FFC300] mt-0"></div>
-    </div>
-    <ul class="pl-4">
-        <?php
-        // Query untuk berita baru dengan kategori yang sama dengan kategori populer
-        $queryBaru = "SELECT id, judul, tanggal_diterbitkan FROM berita WHERE kategori = '$randomCategory' ORDER BY tanggal_diterbitkan DESC LIMIT 6";
-        $resultBaru = $conn->query($queryBaru);
-        $beritaBaru = [];
+        <div class="w-full lg:w-1/3 pl-4 mt-8 md:mt-12 lg:mt-0">
+            <div class="mb-4">
+                <span class="inline-block bg-[#FFC300] text-white px-6 py-1 rounded-t-md">Baru Baru Ini</span>
+                <div class="border-b-4 border-[#FFC300] mt-0"></div>
+            </div>
+            <ul class="pl-4">
+                <?php
+                // Query untuk berita baru dengan kategori yang sama dengan kategori populer
+                $queryBaru = "SELECT id, judul, tanggal_diterbitkan FROM berita WHERE kategori = '$randomCategory' AND visibilitas = 'public' ORDER BY tanggal_diterbitkan DESC LIMIT 6";
+                $resultBaru = $conn->query($queryBaru);
+                $beritaBaru = [];
 
-        if ($resultBaru && $resultBaru->num_rows > 0) {
-            while ($row = $resultBaru->fetch_assoc()) {
-                $beritaBaru[] = $row;
-            }
-        }
+                if ($resultBaru && $resultBaru->num_rows > 0) {
+                    while ($row = $resultBaru->fetch_assoc()) {
+                        $beritaBaru[] = $row;
+                    }
+                }
 
-        foreach ($beritaBaru as $index => $baru): ?>
-            <li class="mb-4 flex items-center">
-                <span class="text-[#CAD2FF] text-5xl font-semibold italic mr-4 flex-shrink-0"><?= $index + 1 ?></span>
-                <div class="flex-grow">
-                    <span class="text-gray-400 text-base"><?= timeAgo($baru['tanggal_diterbitkan']) ?></span>
-                    <a href="../category/news-detail.php?id=<?= $baru['id'] ?>">
-                        <h3 class="text-lg font-bold mt-1"><?= $baru['judul'] ?></h3>
-                    </a>
-                    <div class="border-b border-gray-300 mt-2 w-full"></div>
-                </div>
-            </li>
-        <?php endforeach; ?>
-    </ul>
-</div>
+                foreach ($beritaBaru as $index => $baru): ?>
+                    <li class="mb-4 flex items-center">
+                        <span class="text-[#CAD2FF] text-5xl font-semibold italic mr-4 flex-shrink-0"><?= $index + 1 ?></span>
+                        <div class="flex-grow">
+                            <span class="text-gray-400 text-base"><?= timeAgo($baru['tanggal_diterbitkan']) ?></span>
+                            <a href="../category/news-detail.php?id=<?= $baru['id'] ?>">
+                                <h3 class="text-lg font-bold mt-1"><?= $baru['judul'] ?></h3>
+                            </a>
+                            <div class="border-b border-gray-300 mt-2 w-full"></div>
+                        </div>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
     </div>
 </div>
 
@@ -537,7 +680,7 @@ function getNotif($user_id, $from_id) {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
                 <?php
-                $queryRandomCategorySmall = "SELECT id, judul, konten_artikel FROM berita WHERE kategori = '$randomCategory1' ORDER BY RAND() LIMIT 3";
+                $queryRandomCategorySmall = "SELECT id, judul, konten_artikel FROM berita WHERE kategori = '$randomCategory1' AND visibilitas = 'public' ORDER BY RAND() LIMIT 3";
                 $resultRandomCategorySmall = $conn->query($queryRandomCategorySmall);
                 while ($rowRandomCategorySmall = $resultRandomCategorySmall->fetch_assoc()):
                     $firstImageRandomCategorySmall = '';
@@ -557,7 +700,7 @@ function getNotif($user_id, $from_id) {
             <div>
                 <ul>
                     <?php
-                    $queryRandomCategoryList = "SELECT id, judul, tanggal_diterbitkan FROM berita WHERE kategori = '$randomCategory1' ORDER BY tanggal_diterbitkan DESC LIMIT 6";
+                    $queryRandomCategoryList = "SELECT id, judul, tanggal_diterbitkan FROM berita WHERE kategori = '$randomCategory1' AND visibilitas = 'public' ORDER BY tanggal_diterbitkan DESC LIMIT 6";
                     $resultRandomCategoryList = $conn->query($queryRandomCategoryList);
                     while ($rowRandomCategoryList = $resultRandomCategoryList->fetch_assoc()):
                     ?>
@@ -613,7 +756,7 @@ function getNotif($user_id, $from_id) {
                 <div class="border-b-4 border-[#45C630] mt-0"></div>
             </div>
             <?php
-            $queryLainnya = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan FROM berita WHERE kategori != '$randomCategory1' ORDER BY RAND() LIMIT 4";
+            $queryLainnya = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan FROM berita WHERE kategori != '$randomCategory1' AND visibilitas = 'public' ORDER BY RAND() LIMIT 4";
             $resultLainnya = $conn->query($queryLainnya);
 
             while ($rowLainnya = $resultLainnya->fetch_assoc()):
@@ -651,7 +794,7 @@ function getNotif($user_id, $from_id) {
             </div>
             <ul class="pl-4">
                 <?php
-                $queryBaru = "SELECT id, judul, tanggal_diterbitkan FROM berita WHERE kategori = '$randomCategory1' ORDER BY tanggal_diterbitkan DESC LIMIT 8";
+                $queryBaru = "SELECT id, judul, tanggal_diterbitkan FROM berita WHERE kategori = '$randomCategory1' AND visibilitas = 'public' ORDER BY tanggal_diterbitkan DESC LIMIT 8";
                 $resultBaru = $conn->query($queryBaru);
 
                 while ($rowBaru = $resultBaru->fetch_assoc()):

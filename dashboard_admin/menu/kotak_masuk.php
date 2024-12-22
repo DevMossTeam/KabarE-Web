@@ -352,7 +352,7 @@
         let inboxData = [];
 
         // Fetch data from the API
-        fetch('http://localhost/KabarE-Web/api/pesan.php')
+        fetch('../../api/pesan.php')
             .then(response => response.json())
             .then(data => {
                 inboxData = data.data || [];
@@ -705,8 +705,16 @@
                     deleteButton.disabled = true;
                 }
 
-                // Confirm delete action
-                const confirmDelete = confirm('Are you sure you want to delete the selected messages?');
+                selectedData.forEach(idPesan => {
+                    fetch(`../../api/pesan.php?id=${idPesan}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log(`Success: Message with ID ${idPesan} deleted.`);
 
                 if (confirmDelete) {
                     selectedData.forEach(idPesan => {
@@ -759,7 +767,7 @@
                 }
 
                 selectedData.forEach(idPesan => {
-                    fetch(`http://localhost/KabarE-Web/api/pesan.php?id=${idPesan}`, {
+                    fetch(`../../api/pesan.php?id=${idPesan}`, {
                             method: 'PUT',
                             headers: {
                                 'Content-Type': 'application/json'
@@ -839,7 +847,11 @@
             } else {
                 // Handle "Laporan" case
                 fetchBeritaId(beritaId);
-                jenisPesan = "Laporan";
+                fetchKomenId(komen_id);
+                jenisPesan = "Laporan"
+                document.querySelector('.title_pesan').textContent = titlePesan;
+                document.querySelector('.drawer_href_berita').href =
+                    '../category/news-detail.php?=' + beritaId;
 
                 // Update berita link and text
                 const beritaLinkElement = document.querySelector('.drawer_href_berita');
@@ -877,7 +889,7 @@
             document.querySelector('.drawer_profile').src = 'data:image/jpeg;base64,' + profileParam;
 
             // Update the database with the status
-            fetch(`http://localhost/KabarE-Web/api/pesan.php?id=${idPesan}`, {
+            fetch(`../../api/pesan.php?id=${idPesan}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
@@ -892,8 +904,8 @@
 
                     // Refetch the data after the PUT request
                     fetch(
-                            'http://localhost/KabarE-Web/api/pesan.php'
-                        ) // Make sure this API gives the latest messages
+                            '../../api/pesan.php'
+                            ) // Make sure this API gives the latest messages
                         .then(response => response.json())
                         .then(fetchedData => {
                             fetchNewData();
@@ -920,7 +932,7 @@
         }
 
         function fetchNewData() {
-            fetch('http://localhost/KabarE-Web/api/pesan.php')
+            fetch('../api/pesan.php')
                 .then(response => response.json())
                 .then(data => {
                     inboxData = data.data || [];
@@ -941,8 +953,7 @@
         function fetchBeritaId(berita_id) {
             console.log("fetch Berita ID: " + berita_id)
             fetch(
-                    `http://localhost/KabarE-Web/api/berita.php?berita_id=${berita_id}`
-                ) // Pass berita_id as a query parameter
+                `../../api/berita.php?berita_id=${berita_id}`) // Pass berita_id as a query parameter
                 .then(response => {
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
@@ -963,13 +974,8 @@
         }
 
         function fetchKomenId(komen_id) {
-
-
-            // Reset the textarea and ensure the container is visible
-            document.querySelector('.detail_komentar').value = ""; // Clear old comment
-            document.querySelector('.bungkus_komentar').classList.remove('hidden'); // Ensure visibility
-
-            fetch(`http://localhost/KabarE-Web/api/komentar.php?id=${komen_id}`)
+            console.log("fetch komen_id: " + komen_id);
+            fetch(`../../api/komentar.php?berita_id=${komen_id}`)
                 .then(response => response.json())
                 .then(data => {
                     console.log("Fetched data:", data);

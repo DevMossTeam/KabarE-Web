@@ -4,7 +4,7 @@
     <div class="h-full px-3 py-4 overflow-y-auto bg-blue-50 dark:bg-[#1C2434]">
        <ul class="space-y-2 font-medium">
           <li>
-             <a href="/KabarE-Web/dashboard_admin/home/"
+             <a href="../home/index.php"
                 class="flex items-center p-2 text-blue-900 rounded-lg dark:text-white hover:bg-blue-100 dark:hover:bg-indigo-700 group">
                 <svg
                    class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-500 dark:group-hover:text-white"
@@ -38,17 +38,17 @@
 
              <ul id="dropdown-example" class="hidden py-2 space-y-2 peer-checked:block">
                 <li>
-                   <a href="/KabarE-Web/dashboard_admin/menu/berita.php"
+                   <a href="../menu/berita.php"
                       class="flex items-center w-full p-1 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-indigo-100 dark:text-white dark:hover:bg-indigo-700">Berita</a>
                 </li>
                 <li>
-                   <a href="/KabarE-Web/dashboard_admin/menu/tag.php"
+                   <a href="../menu/tag.php"
                       class="flex items-center w-full p-1 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-indigo-100 dark:text-white dark:hover:bg-indigo-700">Tag</a>
                 </li>
              </ul>
           </li>
           <li>
-             <a href="/KabarE-Web/dashboard_admin/menu/pengguna.php"
+             <a href="../menu/pengguna.php"
                 class="flex items-center p-2 text-blue-900 rounded-lg dark:text-white hover:bg-blue-100 dark:hover:bg-indigo-700 group">
                 <svg
                    class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
@@ -60,7 +60,7 @@
              </a>
           </li>
           <li>
-             <a href="/KabarE-Web/dashboard_admin/menu/newsletter.php"
+             <a href="../menu/newsletter.php"
                 class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-indigo-100 dark:hover:bg-indigo-700 group text-xl">
                 <svg
                    class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
@@ -72,7 +72,7 @@
              </a>
           </li>
           <li>
-             <a href="/KabarE-Web/dashboard_admin/menu/kotak_masuk.php"
+             <a href="../menu/inbox.php"
                 class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-indigo-100 dark:hover:bg-indigo-700 group text-xl">
                 <svg
                    class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
@@ -87,8 +87,8 @@
              </a>
           </li>
 
-          <!-- <li>
-             <a href="#"
+          <li>
+             <a href="../menu/pengaturan.php"
                 class="flex items-center p-2 text-blue-900 rounded-lg dark:text-white hover:bg-blue-100 dark:hover:bg-indigo-700 group">
                 <svg
                    class="flex-shrink-0 w-6 h-6 fill-current text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
@@ -98,7 +98,7 @@
                 </svg>
                 <span class="ms-3 text-xl">Pengaturan</span>
              </a>
-          </li> -->
+          </li> 
        </ul>
     </div>
  </aside>

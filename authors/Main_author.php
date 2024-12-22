@@ -47,63 +47,130 @@ if (isset($_GET['edit_id'])) {
     $tags = implode(',', $tagsArray);
 }
 
-function generateId($conn) {
-    $prefix = "BRT";
-    $newId = null;
-    $isUnique = false;
-
-    while (!$isUnique) {
-        $query = "SELECT MAX(CAST(SUBSTRING(id, 4) AS UNSIGNED)) AS max_id FROM berita WHERE id LIKE '$prefix%'";
-        $result = $conn->query($query);
-        $row = $result->fetch_assoc();
-        $maxId = $row['max_id'] ? $row['max_id'] : 0;
-        $newId = $prefix . ($maxId + 1);
-
-        // Cek apakah ID sudah ada
-        $checkQuery = "SELECT id FROM berita WHERE id = '$newId'";
-        $checkResult = $conn->query($checkQuery);
-        if ($checkResult->num_rows == 0) {
-            $isUnique = true;
+// Fungsi generate ID tag unik
+function generateTagId($conn) {
+    $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    
+    do {
+        $tagId = 'TAG';
+        for ($i = 0; $i < 9; $i++) {
+            $tagId .= $characters[random_int(0, strlen($characters) - 1)];
         }
-    }
+        
+        // Potong untuk memastikan panjang sesuai
+        $tagId = substr($tagId, 0, 12);
+        
+        // Cek keunikan ID
+        $checkQuery = "SELECT COUNT(*) as count FROM tag WHERE id = ?";
+        $checkStmt = $conn->prepare($checkQuery);
+        $checkStmt->bind_param('s', $tagId);
+        $checkStmt->execute();
+        $result = $checkStmt->get_result();
+        $row = $result->fetch_assoc();
+        $checkStmt->close();
+    } while ($row['count'] > 0);
+    
+    return $tagId;
+}
 
+// Fungsi generate ID berita
+function generateBeritaId($conn) {
+    $prefix = "BRT";
+    
+    do {
+        // Gunakan timestamp yang lebih pendek
+        $timestamp = substr((string)time(), -5); // Gunakan 5 digit terakhir
+        
+        // Generate string acak yang lebih pendek
+        $randomStr = substr(md5(uniqid(mt_rand(), true)), 0, 4);
+        
+        // Gabungkan dengan panjang total maksimal 20 karakter
+        $newId = $prefix . $timestamp . $randomStr;
+        $newId = substr($newId, 0, 20); // Pastikan tidak melebihi 20 karakter
+        
+        // Cek keunikan ID
+        $checkQuery = "SELECT COUNT(*) as count FROM berita WHERE id = ?";
+        $checkStmt = $conn->prepare($checkQuery);
+        $checkStmt->bind_param('s', $newId);
+        $checkStmt->execute();
+        $result = $checkStmt->get_result();
+        $row = $result->fetch_assoc();
+        $checkStmt->close();
+    } while ($row['count'] > 0);
+    
     return $newId;
 }
 
+
+// Proses publikasi artikel
+// Proses publikasi artikel
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
-    $conn->begin_transaction(); // Mulai transaksi
+    $conn->begin_transaction();
 
     try {
-        $id = generateId($conn);
-        $title = $_POST['title'];
+        // Generate ID berita unik
+        $id = generateBeritaId($conn);
+        
+        // Ambil data dari form
+        $title = substr($_POST['title'], 0, 255); // Pastikan judul tidak melebihi panjang kolom
         $content = $_POST['content'];
-        $category = $_POST['category'];
-        $visibility = isset($_POST['visibility']) ? $_POST['visibility'] : 'public';
+        $category = substr($_POST['category'], 0, 50); // Batasi panjang kategori
         $created_at = date('Y-m-d H:i:s');
-        $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
+        $visibility = $_POST['visibility'] ?? 'public';
+        $user_id = substr($_SESSION['user_id'], 0, 50); // Batasi panjang user_id
 
-        if ($user_id === null) {
-            throw new Exception("User ID tidak ditemukan.");
+        // Validasi input
+        if (empty($title) || empty($content) || empty($category)) {
+            throw new Exception("Semua field harus diisi.");
         }
 
-        if ($visibility === null) {
-            throw new Exception("Visibilitas tidak boleh kosong.");
-        }
-
-        $query = "INSERT INTO berita (id, judul, konten_artikel, tanggal_diterbitkan, user_id, kategori, visibilitas) 
+        // Query simpan artikel
+        $query = "INSERT INTO berita 
+                  (id, judul, konten_artikel, tanggal_diterbitkan, user_id, kategori, visibilitas) 
                   VALUES (?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($query);
         $stmt->bind_param('sssssss', $id, $title, $content, $created_at, $user_id, $category, $visibility);
 
         if (!$stmt->execute()) {
-            throw new Exception("Gagal menyimpan artikel.");
+            // Log error MySQL secara detail
+            error_log("MySQL Error: " . $stmt->error);
+            error_log("Generated ID: " . $id);
+            error_log("ID Length: " . strlen($id));
+            
+            throw new Exception("Gagal menyimpan artikel: " . $stmt->error);
         }
 
-        $conn->commit(); // Commit transaksi jika semua berhasil
-        echo "Artikel berhasil dipublikasikan!";
+        // Proses penyimpanan tag (sama seperti sebelumnya)
+        if (!empty($_POST['tags'])) {
+            $tags = explode(',', $_POST['tags']);
+            $tagStmt = $conn->prepare("INSERT INTO tag (id, nama_tag, berita_id) VALUES (?, ?, ?)");
+
+            foreach ($tags as $tagName) {
+                $tagName = trim($tagName);
+                if (!empty($tagName)) {
+                    // Generate ID tag unik
+                    $tagId = generateTagId($conn);
+                    
+                    // Batasi panjang nama tag
+                    $tagName = substr($tagName, 0, 50);
+                    
+                    $tagStmt->bind_param('sss', $tagId, $tagName, $id);
+                    
+                    if (!$tagStmt->execute()) {
+                        error_log("Gagal menyimpan tag: " . $tagStmt->error);
+                        throw new Exception("Gagal menyimpan tag: " . $tagStmt->error);
+                    }
+                }
+            }
+            $tagStmt->close();
+        }
+
+        $conn->commit();
+        echo "Artikel berhasil dipublikasikan!"; // Ubah menjadi plain text
     } catch (Exception $e) {
-        $conn->rollback(); // Rollback jika ada kesalahan
-        echo $e->getMessage();
+        $conn->rollback();
+        error_log($e->getMessage());
+        echo "Terjadi kesalahan saat mempublikasikan artikel: " . $e->getMessage(); // Ubah menjadi plain text
     }
 
     $stmt->close();
@@ -578,6 +645,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
             const titleInput = document.getElementById('title').value.trim();
             const contentHtml = quill.root.innerHTML.trim();
             const selectedCategory = categorySelect.value;
+            const selectedVisibility = document.querySelector('input[name="visibility"]:checked').value;
+            const tags = Array.from(document.getElementById('labelContainer').children)
+                .map(label => label.textContent.trim().replace('×', ''));
 
             // Kirim data ke server menggunakan AJAX
             const xhr = new XMLHttpRequest();
@@ -591,7 +661,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['publish'])) {
                     alert('Terjadi kesalahan saat mempublikasikan artikel.');
                 }
             };
-            xhr.send(`publish=true&title=${encodeURIComponent(titleInput)}&content=${encodeURIComponent(contentHtml)}&category=${encodeURIComponent(selectedCategory)}`);
+            xhr.send(`publish=true&title=${encodeURIComponent(titleInput)}&content=${encodeURIComponent(contentHtml)}&category=${encodeURIComponent(selectedCategory)}&visibility=${encodeURIComponent(selectedVisibility)}&tags=${encodeURIComponent(tags.join(','))}`);
         });
 
         confirmNo.addEventListener('click', hideConfirmPopup);

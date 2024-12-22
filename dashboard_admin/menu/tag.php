@@ -331,7 +331,7 @@
             if (event.key === 'Enter') {
                 searchTerm = searchInput.value.trim();
                 const searchUrl =
-                    `http://localhost/KabarE-Web/dashboard_admin/menu/tag.php?search=${searchTerm}`;
+                    `../menu/tag.php?search=${searchTerm}`;
                 window.history.pushState({}, '', searchUrl);
 
                 // Filter the tags based on the search term
@@ -362,7 +362,7 @@
                 // Ensure that the tag name is URL encoded to handle spaces and special characters
                 const encodedTagName = encodeURIComponent(tagName);
 
-                fetch(`http://localhost/KabarE-Web/api/tag.php?name=${encodedTagName}`, {
+                fetch(`../../api/tag.php?name=${encodedTagName}`, {
                         method: 'DELETE',
                         headers: {
                             'Content-Type': 'application/json',
@@ -581,7 +581,7 @@
         // }
 
         function refectch() {
-            fetch('http://localhost/KabarE-Web/api/tag.php')
+            fetch('../../api/tag.php')
                 .then(response => response.json())
                 .then(data => {
                     tagsData = data.data || [];
