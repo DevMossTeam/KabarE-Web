@@ -350,69 +350,6 @@
             }
         });
 
-        // // Function to update the table with data
-        // function updateTable(filteredTags = tagsData) {
-        //     const tableBody = document.getElementById('tag-table-body');
-        //     const startIndex = (currentPage - 1) * itemsPerPage;
-        //     const endIndex = startIndex + itemsPerPage;
-        //     const uniqueNames = new Set(); // Ensure unique tag names
-
-        //     tableBody.innerHTML = ''; // Clear the table before rendering new data
-
-        //     // Filter unique tags and slice for current page
-        //     const paginatedTags = filteredTags.filter(tag => {
-        //         if (!uniqueNames.has(tag.nama_tag)) {
-        //             uniqueNames.add(tag.nama_tag);
-        //             return true;
-        //         }
-        //         return false;
-        //     }).slice(startIndex, endIndex);
-
-        //     if (paginatedTags.length === 0) {
-        //         // Display a message when no data is available
-        //         const noDataRow = document.createElement('tr');
-        //         noDataRow.innerHTML = `
-        //     <td colspan="5" class="py-4 px-6 text-center text-base text-gray-900">
-        //         No data available
-        //     </td>
-        // `;
-        //         tableBody.appendChild(noDataRow);
-        //     } else {
-        //         // Render rows for each tag
-        //         paginatedTags.forEach((tag, index) => {
-        //             const row = document.createElement('tr');
-        //             const rowNumber = startIndex + index + 1; // Calculate row number
-        //             row.innerHTML = `
-        //         <td class="py-4 px-6 border-b text-center">KT${rowNumber}</td>
-        //         <td class="py-4 px-6 border-b">${tag.nama_tag}</td>
-        //         <td class="py-4 px-6 border-b text-right">
-        //             <button type="button" data-modal-target="delete-user-modal" data-modal-toggle="delete-user-modal" class="inline-flex items-center px-1.5 py-1.5 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-800 focus:ring-4 focus:ring-red-300 mr-2" onclick="deleteTag('${tag.nama_tag}')">
-        //                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-        //                     <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-        //                 </svg>
-        //             </button>
-        //         </td>
-        //     `;
-        //             tableBody.appendChild(row);
-        //         });
-        //     }
-
-        //     // Update the results display information
-        //     const resultsInfo = document.getElementById('results-info');
-        //     const totalUnique = uniqueNames.size; // Count unique tags
-        //     const startIndexDisplay = Math.min(startIndex + 1, totalUnique);
-        //     const endIndexDisplay = Math.min(startIndex + itemsPerPage, totalUnique);
-
-        //     resultsInfo.textContent =
-        //         `Showing ${startIndexDisplay}-${endIndexDisplay} of ${totalUnique} unique results`;
-        // }
-
-
-        // document.getElementById('search-input').addEventListener('input', function () {
-        //     const query = this.value.toLowerCase();
-        //     filterTags(query);
-        // });
-
         function filterTags(query) {
             const filteredTags = tagsData.filter(tag => tag.nama_tag.toLowerCase().includes(query));
             totalItems = filteredTags.length;
@@ -539,96 +476,56 @@
             });
         }
 
-        // Function to handle opening and closing of the drawer with overlay
-        function handleDrawer(drawerId, overlayId, openButtonSelector, closeButtonSelector) {
-            const openDrawerButtons = document.querySelectorAll(openButtonSelector); // All open buttons
-            const closeDrawerButtons = document.querySelectorAll(closeButtonSelector); // All close buttons
-            const drawer = document.getElementById(drawerId); // Drawer element
-            const overlay = document.getElementById(overlayId); // Overlay element
+        // document.getElementById('tagForm').addEventListener('submit', async function (event) {
+        //     event.preventDefault(); // Prevent the default form submission
 
-            // Open the drawer when the open button is clicked
-            openDrawerButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    drawer.classList.remove(
-                        'translate-x-full'); // Show the drawer (remove translate effect)
-                    overlay.classList.remove('hidden'); // Show the overlay
-                    overlay.classList.add('block'); // Make the overlay visible
-                    drawer.setAttribute('aria-hidden', 'false'); // Accessibility
-                });
-            });
+        //     const formData = new FormData(this);
+        //     const nama_tag = formData.get('nama_tag'); // Get the 'nama_tag' input value
 
-            // Close the drawer when any close button is clicked
-            closeDrawerButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    drawer.classList.add('translate-x-full'); // Hide the drawer (add translate effect)
-                    overlay.classList.add('hidden'); // Hide the overlay
-                    overlay.classList.remove('block'); // Make the overlay invisible
-                    drawer.setAttribute('aria-hidden', 'true'); // Accessibility
-                });
-            });
+        //     // Check if we are in edit mode by looking for a data attribute on the form
+        //     const tagId = this.getAttribute('data-edit-id');
+        //     const url = tagId ?
+        //         `http://localhost/KabarE-Web/api/tag.php?id=${tagId}` // Update URL if in edit mode
+        //         :
+        //         'http://localhost/KabarE-Web/api/tag.php'; // Create URL if creating new tag
 
-            overlay.addEventListener('click', () => {
-                drawer.classList.add('translate-x-full'); // Hide the drawer
-                overlay.classList.add('hidden'); // Hide the overlay
-                overlay.classList.remove('block'); // Make the overlay invisible
-                drawer.setAttribute('aria-hidden', 'true'); // Accessibility
-                resetFormAndCloseDrawer();
-            });
-        }
+        //     const method = tagId ? 'PUT' : 'POST'; // Use PUT for updates, POST for creation
 
-        // Call the function with specific arguments for your drawer and overlay
-        handleDrawer('drawer-create-product-default', 'overlay', '.openDrawerBtn', '.close-drawer-btn');
+        //     try {
+        //         console.log('Form Data to Submit:', {
+        //             nama_tag,
+        //             tagId
+        //         }); // Log the data for debugging
 
-        document.getElementById('tagForm').addEventListener('submit', async function (event) {
-            event.preventDefault(); // Prevent the default form submission
+        //         // Make the fetch request with dynamic method and URL
+        //         const response = await fetch(url, {
+        //             method: method,
+        //             headers: {
+        //                 'Content-Type': 'application/json',
+        //             },
+        //             body: JSON.stringify({
+        //                 nama_tag
+        //             }),
+        //         });
 
-            const formData = new FormData(this);
-            const nama_tag = formData.get('nama_tag'); // Get the 'nama_tag' input value
+        //         if (response.ok) {
+        //             showAlert('success', `Data ${tagId ? 'updated' : 'created'} successfully.`);
+        //             resetFormAndCloseDrawer(); // Reset the form and close drawer after success
 
-            // Check if we are in edit mode by looking for a data attribute on the form
-            const tagId = this.getAttribute('data-edit-id');
-            const url = tagId ?
-                `http://localhost/KabarE-Web/api/tag.php?id=${tagId}` // Update URL if in edit mode
-                :
-                'http://localhost/KabarE-Web/api/tag.php'; // Create URL if creating new tag
-
-            const method = tagId ? 'PUT' : 'POST'; // Use PUT for updates, POST for creation
-
-            try {
-                console.log('Form Data to Submit:', {
-                    nama_tag,
-                    tagId
-                }); // Log the data for debugging
-
-                // Make the fetch request with dynamic method and URL
-                const response = await fetch(url, {
-                    method: method,
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        nama_tag
-                    }),
-                });
-
-                if (response.ok) {
-                    showAlert('success', `Data ${tagId ? 'updated' : 'created'} successfully.`);
-                    resetFormAndCloseDrawer(); // Reset the form and close drawer after success
-
-                    // Fetch new data after form submission
-                    updateTable();
-                    updatePagination();
-                } else {
-                    const errorData = await response.json();
-                    console.error(`Failed to ${tagId ? 'update' : 'create'} tag: ${errorData.message}`);
-                    showAlert('error',
-                        `Failed to ${tagId ? 'update' : 'create'} tag: ${errorData.message}`);
-                }
-            } catch (error) {
-                console.error("Error submitting form:", error);
-                showAlert('error', `An error occurred: ${error.message || "Unknown error"}`);
-            }
-        });
+        //             // Fetch new data after form submission
+        //             updateTable();
+        //             updatePagination();
+        //         } else {
+        //             const errorData = await response.json();
+        //             console.error(`Failed to ${tagId ? 'update' : 'create'} tag: ${errorData.message}`);
+        //             showAlert('error',
+        //                 `Failed to ${tagId ? 'update' : 'create'} tag: ${errorData.message}`);
+        //         }
+        //     } catch (error) {
+        //         console.error("Error submitting form:", error);
+        //         showAlert('error', `An error occurred: ${error.message || "Unknown error"}`);
+        //     }
+        // });
 
 
         // Helper function to reset the form and close the drawer
@@ -654,34 +551,34 @@
         }
 
 
-        function getEditTag(editTag) {
-            console.log('Editing tag with ID:', editTag);
-            fetch(`http://localhost/KabarE-Web/api/tag.php?id=${editTag}`)
-                .then(response => response.json())
-                .then(responseData => {
-                    console.log('API Response Data:', responseData); // Log the whole response to inspect
+        // function getEditTag(editTag) {
+        //     console.log('Editing tag with ID:', editTag);
+        //     fetch(`http://localhost/KabarE-Web/api/tag.php?id=${editTag}`)
+        //         .then(response => response.json())
+        //         .then(responseData => {
+        //             console.log('API Response Data:', responseData); // Log the whole response to inspect
 
-                    // Check if responseData contains 'data' and 'data.nama_tag'
-                    if (responseData && responseData.data && responseData.data.nama_tag) {
-                        const tagData = responseData.data; // Access the 'data' object
-                        document.getElementById('name').value = tagData.nama_tag; // Set input value with 'nama_tag'
-                        document.getElementById('tagForm').setAttribute('data-edit-id', editTag);
+        //             // Check if responseData contains 'data' and 'data.nama_tag'
+        //             if (responseData && responseData.data && responseData.data.nama_tag) {
+        //                 const tagData = responseData.data; // Access the 'data' object
+        //                 document.getElementById('name').value = tagData.nama_tag; // Set input value with 'nama_tag'
+        //                 document.getElementById('tagForm').setAttribute('data-edit-id', editTag);
 
-                        const submitButton = document.querySelector('#tagForm button[type="submit"]');
-                        if (submitButton) {
-                            submitButton.textContent = 'Update'; // Change button to 'Update' for editing
-                        }
+        //                 const submitButton = document.querySelector('#tagForm button[type="submit"]');
+        //                 if (submitButton) {
+        //                     submitButton.textContent = 'Update'; // Change button to 'Update' for editing
+        //                 }
 
-                        document.querySelector('.openDrawerBtn').click(); // Open the drawer after fetching
-                    } else {
-                        showAlert('error', 'Tag data not found!');
-                    }
-                })
-                .catch(error => {
-                    console.error("Error fetching tag data:", error);
-                    showAlert('error', 'Error fetching tag data.');
-                });
-        }
+        //                 document.querySelector('.openDrawerBtn').click(); // Open the drawer after fetching
+        //             } else {
+        //                 showAlert('error', 'Tag data not found!');
+        //             }
+        //         })
+        //         .catch(error => {
+        //             console.error("Error fetching tag data:", error);
+        //             showAlert('error', 'Error fetching tag data.');
+        //         });
+        // }
 
         function refectch() {
             fetch('http://localhost/KabarE-Web/api/tag.php')

@@ -116,18 +116,21 @@
                             <!-- Dropdown menu -->
                             <div id="dropdownHover"
                                 class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44">
+                                <div class="px-4 py-3 text-sm text-gray-900">
+                                    <div>Filter Role</div>
+                                </div>
                                 <ul class="py-2 text-sm text-gray-700" aria-labelledby="dropdownHoverButton">
                                     <li>
                                         <a href="#" class="block px-4 py-2 hover:bg-gray-100">Semua</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block px-4 py-2 hover:bg-gray-100">penulis</a>
+                                        <a href="#" class="block px-4 py-2 hover:bg-gray-100">Penulis</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block px-4 py-2 hover:bg-gray-100">pembaca</a>
+                                        <a href="#" class="block px-4 py-2 hover:bg-gray-100">Pembaca</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block px-4 py-2 hover:bg-gray-100">admin</a>
+                                        <a href="#" class="block px-4 py-2 hover:bg-gray-100">Admin</a>
                                     </li>
                                 </ul>
                             </div>
@@ -213,7 +216,7 @@
                 <!-- Profile Picture Upload Section -->
                 <div class="flex justify-center mb-4 relative group">
                     <div class="w-24 h-24 overflow-hidden rounded-full border-2 border-gray-300 relative group">
-                        <!-- Profile Image (will show the base64 image if available, otherwise show the default) -->
+                        <!-- Profile Image (will show the Base64 image if available, otherwise show the default) -->
                         <img id="profile-img"
                             src="https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3407.jpg?w=360"
                             alt="Profile Picture" class="w-full h-full object-cover">
@@ -232,23 +235,34 @@
 
                     <!-- JavaScript to handle image upload -->
                     <script>
-                        function handleImageUpload(event) {
-                            const file = event.target.files[0]; // Get the uploaded file
-                            const reader = new FileReader();
+                        let base64ProfilePic = ""; // Global variable to store the Base64 string
 
-                            reader.onloadend = function () {
-                                const profileImg = document.getElementById('profile-img');
-                                profileImg.src = reader.result; // Update the <img> src with Base64 data
-                                console.log("Base64 Image:", reader.result); // Log the Base64 string
-                            };
-
-                            if (file) {
-                                reader.readAsDataURL(file); // Convert file to Base64
-                            } else {
-                                console.warn("No file selected");
-                            }
+                    function handleImageUpload(event) {
+                        const file = event.target.files[0];
+                        if (!file) {
+                            console.warn("No file selected");
+                            return;
                         }
+
+                        const validImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                        if (!validImageTypes.includes(file.type)) {
+                            console.error("Invalid file type. Please upload an image.");
+                            showAlert('error', 'Invalid file type. Please upload an image!');
+                            return;
+                        }
+
+                        const reader = new FileReader();
+                        reader.onloadend = function () {
+                            const profileImg = document.getElementById('profile-img');
+                            profileImg.src = reader.result; // Update the <img> src
+                            base64ProfilePic = reader.result; // Store Base64 string
+                            console.log("Base64 Image:", base64ProfilePic);
+                        };
+                        reader.readAsDataURL(file);
+                    }
                     </script>
+
+
                 </div>
 
                 <!-- Two-column layout for other fields -->
@@ -340,21 +354,22 @@
 
         function updateTable(filteredPenggunas = userData) {
             const tableBody = document.getElementById('pengguna-table-body');
-            const paginationLinks = document.getElementById('pagination-links');
-            const searchTerm = document.getElementById('search-input').value.trim(); // Get the search term
+            const searchTerm = document.getElementById('search-input').value.trim().toLowerCase();
 
-            const totalPages = Math.ceil(filteredPenggunas.length / itemsPerPage);
-            const startIndex = (currentPage - 1) * itemsPerPage;
-            const endIndex = Math.min(startIndex + itemsPerPage, filteredPenggunas.length);
+            // Filter the data based on the selected role and search term
+            let filteredData = userData.filter(pengguna => {
+                const matchesRole = !currentRole || currentRole === 'Semua' || pengguna.role === currentRole;
+                const matchesSearch = !searchTerm ||
+                    pengguna.nama_pengguna.toLowerCase().includes(searchTerm) ||
+                    pengguna.email.toLowerCase().includes(searchTerm);
+                return matchesRole && matchesSearch;
+            });
 
-            // Filter the data based on the selected role
-            let filteredData = userData;
-            if (currentRole && currentRole !== 'Semua') {
-                filteredData = userData.filter(pengguna => pengguna.role === currentRole);
-            }
-
-            // Count how many admin users exist in the filtered data
             const adminCount = filteredData.filter(pengguna => pengguna.role === 'admin').length;
+
+            const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, filteredData.length);
 
             // Clear previous rows
             tableBody.innerHTML = '';
@@ -376,42 +391,51 @@
 
                     // Highlight search term in nama_pengguna and email
                     const highlightedNamaPengguna = searchTerm ? pengguna.nama_pengguna.replace(new RegExp(searchTerm,
-                        'gi'), (match) => {
-                        return `<span class="bg-yellow-300">${match}</span>`; // Highlight with yellow background
+                        'gi'), match => {
+                        return `<span class="bg-yellow-300">${match}</span>`;
                     }) : pengguna.nama_pengguna;
 
-                    const highlightedEmail = searchTerm ? pengguna.email.replace(new RegExp(searchTerm, 'gi'), (
-                        match) => {
-                        return `<span class="bg-yellow-300">${match}</span>`; // Highlight with yellow background
-                    }) : pengguna.email;
+                    const highlightedEmail = searchTerm ? pengguna.email.replace(new RegExp(searchTerm, 'gi'),
+                        match => {
+                            return `<span class="bg-yellow-300">${match}</span>`;
+                        }) : pengguna.email;
 
                     row.innerHTML = `
                 <td class="py-4 px-6 border-b text-left text-base text-gray-900 max-w-[100px] overflow-x-auto whitespace-nowrap">
                     ${pengguna.uid}
                 </td>
-
                 <td class="py-4 px-6 border-b">
                     <div class="flex items-center px-6 py-4 whitespace-nowrap">
-                        <img id="profilePicPreview" class="w-10 h-10 rounded-full" src="data:image/jpeg;base64,${pengguna.profile_pic}">
-                            <div class="text-sm font-normal text-gray-500 ml-4">
-                                <div class="text-base font-semibold text-gray-900">${highlightedNamaPengguna}</div>
-                                <div class="text-sm font-normal text-gray-500">${highlightedEmail}</div>
-                            </div>
+                        <img id="profilePicPreview" class="w-10 h-10 rounded-full" 
+                        src="data:image/jpeg;base64, ${pengguna.profile_pic && pengguna.profile_pic !== 'null' ? pengguna.profile_pic : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS6LXNJFTmLzCoExghcATlCWG85kI8dsnhJng&s'}" 
+                        alt="user photo">
+                        <div class="text-sm font-normal text-gray-500 ml-4">
+                            <div class="text-base font-semibold text-gray-900">${highlightedNamaPengguna}</div>
+                            <div class="text-sm font-normal text-gray-500">${highlightedEmail}</div>
+                        </div>
                     </div>
                 </td>
-                <td class="py-4 px-6 border-b text-base text-left font-medium text-gray-900 whitespace-nowrap">${pengguna.role}</td>                
+                <td class="py-4 px-6 border-b text-base text-left font-medium text-gray-900 whitespace-nowrap">${pengguna.role}</td>
                 <td class="py-4 px-6 border-b text-center">
                     ${adminCount > 1 || pengguna.role !== 'admin' ? `
-                    <button type="button" class="inline-flex items-center px-1.5 py-1.5 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-800 focus:ring-4 focus:ring-red-300" onclick="deletePengguna('${pengguna.uid}')">
+                    <button type="button"
+                        class="inline-flex items-center px-1.5 py-1.5 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-800 focus:ring-4 focus:ring-red-300 lg:mr-2"
+                        onclick="deletePengguna('${pengguna.uid}')">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                        </svg>                                
+                            <path fill-rule="evenodd"
+                                d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                clip-rule="evenodd"></path>
+                        </svg>
                     </button>` : ''}
-
-                    <button type="button" class="modal_user_toggle inline-flex items-center px-1.5 py-1.5 text-sm font-medium text-center text-white bg-yellow-500 rounded-lg hover:bg-yellow-800 focus:ring-4 focus:ring-yellow-300 mt-0 sm:mt-5" onclick="getEditPengguna('${pengguna.uid}')">
+                    <button
+                        class="modal_roleUserUbahStatus-toggle inline-flex items-center px-1.5 py-1.5 text-sm font-medium text-center text-white bg-yellow-500 rounded-lg hover:bg-yellow-800 focus:ring-4 focus:ring-yellow-300 mt-0 md:mt-5"
+                        onclick="getEditPengguna('${pengguna.uid}')">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path>
-                            <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path>
+                            <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z">
+                            </path>
+                            <path fill-rule="evenodd"
+                                d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
+                                clip-rule="evenodd"></path>
                         </svg>
                     </button>
                 </td>
@@ -427,6 +451,21 @@
             // Update pagination
             updatePagination(totalPages);
         }
+
+        // Event listener for search input
+        const searchInput = document.getElementById('search-input');
+        searchInput.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                const searchTerm = searchInput.value.trim();
+                const searchUrl =
+                    `http://localhost/KabarE-Web/dashboard_admin/menu/pengguna.php?search=${searchTerm}`;
+                window.history.pushState({}, '', searchUrl);
+
+                // Update table with the search results
+                currentPage = 1; // Reset to first page
+                updateTable();
+            }
+        });
 
         // Function to update pagination buttons
         function updatePagination() {
@@ -489,28 +528,6 @@
                 updatePagination(); // Update the pagination links
             }
         }
-
-        const searchInput = document.getElementById('search-input');
-
-        // Event listener for pressing Enter in the search input
-        searchInput.addEventListener('keydown', function (event) {
-            if (event.key === 'Enter') {
-                const searchTerm = searchInput.value.trim();
-                const searchUrl =
-                    `http://localhost/KabarE-Web/dashboard_admin/menu/pengguna.php?search=${searchTerm}`;
-                window.history.pushState({}, '', searchUrl);
-
-                // Filter the data based on the search term
-                const filteredUser = searchTerm ?
-                    userData.filter(user => user.nama_pengguna.toLowerCase().includes(searchTerm
-                        .toLowerCase()) || user.email.toLowerCase().includes(searchTerm.toLowerCase())) :
-                    userData;
-
-                // Update the table with the filtered data
-                updateTable(filteredUser);
-                updatePagination(filteredUser);
-            }
-        });
 
         let currentRole = ''; // Variable to store the selected role
 
@@ -734,7 +751,7 @@
             const password = formData.get('password');
             const role = formData.get('role');
             const profile_pic_file = document.getElementById('profile_pic').files[
-            0]; // Explicitly get file input
+                0]; // Explicitly get file input
 
             // Validation - Required fields
             if (!nama_pengguna || !nama_lengkap || !email || !role) {
@@ -816,32 +833,6 @@
                     showAlert('error', 'Something went wrong!');
                 });
         }
-
-
-        // // Function to send request
-        // function sendRequest(method, url, data) {
-        //     const options = {
-        //         method: method,
-        //         headers: {
-        //             'Content-Type': 'application/json', // Send JSON data
-        //         },
-        //         body: JSON.stringify(
-        //             data), // Stringify the request body (including the profile picture if it exists)
-        //     };
-
-        //     fetch(url, options)
-        //         .then(response => response.json())
-        //         .then(data => {
-        //             console.log("Response data:", data);
-        //             // Handle the response here (success or failure)
-        //         })
-        //         .catch(error => {
-        //             console.error("Error sending request:", error);
-        //         });
-        //     resetForm();
-        //     updateTable();
-        //     updatePagination();
-        // }
 
         // Reset the form and ID
         function resetForm() {

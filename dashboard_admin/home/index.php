@@ -13,20 +13,20 @@
 <body class="bg-[#ECEFF5]">
 
     <?php
+    include 'koneksi.php';
     include '../layouts/navbar.php';
     include '../layouts/sidebar.php';
-    ?>
-
+    ?>    
     <!-- Main Content -->
     <div class="p-4 sm:ml-64 mt-14">
         <div class="p-4 border-gray-50 mt-2">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="grid grid-cols-1 gap-4 mb-4 col-span-2">
+                <div class="grid grid-cols-1 gap-4 col-span-2">
                     <!-- Card 1 (top card) -->
                     <div class="p-4 h-[616px] rounded bg-gray-50 shadow">
                         <div class="flex items-center justify-between ">
                             <div class="flex-shrink-0">
-                                <span class="text-xl font-bold leading-none text-gray-900 sm:text-2xl">+1.000</span>
+                                <span class="text-xl font-bold leading-none text-gray-900 sm:text-2xl">+160</span>
                                 <h3 class="text-base font-light text-gray-500 dark:text-gray-600">Statistik Pembaca
                                     Aktif Minggu ini</h3>
                             </div>
@@ -68,7 +68,7 @@
                             </thead>
                         </table>
                         <!-- Scrollable body container -->
-                        <div class="h-[400px] overflow-y-auto">
+                        <div class="h-[490px] overflow-y-auto">
                             <table class="w-full text-left table-auto">
                                 <tbody id="news-table-body">
                                     <!-- Rows will be inserted here dynamically -->
@@ -79,7 +79,7 @@
                     <div class="flex items-center justify-between pt-3 mt-4 border-t border-gray-200 sm:pt-6">
                         <div class="relative">
                             <!-- Dropdown Button -->
-                            <button id="weekly-sales-button" data-dropdown-toggle="weekly-sales-dropdown"
+                            <!-- <button id="weekly-sales-button" data-dropdown-toggle="weekly-sales-dropdown"
                                 class="inline-flex items-center p-2 text-sm font-medium text-center text-gray-500 rounded-lg hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300"
                                 type="button">
                                 Pilih Waktu
@@ -88,10 +88,10 @@
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                                         stroke-width="2" d="m1 1 4 4 4-4" />
                                 </svg>
-                            </button>
+                            </button> -->
 
                             <!-- Dropdown Menu -->
-                            <div id="weekly-sales-dropdown"
+                            <!-- <div id="weekly-sales-dropdown"
                                 class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44">
                                 <ul class="py-2 text-sm text-gray-700" aria-labelledby="weekly-sales-button">
                                     <li>
@@ -104,17 +104,14 @@
                                         <a href="#" class="block px-4 py-2 hover:bg-gray-100">Tahun Ini</a>
                                     </li>
                                 </ul>
-                            </div>
-
-
-
+                            </div> -->
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="grid w-full grid-cols-1 gap-4 xl:grid-cols-2 2xl:grid-cols-3">
+        <div class="grid w-full grid-cols-1 gap-4 xl:grid-cols-2 2xl:grid-cols-3 p-4">
             <!-- Card 1 -->
             <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm flex flex-col sm:p-6">
                 <!-- Teks (Posisi Kiri Atas) -->
@@ -212,6 +209,9 @@
             </div>
         </div> -->
     </div>
+
+
+    
 
     <script>
         // ApexCharts Chart

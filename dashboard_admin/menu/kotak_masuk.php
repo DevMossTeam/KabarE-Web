@@ -16,7 +16,7 @@
     ?>
     <div class="p-4 sm:ml-64 mt-14">
         <div class="p-4 dark:border-gray-700">
-            <div class="container mx-auto mt-5">
+            <div class="container mx-auto mt-2">
                 <!-- Breadcrumb -->
                 <nav class="flex mb-5" aria-label="Breadcrumb">
                     <ol class="inline-flex items-center space-x-1 text-sm font-medium md:space-x-2">
@@ -49,10 +49,11 @@
                 <div class="bg-white shadow-md rounded-lg p-6 border border-gray-200">
                     <div class="mb-4 flex items-center">
                         <div class="flex items-center">
-                            <svg class="flex-shrink-0 w-6 h-6 text-black transition" aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                            <svg class="flex-shrink-0 w-7 h-7 text-black transition duration-75"
+                                aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                                viewBox="0 0 112 112">
                                 <path
-                                    d="m17.418 3.623-.018-.008a6.713 6.713 0 0 0-2.4-.569V2h1a1 1 0 1 0 0-2h-2a1 1 0 0 0-1 1v2H9.89A6.977 6.977 0 0 1 12 8v5h-2V8A5 5 0 1 0 0 8v6a1 1 0 0 0 1 1h8v4a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-4h6a1 1 0 0 0 1-1V8a5 5 0 0 0-2.582-4.377ZM6 12H4a1 1 0 0 1 0-2h2a1 1 0 0 1 0 2Z" />
+                                    d="M23.3333 98C20.7667 98 18.5702 97.0869 16.744 95.2607C14.9178 93.4344 14.0031 91.2364 14 88.6667V23.3333C14 20.7667 14.9147 18.5702 16.744 16.744C18.5733 14.9178 20.7698 14.0031 23.3333 14H88.6667C91.2333 14 93.4313 14.9147 95.2607 16.744C97.09 18.5733 98.0031 20.7698 98 23.3333V88.6667C98 91.2333 97.0869 93.4313 95.2607 95.2607C93.4344 97.09 91.2364 98.0031 88.6667 98H23.3333ZM56 74.6667C58.9556 74.6667 61.6389 73.8111 64.05 72.1C66.4611 70.3889 68.1333 68.1333 69.0667 65.3333H88.6667V23.3333H23.3333V65.3333H42.9333C43.8667 68.1333 45.5389 70.3889 47.95 72.1C50.3611 73.8111 53.0444 74.6667 56 74.6667Z" />
                             </svg>
                             <h1 class="text-xl font-semibold text-gray-900 sm:text-2xl ml-4">Tentang Kotak Masuk</h1>
                         </div>
@@ -93,11 +94,11 @@
                             </label>
 
                             <div class="ml-2 cursor-pointer flex items-center">
-                                <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                <!-- <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
                                     viewBox="0 0 10 6">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                                         stroke-width="2" d="m1 1 4 4 4-4" />
-                                </svg>
+                                </svg> -->
 
                                 <svg class="w-4 h-5 ml-10 checkbox-svg" aria-hidden="true"
                                     xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 53 53">
@@ -151,24 +152,25 @@
                         <div class="overflow-x-auto">
                             <div class="inline-block min-w-full align-middle">
                                 <div class="overflow-hidden shadow">
-                                    <div class="flex space-x-4 ">
+                                    <div class="flex space-x-4">
                                         <div>
-                                            <div
-                                                class="box-border h-14 w-64 p-4 border-b-4 border-blue-500 text-blue-500 hover:bg-gray-100">
+                                            <div id="utama"
+                                                class="tab box-border h-14 w-64 p-4 border-b-4 border-blue-500 text-blue-500 hover:bg-gray-100">
                                                 Utama
                                             </div>
                                         </div>
                                         <div>
-                                            <div class="h-14 w-64 p-4 hover:bg-gray-100">
+                                            <div id="masukan" class="tab h-14 w-64 p-4 hover:bg-gray-100">
                                                 Masukan
                                             </div>
                                         </div>
                                         <div>
-                                            <div class="h-14 w-64 p-4 hover:bg-gray-100">
+                                            <div id="laporan" class="tab h-14 w-64 p-4 hover:bg-gray-100">
                                                 Laporan
                                             </div>
                                         </div>
                                     </div>
+
                                     <!-- Table -->
                                     <table class="min-w-full divide-y divide-gray-200 table-fixed">
                                         <thead class="">
@@ -269,18 +271,72 @@
         </div>
 
         <hr class="mb-5">
-        <h1 class="text-sm">Title:</h1>
-        <p class="title_pesan mb-6 text-lg ">
-            Title Pesan
-        </p>
-        <h1 class="text-sm">Detail pesan:</h1>
-        <p class="detail_pesan mb-6 text-base text-gray-500">
-            
-        </p>
-        <h1 class="text-sm">Komentar:</h1>
-        <p class="detail_komentar_pesan mb-6 text-base text-blue-500">
+        <div class="title_pesanbungkus">
+            <p class="title_pesan mb-6 text-lg ">
 
-        </p>
+            </p>
+        </div>
+        <div class="bungkus_detail ">
+            <h1 class="text-sm">Detail:</h1>
+            <p class="detail_pesan mb-6 text-base text-gray-500">
+            </p>
+        </div>
+
+
+
+
+        <div class="bungkus_komentar">
+            <h1 class="text-sm">Komentar:</h1>
+            <div class="w-full mb-4 border border-gray-200 rounded-lg bg-gray-50 ">
+                <div class="px-4 py-2 bg-white rounded-t-lg">
+                    <label for="comment" class="sr-only">Your comment</label>
+                    <textarea id="comment" rows="4"
+                        class="detail_komentar w-full  px-0 text-sm text-gray-900 bg-white border-0 focus:ring-0 placeholder-gray-400"
+                        placeholder="Write a comment..." required>
+                </textarea>
+                </div>
+                <div class="flex items-center justify-between px-3 py-2 border-t">
+                    <button type="submit" onclick=""
+                        class="button_delete_komentar inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-red-700 rounded-lg focus:ring-4 focus:ring-red-200 hover:bg-red-800">
+                        Hapus Komentar
+                    </button>
+                    <!-- <div class="flex ps-0 space-x-1 rtl:space-x-reverse sm:ps-2">
+                    <button type="button"
+                        class="inline-flex justify-center items-center p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100">
+                        <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 12 20">
+                            <path stroke="currentColor" stroke-linejoin="round" stroke-width="2"
+                                d="M1 6v8a5 5 0 1 0 10 0V4.5a3.5 3.5 0 1 0-7 0V13a2 2 0 0 0 4 0V6" />
+                        </svg>
+                        <span class="sr-only">Attach file</span>
+                    </button>
+                    <button type="button"
+                        class="inline-flex justify-center items-center p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100">
+                        <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                            viewBox="0 0 16 20">
+                            <path
+                                d="M8 0a7.992 7.992 0 0 0-6.583 12.535 1 1 0 0 0 .12.183l.12.146c.112.145.227.285.326.4l5.245 6.374a1 1 0 0 0 1.545-.003l5.092-6.205c.206-.222.4-.455.578-.7l.127-.155a.934.934 0 0 0 .122-.192A8.001 8.001 0 0 0 8 0Zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z" />
+                        </svg>
+                        <span class="sr-only">Set location</span>
+                    </button>
+                    <button type="button"
+                        class="inline-flex justify-center items-center p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100">
+                        <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                            viewBox="0 0 20 18">
+                            <path
+                                d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2ZM4 8h12v2H4V8Zm0-4h12v2H4V4Zm0 8h8v2H4v-2Z" />
+                        </svg>
+                        <span class="sr-only">Add emoji</span>
+                    </button>
+                </div> -->
+                </div>
+            </div>
+        </div>
+
+
+        <!-- <p class="detail_komentar_pesan mb-6 text-base text-blue-500">
+
+        </p> -->
         <hr class="mb-5">
         <p class="mb-6 text-sm ">
             <a href="" class="drawer_href_berita text-blue-500 underline">
@@ -288,9 +344,6 @@
             </a>
         </p>
     </div>
-
-
-
 
     <script>
         let currentPage = 1;
@@ -304,7 +357,7 @@
             .then(data => {
                 inboxData = data.data || [];
                 totalItems = inboxData.length;
-                console.log(inboxData);
+                // console.log(inboxData);
                 updateTable();
                 updatePagination();
             })
@@ -312,6 +365,11 @@
                 console.error('Error fetching data:', error);
             });
 
+
+
+        let selectedTab = 'utama'; // Default to 'Utama'
+
+        // Function to update the table based on the selected status filter
         function updateTable(filteredPesan = inboxData) {
             const tableBody = document.getElementById('pesan-table-body');
             const startIndex = (currentPage - 1) * itemsPerPage;
@@ -320,16 +378,20 @@
 
             tableBody.innerHTML = ''; // Clear the table body
 
-            // Filter unique pesan and slice for current page
-            const paginatedPesan = filteredPesan.filter(pesan => {
-                if (!uniquePesanIds.has(pesan.id)) {
+            // Filter based on selected tab's status
+            const statusFilter = selectedTab === 'utama' ? ['masukan', 'laporan'] :
+                selectedTab === 'masukan' ? ['masukan'] :
+                selectedTab === 'laporan' ? ['laporan'] : [];
+
+            const filteredAndPaginatedPesan = filteredPesan.filter(pesan => {
+                if (!uniquePesanIds.has(pesan.id) && statusFilter.includes(pesan.status)) {
                     uniquePesanIds.add(pesan.id);
                     return true;
                 }
                 return false;
             }).slice(startIndex, endIndex);
 
-            if (paginatedPesan.length === 0) {
+            if (filteredAndPaginatedPesan.length === 0) {
                 // Display a message when no data is available
                 const noDataRow = document.createElement('tr');
                 noDataRow.innerHTML = `
@@ -340,7 +402,7 @@
                 tableBody.appendChild(noDataRow);
             } else {
                 // Render rows for each pesan
-                paginatedPesan.forEach(pesan => {
+                filteredAndPaginatedPesan.forEach(pesan => {
                     const rowBackground = pesan.status_read === 'belum' ? 'bg-white' : 'bg-[#ECEFF5]';
                     const row = document.createElement('tr');
                     row.className =
@@ -379,6 +441,11 @@
                 `;
                     }
 
+                    // Highlight the text in nama_pengguna, email, and pesan fields
+                    const highlightedNamaPengguna = highlightText(pesan.nama_pengguna, searchTerm);
+                    const highlightedPesan = highlightText(pesan.pesan, searchTerm);
+                    const highlightedEmail = highlightText(pesan.email, searchTerm);
+
                     row.innerHTML = `
                 <td class="w-4 p-4">
                     <div class="flex items-center">
@@ -394,12 +461,12 @@
                 <td class="flex items-center px-6 py-4 whitespace-nowrap">
                     <img id="profilePicPreview" class="w-10 h-10 rounded-full" src="data:image/jpeg;base64,${pesan.profile_pic}">
                     <div class="text-sm font-normal text-gray-500 ml-4">
-                        <div class="text-base font-semibold text-gray-900">${pesan.nama_pengguna}</div>
-                        <div class="text-sm font-normal text-gray-500">${pesan.email}</div>
+                        <div class="text-base font-semibold text-gray-900">${highlightedNamaPengguna}</div>
+                        <div class="text-sm font-normal text-gray-500">${highlightedEmail}</div>
                     </div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap overflow-hidden max-w-[70ch] truncate">
-                    ${pesan.pesan}
+                <td class="px-6 py-4 whitespace-nowrap overflow-hidden max-w-[70ch] truncate text-left">
+                    ${highlightedPesan}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">${pesan.created_at}</td>
             `;
@@ -417,6 +484,62 @@
                 `Menampilkan ${startIndexDisplay}-${endIndexDisplay} dari ${totalUnique} hasil yang unik`;
         }
 
+        // Select all tabs
+        const tabs = document.querySelectorAll('.tab');
+
+        // Add event listeners to each tab
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs and reset them to the default style
+                tabs.forEach(t => {
+                    t.classList.remove('box-border', 'border-b-4', 'border-blue-500',
+                        'text-blue-500');
+                    t.classList.add('hover:bg-gray-100');
+                });
+
+                // Add active styles to the clicked tab
+                tab.classList.add('box-border', 'border-b-4', 'border-blue-500', 'text-blue-500');
+
+                // Update the selected tab based on the clicked tab
+                selectedTab = tab.id;
+                updateTable(); // Update the table to filter based on the selected tab
+            });
+        });
+
+
+        function highlightText(text, searchTerm) {
+            if (!searchTerm) return text; // No search term, return the text as it is
+            const regex = new RegExp(`(${searchTerm})`, 'gi'); // Case insensitive search
+            return text.replace(regex, `<span class="bg-yellow-200">$1</span>`); // Highlight the matched text
+        }
+        // Search functionality for the pesan table
+        const searchInput = document.getElementById('search-input');
+        let searchTerm = '';
+
+        searchInput.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                searchTerm = searchInput.value.trim();
+                const searchUrl =
+                    `http://localhost/KabarE-Web/dashboard_admin/menu/inbox.php?search=${searchTerm}`;
+                window.history.pushState({}, '', searchUrl);
+
+                // Filter the pesan based on the search term
+                const filteredPesan = searchTerm ?
+                    inboxData.filter(pesan =>
+                        pesan.nama_pengguna.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                        pesan.pesan.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                        pesan.email.toLowerCase().includes(searchTerm.toLowerCase())
+                    ) :
+                    inboxData;
+
+                // Reset currentPage to 1 to show results from the first page
+                currentPage = 1;
+
+                // Update the table and pagination with the filtered data
+                updateTable(filteredPesan);
+                updatePagination(filteredPesan);
+            }
+        });
 
         function updatePagination(filteredPesan = inboxData) {
             const paginationLinks = document.getElementById('pagination-links');
@@ -447,7 +570,7 @@
             for (let i = startPage; i <= endPage; i++) {
                 const pageButton = document.createElement('li');
                 pageButton.innerHTML = `
-            <a href="#" class="px-3 py-1 text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-100 ${currentPage === i ? 'bg-blue-100' : ''}" onclick="changePage(${i})">${i}</a>
+            <a href="#" class="px-3 py-1 border border-gray-300 rounded  ${currentPage === i ? 'bg-blue-100 text-blue-800 hover:bg-blue-300' : 'text-gray-700 bg-white hover:bg-gray-300'}" onclick="changePage(${i})">${i}</a>
         `;
                 paginationLinks.appendChild(pageButton);
             }
@@ -455,10 +578,10 @@
             // Add "Next" button
             const nextButton = document.createElement('li');
             nextButton.innerHTML = `
-        <a href="#" class="px-3 py-1 text-gray-500 bg-gray-200 rounded hover:bg-gray-300" aria-label="Next" onclick="changePage(currentPage + 1)">
-            &raquo;
-        </a>
-    `;
+            <a href="#" class="px-3 py-1 text-gray-500 bg-gray-200 rounded hover:bg-gray-300" aria-label="Next" onclick="changePage(currentPage + 1)">
+                &raquo;
+            </a>
+        `;
             nextButton.classList.toggle('cursor-not-allowed', currentPage === totalPages);
             paginationLinks.appendChild(nextButton);
         }
@@ -469,8 +592,8 @@
 
             if (pageNumber >= 1 && pageNumber <= totalPages) {
                 currentPage = pageNumber; // Update the current page
-                updateTable(); 
-                updatePagination(); 
+                updateTable();
+                updatePagination();
             }
         }
 
@@ -488,13 +611,6 @@
         }
 
         overlayInboxDrawer.addEventListener('click', closeInboxDrawer);
-
-
-
-        document.getElementById('search-input').addEventListener('input', function () {
-            const query = this.value.toLowerCase();
-            filterTags(query);
-        });
 
         function filterTags(query) {
             const filteredTags = pesansData.filter(pesan => pesan.nama_pesan.toLowerCase().includes(query));
@@ -589,40 +705,51 @@
                     deleteButton.disabled = true;
                 }
 
-                selectedData.forEach(idPesan => {
-                    fetch(`http://localhost/KabarE-Web/api/pesan.php?id=${idPesan}`, {
-                            method: 'DELETE',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            console.log(`Success: Message with ID ${idPesan} deleted.`);
+                // Confirm delete action
+                const confirmDelete = confirm('Are you sure you want to delete the selected messages?');
 
-                            const row = document.querySelector(`tr[data-id="${idPesan}"]`);
-                            if (row) {
-                                row.remove();
-                            }
-                        })
-                        .catch(error => {
-                            console.error(`Error deleting message with ID ${idPesan}:`, error);
-                        });
-                });
+                if (confirmDelete) {
+                    selectedData.forEach(idPesan => {
+                        fetch(`http://localhost/KabarE-Web/api/pesan.php?id=${idPesan}`, {
+                                method: 'DELETE',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log(`Success: Message with ID ${idPesan} deleted.`);
 
-                selectedData = [];
+                                const row = document.querySelector(`tr[data-id="${idPesan}"]`);
+                                if (row) {
+                                    row.remove();
+                                }
+                            })
+                            .catch(error => {
+                                console.error(`Error deleting message with ID ${idPesan}:`, error);
+                            });
+                    });
 
-                updateTable();
-                updatePagination();
+                    selectedData = [];
 
-                if (deleteButton) {
-                    deleteButton.disabled = false;
+                    updateTable();
+                    updatePagination();
+
+                    if (deleteButton) {
+                        deleteButton.disabled = false;
+                    }
+                } else {
+                    console.log('Delete action was canceled.');
+                    if (deleteButton) {
+                        deleteButton.disabled = false;
+                    }
                 }
 
             } else {
                 console.error('No valid IDs selected for deletion.');
             }
         }
+
 
         function unreadPesan() {
             if (Array.isArray(selectedData) && selectedData.length > 0) {
@@ -703,34 +830,51 @@
             titlePesan = titlePesanParam;
             tglPesan = tglPesanParam;
             jenisPesan = null;
-            if (jenisPesanParam == "masukan") {
-                jenisPesan = "Masukan"
-                document.querySelector('.title_pesan').textContent = "";
+            if (jenisPesanParam === "masukan") {
+                jenisPesan = "Masukan";
                 document.querySelector('.drawer_href_berita').textContent = "";
+                document.querySelector('.detail_pesan').textContent = "";
+                document.querySelector('.bungkus_detail').classList.add('hidden');
+                document.querySelector('.bungkus_komentar').classList.add('hidden');
             } else {
+                // Handle "Laporan" case
                 fetchBeritaId(beritaId);
-                fetchKomenId(komen_id);
-                jenisPesan = "Laporan"
-                document.querySelector('.title_pesan').textContent = titlePesan;
-                document.querySelector('.drawer_href_berita').href =
-                    'http://localhost/KabarE-Web/category/news-detail.php?=' + beritaId;
+                jenisPesan = "Laporan";
 
-                if (!komen_id) {
-                    document.querySelector('.detail_komentar_pesan').textContent = "Link Berita";
+                // Update berita link and text
+                const beritaLinkElement = document.querySelector('.drawer_href_berita');
+                beritaLinkElement.href = `http://localhost/KabarE-Web/category/news-detail.php?id=${beritaId}`;
+                beritaLinkElement.textContent = "Lihat Berita ⮕";
+
+                // Handle detailPesan
+                if (detailPesan) {
+                    document.querySelector('.detail_pesan').textContent = detailPesan;
+                    document.querySelector('.bungkus_detail').classList.remove('hidden');
+                } else {
+                    document.querySelector('.bungkus_detail').classList.add('hidden');
+                    document.querySelector('.detail_pesan').textContent = "";
                 }
 
-                document.querySelector('.drawer_href_berita').textContent = "Link ke Berita";
+                // Handle komen_id
+                if (komen_id) {
+                    fetchKomenId(komen_id);
+                    document.querySelector('.bungkus_komentar').classList.remove('hidden');
+
+                    // Attach delete action to the delete button
+                    document.querySelector('.button_delete_komentar').onclick = function () {
+                        deleteKomen(komen_id);
+                    };
+                } else {
+                    document.querySelector('.bungkus_komentar').classList.add('hidden');
+                }
             }
+            document.querySelector('.title_pesan').textContent = titlePesan;
             selectedData = [];
             selectedData = [idPesan],
-
-                document.querySelector('.detail_pesan').textContent = detailPesan;
-            document.querySelector('.status_drawer').textContent = jenisPesan;
+                document.querySelector('.status_drawer').textContent = jenisPesan;
             document.querySelector('.drawer_username').textContent = pesanUser;
             document.querySelector('.drawer_email').textContent = email;
             document.querySelector('.drawer_profile').src = 'data:image/jpeg;base64,' + profileParam;
-
-
 
             // Update the database with the status
             fetch(`http://localhost/KabarE-Web/api/pesan.php?id=${idPesan}`, {
@@ -749,7 +893,7 @@
                     // Refetch the data after the PUT request
                     fetch(
                             'http://localhost/KabarE-Web/api/pesan.php'
-                            ) // Make sure this API gives the latest messages
+                        ) // Make sure this API gives the latest messages
                         .then(response => response.json())
                         .then(fetchedData => {
                             fetchNewData();
@@ -760,19 +904,19 @@
                 .catch(console.error);
 
             // testing
-            console.log('data that being populate:');
-            console.log(`
-            idPesan: ${selectedData}
-            beritaId: ${beritaId}
-            komen_id: ${komen_id}
-            username: ${username}
-            profileParam: ${profileParam}
-            emailParam: ${emailParam}
-            titlePesanParam: ${titlePesanParam}
-            detailPesan: ${detailPesan}
-            tglPesanParam: ${tglPesanParam}
-            jenisPesanParam: ${jenisPesanParam}
-            `);
+            // console.log('data that being populate:');
+            // console.log(`
+            // idPesan: ${selectedData}
+            // beritaId: ${beritaId}
+            // komen_id: ${komen_id}
+            // username: ${username}
+            // profileParam: ${profileParam}
+            // emailParam: ${emailParam}
+            // titlePesanParam: ${titlePesanParam}
+            // detailPesan: ${detailPesan}
+            // tglPesanParam: ${tglPesanParam}
+            // jenisPesanParam: ${jenisPesanParam}
+            // `);
         }
 
         function fetchNewData() {
@@ -797,7 +941,8 @@
         function fetchBeritaId(berita_id) {
             console.log("fetch Berita ID: " + berita_id)
             fetch(
-                `http://localhost/KabarE-Web/api/berita.php?berita_id=${berita_id}`) // Pass berita_id as a query parameter
+                    `http://localhost/KabarE-Web/api/berita.php?berita_id=${berita_id}`
+                ) // Pass berita_id as a query parameter
                 .then(response => {
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
@@ -817,25 +962,65 @@
                 });
         }
 
-
         function fetchKomenId(komen_id) {
-            console.log("fetch komen_id: " + komen_id);
-            fetch(`http://localhost/KabarE-Web/api/komentar.php?berita_id=${komen_id}`)
+
+
+            // Reset the textarea and ensure the container is visible
+            document.querySelector('.detail_komentar').value = ""; // Clear old comment
+            document.querySelector('.bungkus_komentar').classList.remove('hidden'); // Ensure visibility
+
+            fetch(`http://localhost/KabarE-Web/api/komentar.php?id=${komen_id}`)
                 .then(response => response.json())
                 .then(data => {
-                    console.log(data);
-                    if (data && data.teks_komentar) {
-                        // Display the fetched comment text
-                        document.querySelector('.detail_komentar_pesan').textContent = data.teks_komentar;
+                    console.log("Fetched data:", data);
+
+                    if (data && data.data && data.data.teks_komentar) {
+                        // Populate the textarea with the fetched comment
+                        const teks_komentar = data.data.teks_komentar;
+                        document.querySelector('.detail_komentar').value = teks_komentar;
+                        console.log("Fetching komen_id: " + komen_id);
+                        console.log("Fetched teks_komentar: " + teks_komentar);
                     } else {
                         // Handle case where 'teks_komentar' is not available
-                        document.querySelector('.detail_komentar_pesan').textContent = "";
+                        console.log("No teks_komentar found in the response.");
                     }
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
                     // Handle the error case and inform the user
-                    document.querySelector('.detail_komentar_pesan').textContent = "Error fetching comment.";
+                    document.querySelector('.detail_komentar').value = "Error fetching comment.";
+                });
+        }
+
+
+        function deleteKomen(komenId) {
+            if (!komenId) {
+                console.error("Invalid komenId. Unable to delete.");
+                return;
+            }
+
+            // Show confirmation dialog
+            const userConfirmed = confirm("Are you sure you want to delete this comment?");
+            if (!userConfirmed) {
+                console.log("User canceled the delete action.");
+                return;
+            }
+
+            console.log("Deleting komen with ID: " + komenId);
+
+            fetch(`http://localhost/KabarE-Web/api/komentar.php?id=${komenId}`, {
+                    method: 'DELETE',
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // console.log("Komentar deleted successfully.");
+                        document.querySelector('.bungkus_komentar').classList.add('hidden');
+                    } else {
+                        console.error("Failed to delete komentar. Status:", response.status);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error occurred while deleting komentar:", error);
                 });
         }
     </script>

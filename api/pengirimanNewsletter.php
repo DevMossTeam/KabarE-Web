@@ -1,4 +1,4 @@
- <?php
+<?php
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -7,40 +7,77 @@ error_reporting(E_ALL);
 include 'koneksi.php';
 
 
-// API URLs
-$apiUrl1 = "http://localhost/KabarE-Web/api/newsletterFetch.php";
-$apiUrl2 = "http://localhost/KabarE-Web/api/newsletter.php";
+$queryBulletin = "SELECT * FROM `newsletter`";
+$stmtBulletin = $koneksi->prepare($queryBulletin); 
+$stmtBulletin->execute();  
+$resultBulletin = $stmtBulletin->get_result();  
 
-// Fetch data from the first API
-$response1 = file_get_contents($apiUrl1);
-if ($response1 === FALSE) {
-    die('Error occurred while fetching data from newsletterFetch.php');
-}
-$dataApi1 = json_decode($response1, true);
-$dataBerita = $dataApi1['data'] ?? [];
+// Initialize an array to hold all rows
+$dataBulletin = [];
 
-// Fetch data from the second API
-$response2 = file_get_contents($apiUrl2);
-if ($response2 === FALSE) {
-    die('Error occurred while fetching data from newsletter.php');
-}
-$dataApi2 = json_decode($response2, true);
-$dataNewsletter = $dataApi2['data'] ?? [];
-
-// Process the data from $dataBerita
-$processedData = [];
-foreach ($dataBerita as $item) {
-    $htmlContent = $item['konten_artikel'] ?? '';
+// Loop through all rows and add them to the array
+while ($row = $resultBulletin->fetch_assoc()) {
+    // Process the footer content
+    $htmlContent = $row['footer_content'] ?? '';
     $dom = new DOMDocument();
     libxml_use_internal_errors(true);
     $dom->loadHTML($htmlContent);
     libxml_clear_errors();
 
-    // Extract image sources
-    // $imageData = [];
-    // foreach ($dom->getElementsByTagName('img') as $img) {
-    //     $imageData[] = $img->getAttribute('src');
-    // }
+    // Extract content paragraphs
+    $footerContent = '';
+    foreach ($dom->getElementsByTagName('p') as $p) {
+        $footerContent .= $p->textContent . "\n";
+    }
+
+    // Add the processed data to the array
+    $dataBulletin[] = [
+        'id' => $row['id'] ?? '',
+        'judul_bulletin' => $row['judul_bulletin'] ?? '',
+        'status' => $row['status'] ?? '',
+        'tipe_content' => $row['tipe_content'] ?? '',
+        'kategori' => $row['kategori'] ?? '',
+        'footer_content' => $footerContent,
+        'hari_pengiriman' => $row['hari_pengiriman'] ?? '',
+        'jam_pengiriman' => $row['jam_pengiriman'] ?? '',
+        'jumlah_berita' => $row['jumlah_berita'] ?? 0
+    ];
+}
+
+echo "<script>";
+echo "console.log('Data Bulletin:', " . json_encode($dataBulletin) . ");";
+echo "</script>";
+
+
+$query = "SELECT 
+                berita.*, 
+                user.nama_pengguna,                                                                         
+                COUNT(CASE WHEN reaksi.jenis_reaksi = 'Suka' THEN 1 END) AS suka_count, 
+                COUNT(CASE WHEN reaksi.jenis_reaksi = 'Tidak Suka' THEN 1 END) AS bukan_suka_count 
+            FROM 
+                berita 
+            JOIN 
+                user ON berita.user_id = user.uid 
+            LEFT JOIN 
+                reaksi ON reaksi.berita_id = berita.id 
+            GROUP BY 
+                berita.id, user.uid;";
+
+$stmt = $koneksi->prepare($query); 
+$stmt->execute();  
+$result = $stmt->get_result();  
+
+// Initialize an array to hold all rows
+$dataBeritaNews = [];
+
+// Loop through all rows and add them to the array
+while ($row = $result->fetch_assoc()) {
+    // Process the content of the article (konten_artikel)
+    $htmlContent = $row['konten_artikel'] ?? '';
+    $dom = new DOMDocument();
+    libxml_use_internal_errors(true);
+    $dom->loadHTML($htmlContent);
+    libxml_clear_errors();
 
     // Extract content paragraphs
     $content = '';
@@ -48,23 +85,26 @@ foreach ($dataBerita as $item) {
         $content .= $p->textContent . "\n";
     }
 
-    $processedData[] = [
-        'id' => $item['id'] ?? '',
-        'judul' => $item['judul'] ?? '',
-        'tanggal_diterbitkan' => $item['tanggal_diterbitkan'] ?? '',
-        'view_count' => $item['view_count'] ?? 0,
-        'user_id' => $item['user_id'] ?? '',
-        'nama_pengguna' => $item['nama_pengguna'] ?? '',
-        'email' => $item['email'] ?? '',
-        // 'profile_pic' => $item['profile_pic'] ?? '',
-        'kategori' => $item['kategori'] ?? '',
+    // Add the processed data to the array
+    $dataBeritaNews[] = [
+        'id' => $row['id'] ?? '',
+        'judul' => $row['judul'] ?? '',
+        'tanggal_diterbitkan' => $row['tanggal_diterbitkan'] ?? '',
+        'view_count' => $row['view_count'] ?? 0,
+        'user_id' => $row['user_id'] ?? '',
+        'nama_pengguna' => $row['nama_pengguna'] ?? '',
+        'email' => $row['email'] ?? '',
+        'kategori' => $row['kategori'] ?? '',
         'konten_artikel' => $content,
-        // 'images' => $imageData,
-        'visibilitas' => $item['visibilitas'] ?? '',
-        'suka_count' => $item['suka_count'] ?? 0
+        'visibilitas' => $row['visibilitas'] ?? '',
+        'suka_count' => $row['suka_count'] ?? 0
     ];
 }
 
+// Log the processed data to the JavaScript console
+echo "<script>console.log('Query Result:', " . json_encode($dataBeritaNews) . ");</script>";
+
+$stmt->close();
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
@@ -134,106 +174,104 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Start the message with the initial HTML structure
     $message = '
-    <!DOCTYPE html>
-    <html>
-    <body style="background-color: #f7fafc; font-family: Arial, sans-serif; margin: 0; padding: 0;">
-        <table align="center" width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #f7fafc; margin: 0; padding: 0;">
-            <tr>
-                <td align="center">
-                    <table width="600" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; padding: 20px; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1); margin-top: 20px;">
-                        <tr>
-                            <td align="center" style="padding: 5px;">
-                                <h1 style="font-size: 24px; color: #3b82f6; font-weight: bold; margin: 0;">KabarE</h1>
-                                <p style="color: #6b7280; font-size: 14px; margin: 4px 0;">Stories from your recommendation</p>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="border-top: 1px solid #e2e8f0; padding: 6px 0;"></td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <h2 style="color: #4a5568; font-size: 24px; font-weight: 600;">Weekly Tech Update</h2>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="border-top: 1px solid #e2e8f0; padding: 4px 0;"></td>
-                        </tr>';
+            <!DOCTYPE html>
+            <html>
+            <body style="background-color: #f7fafc; font-family: Arial, sans-serif; margin: 0; padding: 0;">
+                <table align="center" width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #f7fafc; margin: 0; padding: 0;">
+                    <tr>
+                        <td align="center">
+                            <table width="600" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; padding: 20px; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1); margin-top: 20px;">
+                                <tr>
+                                    <td align="center" style="padding: 5px;">
+                                        <h1 style="font-size: 24px; color: #3b82f6; font-weight: bold; margin: 0;">KabarE</h1>
+                                        <p style="color: #6b7280; font-size: 14px; margin: 4px 0;">Stories from your recommendation</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border-top: 1px solid #e2e8f0; padding: 6px 0;"></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <h2 style="color: #4a5568; font-size: 24px; font-weight: 600;">Weekly Tech Update</h2>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border-top: 1px solid #e2e8f0; padding: 4px 0;"></td>
+                                </tr>';
 
-    // Limit to first 5 items
-    $processedData = array_slice($processedData, 0, 5);
-    
-    // Loop over the processed data to generate the email content dynamically
-    foreach ($processedData as $item) {
-        $judul = htmlspecialchars($item['judul']);
-        $namaPengguna = htmlspecialchars($item['nama_pengguna']);
-        // $email = htmlspecialchars($item['email']);
-        // $profilePic = htmlspecialchars($item['profile_pic']);
-        $kategori = htmlspecialchars($item['kategori']);
-        $kontenArtikel = htmlspecialchars($item['konten_artikel']);
-        // $images = $item['images'] ?? [];
-        // $mainImage = !empty($images) ? htmlspecialchars($images[0]) : 'default-image.jpg';
-        $view_count = htmlspecialchars($item['view_count'] ?? 0);
-        $suka_count = htmlspecialchars($item['suka_count'] ?? 0);
-        // $bukan_suka_count = htmlspecialchars($item['bukan_suka_count'] ?? 0); 
+            // Limit to first 5 items
+            $dataBeritaNews = array_slice($dataBeritaNews, 0, 5);
+            
+            // Loop over the processed data to generate the email content dynamically
+            foreach ($dataBeritaNews as $item) {
+                $judul = htmlspecialchars($item['judul']);
+                $namaPengguna = htmlspecialchars($item['nama_pengguna']);
+                // $email = htmlspecialchars($item['email']);
+                // $profilePic = htmlspecialchars($item['profile_pic']);
+                $kategori = htmlspecialchars($item['kategori']);
+                $kontenArtikel = htmlspecialchars($item['konten_artikel']);
+                // $images = $item['images'] ?? [];
+                // $mainImage = !empty($images) ? htmlspecialchars($images[0]) : 'default-image.jpg';
+                $view_count = htmlspecialchars($item['view_count'] ?? 0);
+                $suka_count = htmlspecialchars($item['suka_count'] ?? 0);
+                // $bukan_suka_count = htmlspecialchars($item['bukan_suka_count'] ?? 0); 
 
-        // Add the dynamic content to the message
-        $message .= '
-        <tr>
-    <td>
-        <table width="100%" border="0" cellspacing="0" cellpadding="0" style="padding: 10px 0;">
-            <tr>
-                <td width="50%" valign="top">
-                    <table width="100%" cellspacing="0" cellpadding="0" style="padding-right: 16px;">
-                        <tr>
-                            <td style="padding: 0; text-align: left;">
-                                <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
-                                    <tr>
-                                        <td style="color: #4a5568; font-weight: 500; font-size: 12px;">
-                                            '. $namaPengguna .'
-                                        </td>
-                                        <td style="text-align: right; padding-right: 6px;">
-                                            <p style="color: white; font-weight: 500; font-size: 12px; margin-left: 6px; background-color: red; border-radius: 5px; padding: 4px; display: inline;">
-                                            '. $kategori .'    
+                // Add the dynamic content to the message
+                $message .= '
+                <tr>
+            <td>
+                <table width="100%" border="0" cellspacing="0" cellpadding="0" style="padding: 10px 0;">
+                    <tr>
+                        <td width="50%" valign="top">
+                            <table width="100%" cellspacing="0" cellpadding="0" style="padding-right: 16px;">
+                                <tr>
+                                    <td style="padding: 0; text-align: left;">
+                                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                                            <tr>
+                                                <td style="color: #4a5568; font-weight: 500; font-size: 12px;">
+                                                    '. $namaPengguna .'
+                                                </td>
+                                                <td style="text-align: right; padding-right: 6px;">
+                                                    <p style="color: white; font-weight: 500; font-size: 12px; margin-left: 6px; background-color: red; border-radius: 5px; padding: 4px; display: inline;">
+                                                    '. $kategori .'    
+                                                    </p>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <a href="../category/news-detail.php?id=' . $item['id']  . '" style="text-decoration: none; color: inherit;">
+                                            <h3 style="font-size: 18px; font-weight: bold; color: #1a202c; margin: 8px 0;">
+                                                ' . substr($judul, 0, 300) . '
+                                            </h3>
+                                            <p style="color: #a0aec0; font-size: 16px; margin: 4px 0; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;">
+                                                ' .  substr($kontenArtikel, 0, 180) . '...' . '
                                             </p>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
+                                        </a>
+                                    </td>
+                                </tr>
 
-                        <tr>
-                            <td>
-                                <a href="http://localhost/KabarE-Web/category/news-detail.php?id=' . $item['id']  . '" style="text-decoration: none; color: inherit;">
-                                    <h3 style="font-size: 18px; font-weight: bold; color: #1a202c; margin: 8px 0;">
-                                        ' . substr($judul, 0, 300) . '
-                                    </h3>
-                                    <p style="color: #a0aec0; font-size: 16px; margin: 4px 0; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;">
-                                        ' .  substr($kontenArtikel, 0, 180) . '...' . '
-                                    </p>
-                                </a>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td style="margin-top: 16px; display: flex; align-items: center;">
-                                <img src="https://icons.veryicon.com/png/o/miscellaneous/streamline-bold-icon/view-11.png" alt="Likes" style="width: 20px; height: 20px;">
-                                <div style="color: #4a5568; font-size: 14px; font-weight: 500; margin-left: 4px;">
-                                    ' . $view_count . '
-                                </div>
-                                <img src="https://icons.veryicon.com/png/o/miscellaneous/yuanql/icon-like.png" alt="Likes" style="width: 16px; height: 16px; margin-left: 20px;">
-                                <div style="color: #4a5568; font-size: 14px; font-weight: 500; margin-left: 4px;">
-                                    ' . $suka_count . '
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
-    </td>
-</tr>
-
-
+                                <tr>
+                                    <td style="margin-top: 16px; display: flex; align-items: center;">
+                                        <img src="https://icons.veryicon.com/png/o/miscellaneous/streamline-bold-icon/view-11.png" alt="Likes" style="width: 20px; height: 20px;">
+                                        <div style="color: #4a5568; font-size: 14px; font-weight: 500; margin-left: 4px;">
+                                            ' . $view_count . '
+                                        </div>
+                                        <img src="https://icons.veryicon.com/png/o/miscellaneous/yuanql/icon-like.png" alt="Likes" style="width: 16px; height: 16px; margin-left: 20px;">
+                                        <div style="color: #4a5568; font-size: 14px; font-weight: 500; margin-left: 4px;">
+                                            ' . $suka_count . '
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
         <tr>
             <td style="border-top: 1px solid #e2e8f0; padding: 4px 0;"></td>
         </tr>';
@@ -287,10 +325,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <button type="submit">Send Email</button>
     </form>
 </body>
-
 </html>
-
-<script>
-    var beritaData = <?php echo json_encode($beritaData); ?>;
-    console.log(beritaData); 
-</script>

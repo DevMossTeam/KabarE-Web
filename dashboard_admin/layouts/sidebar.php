@@ -72,7 +72,7 @@
              </a>
           </li>
           <li>
-             <a href="/KabarE-Web/dashboard_admin/menu/inbox.php"
+             <a href="/KabarE-Web/dashboard_admin/menu/kotak_masuk.php"
                 class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-indigo-100 dark:hover:bg-indigo-700 group text-xl">
                 <svg
                    class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
@@ -87,7 +87,7 @@
              </a>
           </li>
 
-          <li>
+          <!-- <li>
              <a href="#"
                 class="flex items-center p-2 text-blue-900 rounded-lg dark:text-white hover:bg-blue-100 dark:hover:bg-indigo-700 group">
                 <svg
@@ -98,7 +98,7 @@
                 </svg>
                 <span class="ms-3 text-xl">Pengaturan</span>
              </a>
-          </li>
+          </li> -->
        </ul>
     </div>
  </aside>

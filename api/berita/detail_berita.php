@@ -79,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_comment_id']))
     $commentId = $_POST['delete_comment_id'];
     $user_id = $_SESSION['user_id'] ?? null;
 
-    if ($user_id) {
+    if ($user_id || $_SESSION['role'] == "Admin") {
         $query = "DELETE FROM komentar WHERE id = ? AND user_id = ?";
         $stmt = $conn->prepare($query);
         $stmt->bind_param('ss', $commentId, $user_id);

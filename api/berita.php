@@ -206,12 +206,13 @@ function update_berita() {
 // Delete a berita by ID
 function delete_berita() {
     global $conn;
-    $data = json_decode(file_get_contents("php://input"), true);
 
-    if (isset($data['id'])) {
+    // Check if 'id' is provided in the query parameters
+    if (isset($_GET['id'])) {
+        $id = $_GET['id']; // Get the ID from the query parameter
         try {
             $stmt = $conn->prepare("DELETE FROM berita WHERE id = :id");
-            $stmt->bindParam(':id', $data['id'], PDO::PARAM_INT);
+            $stmt->bindParam(':id', $id, PDO::PARAM_STR); // Use PDO::PARAM_STR for alphanumeric IDs
 
             if ($stmt->execute()) {
                 echo json_encode(['message' => 'Berita deleted successfully']);
@@ -225,4 +226,5 @@ function delete_berita() {
         echo json_encode(['message' => 'Invalid input']);
     }
 }
+
 ?>

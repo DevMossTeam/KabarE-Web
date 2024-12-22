@@ -18,10 +18,10 @@
 
     <?php
 // The URL of your API endpoint
-$apiUrl = "/../api/berita.php";
+$apiUrl = "http://localhost/KabarE-Web/api/berita.php";
 
 // Number of items per page
-$itemsPerPage = 10; // Limit to 5 items per page
+$itemsPerPage = 5; // Limit to 5 items per page
 
 // Get the current page number from the query string, default to page 1
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
@@ -167,6 +167,9 @@ echo "<script>console.log(" . json_encode($currentPageData) . ");</script>";
                             <!-- Dropdown menu -->
                             <div id="dropdownHover"
                                 class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44">
+                                <div class="px-4 py-3 text-sm text-gray-900">
+                                    <div>Filter Visiblits</div>
+                                </div>
                                 <ul class="py-2 text-sm text-gray-700" aria-labelledby="dropdownHoverButton">
                                     <li>
                                         <a href="?filter=semua" class="block px-4 py-2 hover:bg-gray-100">Semua</a>
@@ -208,7 +211,7 @@ echo "<script>console.log(" . json_encode($currentPageData) . ");</script>";
                                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
                                             <option selected>Pilih Role</option>
                                             <option value="pembaca">pembaca</option>
-                                            <option value="penulis">penulis</option>
+                                            <!-- <option value="penulis">penulis</option> -->
                                             <option value="admin">admin</option>
                                         </select>
                                     </div>
@@ -243,10 +246,10 @@ echo "<script>console.log(" . json_encode($currentPageData) . ");</script>";
                                                     class="p-4 text-xs font-medium text-left text-gray-500 uppercase">
                                                     Judul Berita
                                                 </th>
-                                                <th scope="col"
+                                                <!-- <th scope="col"
                                                     class="p-4 text-xs font-medium text-left text-gray-500 uppercase">
                                                     Penulis
-                                                </th>
+                                                </th> -->
                                                 <th scope="col"
                                                     class="p-4 text-xs font-medium text-left text-gray-500 uppercase">
                                                     Tanggal Terbit
@@ -267,18 +270,18 @@ echo "<script>console.log(" . json_encode($currentPageData) . ");</script>";
                                         </thead>
                                         <tbody id="pengguna-table-body" class="text-gray-600 text-sm">
                                             <?php
-    if (!empty($currentPageData)) {
-        foreach ($currentPageData as $item) {
-            // Highlight the search query in 'judul'
-            $highlightedTitle = $item['judul'];
-            if ($searchQuery) {
-                // Escape the search query to prevent XSS and handle special characters
-                $escapedSearchQuery = htmlspecialchars($searchQuery);
-                // Highlight the matched part
-                $highlightedTitle = preg_replace('/(' . preg_quote($escapedSearchQuery, '/') . ')/i', '<span class="bg-yellow-300">$1</span>', $item['judul']);
-            }
-    ?>
-                                            <tr class="hover:bg-gray-100">
+                                            if (!empty($currentPageData)) {
+                                                foreach ($currentPageData as $item) {
+                                                    // Highlight the search query in 'judul'
+                                                    $highlightedTitle = $item['judul'];
+                                                    if ($searchQuery) {
+                                                        // Escape the search query to prevent XSS and handle special characters
+                                                        $escapedSearchQuery = htmlspecialchars($searchQuery);
+                                                        // Highlight the matched part
+                                                        $highlightedTitle = preg_replace('/(' . preg_quote($escapedSearchQuery, '/') . ')/i', '<span class="bg-yellow-300">$1</span>', $item['judul']);
+                                                    }
+                                            ?>
+                                            <tr id="row-<?php echo $item['id']; ?>" class="hover:bg-gray-100">
                                                 <td class="p-4 text-gray-900 whitespace-nowrap border-b">
                                                     <?php echo $item['id']; ?>
                                                 </td>
@@ -288,7 +291,7 @@ echo "<script>console.log(" . json_encode($currentPageData) . ");</script>";
                                                     </div>
                                                 </td>
 
-                                                <td class="p-4 text-gray-900 whitespace-nowrap border-b">
+                                                <!-- <td class="p-4 text-gray-900 whitespace-nowrap border-b">
                                                     <div class="flex items-center">
                                                         <img id="profilePicPreview"
                                                             src="data:image/jpeg;base64,<?= $item['profile_pic']; ?>"
@@ -302,7 +305,7 @@ echo "<script>console.log(" . json_encode($currentPageData) . ");</script>";
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </td>
+                                                </td> -->
                                                 <td class="p-4 text-gray-900 whitespace-nowrap border-b">
                                                     <?php echo date('Y-m-d H:i', strtotime($item['tanggal_diterbitkan'])); ?>
                                                 </td>
@@ -313,9 +316,9 @@ echo "<script>console.log(" . json_encode($currentPageData) . ");</script>";
                                                     <?php echo $item['visibilitas']; ?>
                                                 </td>
                                                 <td class="p-4 text-center border-b">
-                                                    <button type="button" data-modal-target="delete-user-modal"
-                                                        data-modal-toggle="delete-user-modal"
-                                                        class="inline-flex items-center px-1.5 py-1.5 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-800 focus:ring-4 focus:ring-red-300 lg:mr-2">
+                                                    <button type="button"
+                                                        class="inline-flex items-center px-1.5 py-1.5 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-800 focus:ring-4 focus:ring-red-300 lg:mr-2"
+                                                        onclick="deleteBerita('<?php echo $item['id']; ?>')">
                                                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
                                                             xmlns="http://www.w3.org/2000/svg">
                                                             <path fill-rule="evenodd"
@@ -340,11 +343,11 @@ echo "<script>console.log(" . json_encode($currentPageData) . ");</script>";
                                                 </td>
                                             </tr>
                                             <?php 
-        }
-    } else {
-        echo "<tr><td colspan='7' class='text-center p-4'>No data available</td></tr>";
-    }
-    ?>
+                                                }
+                                            } else {
+                                                echo "<tr><td colspan='7' class='text-center p-4'>No data available</td></tr>";
+                                            }
+                                            ?>
                                         </tbody>
 
                                     </table>
@@ -406,25 +409,87 @@ echo "<script>console.log(" . json_encode($currentPageData) . ");</script>";
 
         <!--script -->
         <script>
-            const modal = document.getElementById('BeritaModal');
-            const openButton = document.getElementById('createUser');
-            const closeButtons = document.querySelectorAll('#closeModal, #closeModal2');
-
-            openButton.addEventListener('click', () => {
-                modal.classList.remove('hidden');
-            });
-
-            closeButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    modal.classList.add('hidden');
-                });
-            });
-
-            modal.addEventListener('click', (event) => {
-                if (event.target === modal) { // Check if the click was on the backdrop (modal itself)
-                    modal.classList.add('hidden');
+            function deleteBerita(id) {
+                if (!id) {
+                    console.error('Invalid ID:', id);
+                    return;
                 }
-            });
+
+                const isConfirmed = confirm('Are you sure you want to delete this newsletter?');
+
+                if (isConfirmed) {
+                    const url = `http://localhost/KabarE-Web/api/berita.php?id=${id}`;
+
+                    fetch(url, {
+                            method: 'DELETE',
+                        })
+                        .then(response => {
+                            console.log('Response:', response);
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data.message === 'Berita deleted successfully') {
+                                showAlert('success', 'Newsletter deleted successfully!');
+                                const element = document.getElementById(`row-${id}`);
+                                if (element) element.remove();
+                            } else {
+                                showAlert('failed', 'Failed to delete the newsletter.');
+                            }
+                        })
+                        .catch(error => {
+                            // console.error('Fetch error:', error);
+                        });
+                }
+            }
+
+            function showAlert(type, message) {
+                // Create the alert div
+                const alertDiv = document.createElement('div');
+                alertDiv.classList.add('flex', 'items-center', 'p-4', 'mb-4', 'rounded-lg', 'text-sm', 'font-medium');
+
+                // Check the type of alert (success or error)
+                if (type === 'success') {
+                    alertDiv.classList.add('bg-green-50', 'text-green-800', );
+                    alertDiv.innerHTML = `
+                    <svg class="flex-shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+                    </svg>
+                    <span class="sr-only">Success</span>
+                    <div class="ms-3">${message}</div>
+                    <button type="button" class="ms-auto -mx-1.5 -my-1.5 bg-green-50 text-green-500 rounded-lg focus:ring-2 focus:ring-green-400 p-1.5 hover:bg-green-200 inline-flex items-center justify-center h-8 w-8" onclick="closeAlert(this)">
+                        <span class="sr-only">Close</span>
+                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                        </svg>
+                    </button>
+                `;
+                } else {
+                    alertDiv.classList.add('bg-red-50', 'text-red-800', );
+                    alertDiv.innerHTML = `
+                    <svg class="flex-shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+                    </svg>
+                    <span class="sr-only">Error</span>
+                    <div class="ms-3">${message}</div>
+                    <button type="button" class="ms-auto -mx-1.5 -my-1.5 bg-red-50 text-red-500 rounded-lg focus:ring-2 focus:ring-red-400 p-1.5 hover:bg-red-200 inline-flex items-center justify-center h-8 w-8" onclick="closeAlert(this)">
+                        <span class="sr-only">Close</span>
+                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                        </svg>
+                    </button>
+                `;
+                }
+
+                // Append the alert to the body or a specific container
+                document.querySelector('.alert-dynamic').appendChild(alertDiv);
+
+                // Automatically remove the alert after 5 seconds
+                setTimeout(() => closeAlert(alertDiv), 5000);
+            }
+
+            function closeAlert(alert) {
+                alert.remove();
+            }
         </script>
 </body>
 
