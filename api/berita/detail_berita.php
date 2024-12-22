@@ -67,7 +67,7 @@ function timeAgo($datetimeString) {
 $query = "SELECT b.judul, b.konten_artikel, b.tanggal_diterbitkan, b.kategori, u.nama_lengkap, u.nama_pengguna, u.profile_pic 
           FROM berita b 
           JOIN user u ON b.user_id = u.uid 
-          WHERE b.id = ?";
+          WHERE b.id = ? AND b.visibilitas = 'public'";
 $stmt = $conn->prepare($query);
 $stmt->bind_param('s', $id);
 $stmt->execute();
@@ -97,7 +97,7 @@ $kategori = '';
 
 // Dapatkan kategori berita saat ini
 if ($id) {
-    $query = "SELECT kategori FROM berita WHERE id = ?";
+    $query = "SELECT kategori FROM berita WHERE id = ? AND visibilitas = 'public'";
     $stmt = $conn->prepare($query);
     $stmt->bind_param('s', $id);
     $stmt->execute();
@@ -111,7 +111,7 @@ $topNewsQuery = "
     SELECT b.id, b.judul, b.tanggal_diterbitkan, COUNT(r.jenis_reaksi) AS like_count
     FROM berita b
     LEFT JOIN reaksi r ON b.id = r.berita_id AND r.jenis_reaksi = 'Suka'
-    WHERE b.kategori = ?
+    WHERE b.kategori = ? AND b.visibilitas = 'public'
     GROUP BY b.id
     ORDER BY like_count DESC, b.view_count DESC
     LIMIT 6
@@ -126,7 +126,7 @@ $kategori = '';
 
 // Dapatkan kategori berita saat ini
 if ($id) {
-    $query = "SELECT kategori FROM berita WHERE id = ?";
+    $query = "SELECT kategori FROM berita WHERE id = ? AND visibilitas = 'public'";
     $stmt = $conn->prepare($query);
     $stmt->bind_param('s', $id);
     $stmt->execute();
@@ -136,7 +136,7 @@ if ($id) {
 }
 
 // Query untuk mendapatkan berita terbaru dari kategori yang sama
-$recentNewsQuery = "SELECT id, judul, tanggal_diterbitkan FROM berita WHERE kategori = ? AND id != ? ORDER BY tanggal_diterbitkan DESC LIMIT 4";
+$recentNewsQuery = "SELECT id, judul, tanggal_diterbitkan FROM berita WHERE kategori = ? AND id != ? AND visibilitas = 'public' ORDER BY tanggal_diterbitkan DESC LIMIT 4";
 $stmt = $conn->prepare($recentNewsQuery);
 $stmt->bind_param('ss', $kategori, $id);
 $stmt->execute();
@@ -147,7 +147,7 @@ if (!$recentNewsResult) {
 }
 
 // Query untuk mendapatkan berita acak dari kategori yang sama
-$sameTopicNewsQuery = "SELECT id, judul, konten_artikel FROM berita WHERE kategori = ? AND id != ? ORDER BY RAND() LIMIT 3";
+$sameTopicNewsQuery = "SELECT id, judul, konten_artikel FROM berita WHERE kategori = ? AND id != ? AND visibilitas = 'public' ORDER BY RAND() LIMIT 3";
 $stmt = $conn->prepare($sameTopicNewsQuery);
 $stmt->bind_param('ss', $kategori, $id);
 $stmt->execute();
@@ -158,7 +158,7 @@ if (!$sameTopicNewsResult) {
 }
 
 // Query untuk mendapatkan berita acak
-$randomNewsQuery = "SELECT id, judul, konten_artikel, tanggal_diterbitkan, kategori FROM berita ORDER BY RAND() LIMIT 4";
+$randomNewsQuery = "SELECT id, judul, konten_artikel, tanggal_diterbitkan, kategori FROM berita WHERE visibilitas = 'public' ORDER BY RAND() LIMIT 4";
 $randomNewsResult = $conn->query($randomNewsQuery);
 
 if (!$randomNewsResult) {
@@ -324,7 +324,8 @@ while ($tag = $tagResult->fetch_assoc()) {
 $commentQuery = "SELECT k.id, k.teks_komentar, k.tanggal_komentar, u.nama_pengguna, u.profile_pic, k.user_id 
                  FROM komentar k 
                  JOIN user u ON k.user_id = u.uid 
-                 WHERE k.berita_id = ? 
+                 JOIN berita b ON k.berita_id = b.id
+                 WHERE k.berita_id = ? AND b.visibilitas = 'public'
                  ORDER BY k.tanggal_komentar DESC";
 $stmt = $conn->prepare($commentQuery);
 $stmt->bind_param('s', $id);

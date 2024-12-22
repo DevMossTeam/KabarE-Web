@@ -24,7 +24,7 @@ function timeAgo($datetime) {
     <!-- 4 Berita -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         <?php
-        $query = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan FROM berita WHERE kategori = 'Olahraga' ORDER BY RAND() LIMIT 4";
+        $query = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan FROM berita WHERE kategori = 'Olahraga' AND visibilitas = 'public' ORDER BY RAND() LIMIT 4";
         $result = $conn->query($query);
 
         while ($row = $result->fetch_assoc()):
@@ -64,7 +64,7 @@ function timeAgo($datetime) {
         <!-- 3 Kartu Gambar -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
             <?php
-            $queryPopuler = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan FROM berita WHERE kategori = 'Olahraga' ORDER BY tanggal_diterbitkan DESC LIMIT 3";
+            $queryPopuler = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan FROM berita WHERE kategori = 'Olahraga' AND visibilitas = 'public' ORDER BY tanggal_diterbitkan DESC LIMIT 3";
             $resultPopuler = $conn->query($queryPopuler);
 
             while ($rowPopuler = $resultPopuler->fetch_assoc()):
@@ -97,7 +97,7 @@ function timeAgo($datetime) {
                     <div class="border-b-4 border-[#45C630] mt-0"></div>
                 </div>
                 <?php
-                $queryLainnya = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan FROM berita WHERE kategori != 'Olahraga' ORDER BY RAND() LIMIT 4";
+                $queryLainnya = "SELECT id, judul, konten_artikel, kategori, tanggal_diterbitkan FROM berita WHERE kategori != 'Olahraga' AND visibilitas = 'public' ORDER BY RAND() LIMIT 4";
                 $resultLainnya = $conn->query($queryLainnya);
 
                 while ($rowLainnya = $resultLainnya->fetch_assoc()):
@@ -138,7 +138,7 @@ function timeAgo($datetime) {
                 </div>
                 <ul class="pl-4">
                     <?php
-                    $queryBaru = "SELECT id, judul, tanggal_diterbitkan FROM berita WHERE kategori = 'Olahraga' ORDER BY tanggal_diterbitkan DESC LIMIT 8";
+                    $queryBaru = "SELECT id, judul, tanggal_diterbitkan FROM berita WHERE kategori = 'Olahraga' AND visibilitas = 'public' ORDER BY tanggal_diterbitkan DESC LIMIT 8";
                     $resultBaru = $conn->query($queryBaru);
 
                     while ($rowBaru = $resultBaru->fetch_assoc()):
