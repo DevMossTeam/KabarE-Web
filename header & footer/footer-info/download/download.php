@@ -69,7 +69,7 @@ renderCategoryHeader('Download');
         <div class="text-container">
             <h2>Mengapa Menggunakan KabarE?</h2>
             <p>Ayo, jangan sampai ketinggalan berita kampus terbaru! Unduh aplikasi KabarE sekarang dan nikmati pengalaman membaca berita yang lebih praktis dan cepat, langsung dari ponsel Anda.</p>
-            <p>Tautan Download untuk Android: <a href="#">Unduh KabarE Sekarang</a></p>
+            <p>Tautan Download untuk Android: <a href="https://drive.google.com/drive/folders/1VJpPSYP0ucCk3bGrsEmR1mPpwcYOQiHw">Unduh KabarE Sekarang</a></p>
             <p>Aplikasi ini tersedia secara gratis dan kompatibel dengan berbagai versi Android. Kami secara berkala melakukan pembaruan untuk meningkatkan performa dan menambahkan fitur-fitur baru sesuai kebutuhan pengguna.</p>
             <h2>Nikmati Akses Mudah ke Berita Kampus di KabarE!</h2>
             <p>Jadilah bagian dari komunitas kampus yang selalu terinformasi. Unduh KabarE dan temukan semua informasi yang Anda butuhkan langsung di genggaman Anda!</p>

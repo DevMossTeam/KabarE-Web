@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bookmark'])) {
 }
 
 // Ambil ID dari URL
-$id = $_GET['id']; // ID bisa berupa string seperti 'BRT100'
+$id = $_GET['id']; 
 
 // Pastikan ID tidak kosong
 if (empty($id)) {
@@ -782,6 +782,38 @@ $stmt->close();
         closeModalOnOutsideClick(reportModal);
         closeModalOnOutsideClick(thankYouModal);
     });
+
+    document.getElementById('submitReportButton').addEventListener('click', function() {
+    const selectedReason = document.querySelector('input[name="reportReason"]:checked');
+    const additionalDetail = document.querySelector('textarea').value.trim();
+
+    if (selectedReason) {
+        const reason = selectedReason.value;
+
+        // Kirim data ke server
+        fetch('news-detail.php?id=<?= $id ?>', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                report_reason: reason,
+                detail_pesan: additionalDetail
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Tampilkan modal terima kasih
+                thankYouModal.classList.remove('hidden');
+            } else {
+                alert('Gagal mengirim laporan.');
+            }
+        });
+    } else {
+        alert('Silakan pilih alasan pelaporan.');
+    }
+});
 </script>
 
 <?php include '../header & footer/footer.php'; ?>

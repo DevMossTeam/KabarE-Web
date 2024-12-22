@@ -332,4 +332,40 @@ $stmt->bind_param('s', $id);
 $stmt->execute();
 $commentResult = $stmt->get_result();
 $commentCount = $commentResult->num_rows;
+
+function saveReport($conn, $user_id, $berita_id, $reason, $detail_pesan) {
+    // Generate ID acak 12 karakter
+    $id = bin2hex(random_bytes(6)); // 12 karakter heksadesimal
+
+    // Waktu saat laporan dibuat
+    $created_at = date('Y-m-d H:i:s');
+
+    // Status default
+    $status_read = 'belum';
+    $status = 'laporan';
+
+    // Siapkan statement untuk menyimpan laporan
+    $stmt = $conn->prepare("INSERT INTO pesan (id, user_id, berita_id, pesan, created_at, status_read, status, detail_pesan) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("ssssssss", $id, $user_id, $berita_id, $reason, $created_at, $status_read, $status, $detail_pesan);
+    
+    // Eksekusi statement
+    if ($stmt->execute()) {
+        return true; // Berhasil
+    } else {
+        return false; // Gagal
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['report_reason'])) {
+    $reportReason = $_POST['report_reason'];
+    $detailPesan = $_POST['detail_pesan'] ?? ''; // Ambil detail pesan jika ada
+
+    // Simpan laporan ke database
+    if (saveReport($conn, $user_id, $id, $reportReason, $detailPesan)) {
+        echo json_encode(['success' => true]);
+    } else {
+        echo json_encode(['success' => false]);
+    }
+    exit; // Hentikan eksekusi lebih lanjut
+}
 ?>
