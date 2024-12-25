@@ -76,6 +76,7 @@ class UserAPI {
         }
     }
     
+
     // Function to generate a random alphanumeric UID of a specified length
     private function generateUID() {
         try {

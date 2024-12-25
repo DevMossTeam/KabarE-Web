@@ -54,33 +54,20 @@ function fetch_komentars() {
     }
 }
 
+// Fetch a single komentar by ID
 function fetch_komentar($id) {
     global $conn;
     try {
-        // Make sure the ID is not empty
-        if (empty($id)) {
-            echo json_encode(['message' => 'ID is required']);
-            return;
-        }
-
-        // Prepare the SQL query with the correct ID parameter
         $stmt = $conn->prepare("SELECT * FROM komentar WHERE id = :id");
-        $stmt->bindParam(':id', $id, PDO::PARAM_STR); // Using PDO::PARAM_STR for the id if it's a string
-
-        // Execute the statement
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
-
-        // Fetch the result
         $komentar = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        // Check if a record was found
         if ($komentar) {
             echo json_encode(['data' => $komentar, 'message' => 'Komentar fetched successfully']);
         } else {
             echo json_encode(['message' => 'Komentar not found']);
         }
     } catch (PDOException $e) {
-        // In case of an error, show the error message
         echo json_encode(['error' => $e->getMessage()]);
     }
 }
@@ -144,27 +131,25 @@ function update_komentar() {
 }
 
 // Delete a komentar by ID
-// Delete a komentar by ID
 function delete_komentar() {
     global $conn;
-    // Ensure the 'id' is passed and is valid from the URL
-    if (isset($_GET['id']) && !empty($_GET['id'])) {
-        $id = $_GET['id'];  // Get the 'id' from the URL query parameter
+    $data = json_decode(file_get_contents("php://input"), true);
+
+    if (isset($data['id'])) {
         try {
             $stmt = $conn->prepare("DELETE FROM komentar WHERE id = :id");
-            $stmt->bindParam(':id', $id, PDO::PARAM_STR);  // Use PDO::PARAM_STR if id is a string
+            $stmt->bindParam(':id', $data['id'], PDO::PARAM_INT);
 
-            // Execute the statement and check if any row was deleted
-            if ($stmt->execute() && $stmt->rowCount() > 0) {
+            if ($stmt->execute()) {
                 echo json_encode(['message' => 'Komentar deleted successfully']);
             } else {
-                echo json_encode(['message' => 'Komentar not found or could not be deleted']);
+                echo json_encode(['message' => 'Failed to delete komentar']);
             }
         } catch (PDOException $e) {
             echo json_encode(['error' => $e->getMessage()]);
         }
     } else {
-        echo json_encode(['message' => 'Invalid input: Missing or empty ID']);
+        echo json_encode(['message' => 'Invalid input']);
     }
 }
 ?>

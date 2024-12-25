@@ -109,7 +109,7 @@
        sidebar.classList.toggle('-translate-x-full');
     });
 
-    fetch('http://localhost/KabarE-Web/api/pesan.php')
+    fetch('../../api/pesan.php')
        .then(response => response.json())
        .then(data => {
           inboxData = data.data || [];

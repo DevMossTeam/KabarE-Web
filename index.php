@@ -409,36 +409,6 @@ if ($resultBeritaLainnya && $resultBeritaLainnya->num_rows > 0) {
 }
 ?>
 
-
-<?php
-$user_id = $_SESSION['user_id'];
-
-function getNotif($user_id, $from_id) {
-    // Construct the URL dynamically with the user_id
-    $url = "http://localhost/KabarE-Web/api/notifikasi.php?penerima_user_id=" . urlencode($user_id);
-
-    // Initialize cURL session
-    $ch = curl_init();
-
-    // Set the cURL options
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-    // Execute the cURL request
-    $response = curl_exec($ch);
-
-    // Check for errors in the request
-    if ($response === false) {
-        echo "Error: " . curl_error($ch);
-    }
-
-    // Close cURL session
-    curl_close($ch);
-
-    // Process the response (you can also return it if needed)
-    echo $response;
-}
-?>
 <!-- Main Content -->
 <div class="flex-grow container mx-auto mt-8 mb-8 relative z-0 px-4 lg:px-20">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -860,4 +830,4 @@ function getNotif($user_id, $from_id) {
     setInterval(nextSlide, 5000); // Change slide every 5 seconds
 
     updateSlider();
-</script>
+</script>L
